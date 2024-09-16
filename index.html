@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <title>Real-Time Code Sharing</title>
+    <title>แหล่งร่วมโค้ดเน็ตฟรี</title>
     <!-- CSS Styles -->
     <style>
         * {
@@ -66,6 +66,13 @@
         }
 
         .server-item span {
+            margin-bottom: 5px;
+        }
+
+        .server-item .timestamp {
+            font-size: 12px;
+            color: #999;
+            font-family: 'Arial', sans-serif;
             margin-bottom: 10px;
         }
 
@@ -217,7 +224,7 @@
 <body>
 
 <div class="container">
-    <div class="title">Real-Time Code Sharing</div>
+    <div class="title">แหล่งร่วมโค้ดเน็ตฟรี</div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -273,12 +280,12 @@
   const passwordModal = document.getElementById('passwordModal');
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
-  const passwordError = document.getElementById('passwordError'); // เรียกการแจ้งเตือนรหัสผิด
+  const passwordError = document.getElementById('passwordError');
 
   const PASSWORD = "975699";
   let currentServerId = null;
   let currentButton = null;
-  let currentAction = null; // แยกประเภทการกระทำ (ดูโค้ด หรือลบ)
+  let currentAction = null;
 
   // แสดงฟอร์มส่งโค้ด
   showFormButton.addEventListener('click', () => {
@@ -286,18 +293,28 @@
     showFormButton.style.display = 'none';
   });
 
+  // Regex pattern update to allow both domain names and IP addresses
+  const codePattern = /^vless:\/\/[\w-]+@([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[\w.-]+):[0-9]+.*$/;
+
+  // ฟังก์ชันแปลงเวลาตามประเทศไทย
+  function formatThaiTime(timestamp) {
+    const options = { timeZone: 'Asia/Bangkok', hour12: false };
+    const date = new Date(timestamp).toLocaleString('th-TH', options);
+    return `เวลา: ${date}`;
+  }
+
   // การส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
-    const codePattern = /^vless:\/\/[\w-]+@[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+?.*$/;
 
     if (serverName && codePattern.test(code)) {
       const codeRef = ref(database, 'servers');
+      const timestamp = new Date().toISOString();
       push(codeRef, {
         serverName: serverName,
         code: code,
-        timestamp: new Date().toISOString()
+        timestamp: timestamp
       })
       .then(() => {
         console.log('ส่งข้อมูลสำเร็จ');
@@ -317,7 +334,7 @@
     }
   });
 
-  // การเพิ่มโค้ดใน UI
+  // การเพิ่มโค้ดใน UI พร้อมแสดงเวลา
   const codeRef = ref(database, 'servers');
   onChildAdded(codeRef, (snapshot) => {
     const serverData = snapshot.val();
@@ -327,6 +344,7 @@
     serverElement.classList.add('server-item');
     serverElement.innerHTML = 
       `<span>${serverData.serverName}</span>
+      <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
       <div>
         <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
         <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
@@ -339,16 +357,16 @@
   window.requestPasswordAndShowCode = function (serverId, button) {
     currentServerId = serverId;
     currentButton = button;
-    currentAction = 'show'; // กำหนด action ให้เป็นการแสดงโค้ด
-    passwordModal.style.display = 'flex'; // แสดง modal
+    currentAction = 'show';
+    passwordModal.style.display = 'flex';
   };
 
   // ฟังก์ชันขอรหัสผ่านเพื่อลบ
   window.requestPasswordToDelete = function (serverId, button) {
     currentServerId = serverId;
     currentButton = button;
-    currentAction = 'delete'; // กำหนด action ให้เป็นการลบ
-    passwordModal.style.display = 'flex'; // แสดง modal
+    currentAction = 'delete';
+    passwordModal.style.display = 'flex';
   };
 
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
@@ -360,11 +378,11 @@
       } else if (currentAction === 'delete') {
         deleteCode(currentServerId, currentButton);
       }
-      passwordModal.style.display = 'none'; // ซ่อน modal
-      passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
+      passwordModal.style.display = 'none';
+      passwordInput.value = '';
     } else {
-      showPasswordError(); // แสดงแจ้งเตือนรหัสผ่านไม่ถูกต้อง
-      passwordInput.value = ''; // รีเซ็ตรหัสเพื่อให้กรอกใหม่
+      showPasswordError();
+      passwordInput.value = '';
     }
   });
 
@@ -388,7 +406,7 @@
       button.parentNode.parentNode.appendChild(codeElement);
     });
 
-    button.onclick = () => hideCode(button); // เปลี่ยนฟังก์ชันปุ่มเป็นซ่อนโค้ด
+    button.onclick = () => hideCode(button);
   }
 
   // ฟังก์ชันซ่อนโค้ด
@@ -399,7 +417,7 @@
       codeToHide.remove();
     }
 
-    button.onclick = () => requestPasswordAndShowCode(currentServerId, button); // เปลี่ยนฟังก์ชันปุ่มกลับเป็นดูโค้ด
+    button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
   }
 
   // ฟังก์ชันลบโค้ด
@@ -417,9 +435,9 @@
 
   // ฟังก์ชันแสดงการแจ้งเตือนเมื่อใส่รหัสผ่านผิด
   function showPasswordError() {
-    passwordError.style.display = 'block'; // แสดงข้อความแจ้งเตือน
+    passwordError.style.display = 'block';
     setTimeout(() => {
-      passwordError.style.display = 'none'; // ซ่อนหลังจาก 3 วินาที
+      passwordError.style.display = 'none';
     }, 3000);
   }
 </script>
