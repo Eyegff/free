@@ -295,7 +295,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
@@ -348,6 +348,115 @@
       priceError.style.display = 'none';
     }
   });
+
+  // ฟังก์ชันแปลงเวลาตามประเทศไทย
+  function formatThaiTime(timestamp) {
+    const options = { timeZone: 'Asia/Bangkok', hour12: false };
+    const date = new Date(timestamp).toLocaleString('th-TH', options);
+    return `เวลา: ${date}`;
+  }
+
+  // ฟังก์ชันการส่งข้อมูลโค้ด
+  sendButton.addEventListener('click', () => {
+    const serverName = serverNameInput.value.trim();
+    const code = codeInput.value.trim();
+    const passwordForm = passwordInputForm.value.trim();
+    const facebookLink = facebookInput.value.trim();
+    const expiryTime = expiryInput.value.trim();
+    const price = parseFloat(priceInput.value.trim());
+
+    if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
+      const codeRef = ref(database, 'servers');
+      const timestamp = new Date().toISOString();
+      push(codeRef, {
+        serverName: serverName,
+        code: code,
+        password: passwordForm,
+        facebookLink: facebookLink,
+        expiryTime: expiryTime,
+        timestamp: timestamp,
+        price: price
+      })
+      .then(() => {
+        console.log('ส่งข้อมูลสำเร็จ');
+        resetForm();
+      })
+      .catch((error) => {
+        console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+      });
+
+      errorMessage.style.display = 'none';
+    } else {
+      errorMessage.style.display = 'block';
+    }
+  });
+
+  function resetForm() {
+    serverNameInput.value = '';
+    codeInput.value = '';
+    passwordInputForm.value = '';
+    facebookInput.value = '';
+    expiryInput.value = '';
+    priceInput.value = '';
+    codeForm.style.display = 'none';
+    showFormButton.style.display = 'block';
+  }
+
+  // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
+  const codeRef = ref(database, 'servers');
+  onChildAdded(codeRef, (snapshot) => {
+    const serverData = snapshot.val();
+    const serverId = snapshot.key;
+
+    const serverElement = document.createElement('div');
+    serverElement.classList.add('server-item');
+
+    const serverName = serverData.serverName.toLowerCase() === "admin" 
+      ? `<span class="admin-name">${serverData.serverName}</span>` 
+      : `<span>${serverData.serverName}</span>`;
+
+    serverElement.innerHTML = 
+      `${serverName}
+      <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+      <span class="countdown"></span>
+      <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
+      <div>
+        <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
+        <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
+      </div>`;
+
+    const countdownElement = serverElement.querySelector('.countdown');
+    codeDisplay.appendChild(serverElement);
+    codeDisplay.scrollTop = codeDisplay.scrollHeight;
+
+    // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
+    updateCountdown(serverId, countdownElement, serverData.expiryTime);
+  });
+
+  // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
+  function updateCountdown(serverId, expiryTimeElement, expiryTime) {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const expiry = new Date(expiryTime).getTime();
+      const distance = expiry - now;
+
+      if (distance <= 0) {
+        expiryTimeElement.innerHTML = "หมดอายุ";
+        clearInterval(interval);
+        const codeToRemoveRef = ref(database, `servers/${serverId}`);
+        remove(codeToRemoveRef).then(() => {
+          console.log("ลบโค้ดที่หมดอายุแล้ว");
+        });
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+      }
+    }, 1000);
+  }
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
   window.requestPasswordAndShowCode = function (serverId, button) {
