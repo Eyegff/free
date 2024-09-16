@@ -272,7 +272,7 @@
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <div id="priceError" style="color: red; display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
-        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก">
+        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" inputmode="numeric">
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
@@ -285,7 +285,7 @@
 <div id="passwordModal">
     <div class="modal-content">
         <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
-        <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
+        <input type="password" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric">
         <button id="passwordSubmit">ยืนยัน</button>
     </div>
 </div>
