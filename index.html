@@ -107,7 +107,7 @@
             width: 100%;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"] {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -137,7 +137,7 @@
                 font-size: 14px;
             }
 
-            input[type="text"], input[type="password"] {
+            input[type="text"] {
                 padding: 10px;
                 font-size: 14px;
             }
@@ -168,7 +168,6 @@
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
-        <input type="password" id="passwordInput" placeholder="ตั้งรหัสผ่าน 6 หลัก">
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 </div>
@@ -196,12 +195,10 @@
   const codeForm = document.getElementById('codeForm');
   const serverNameInput = document.getElementById('serverNameInput');
   const codeInput = document.getElementById('codeInput');
-  const passwordInput = document.getElementById('passwordInput');
   const sendButton = document.getElementById('sendButton');
   const errorMessage = document.getElementById('errorMessage');
 
   const codePattern = /^vless:\/\/[\w-]+@[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+?.*$/;
-  const passwordPattern = /^\d{6}$/; // ตรวจสอบว่ารหัสผ่านเป็นตัวเลข 6 หลัก
 
   showFormButton.addEventListener('click', () => {
     codeForm.style.display = 'block';
@@ -211,14 +208,12 @@
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
-    const password = passwordInput.value.trim();
 
-    if (serverName && codePattern.test(code) && passwordPattern.test(password)) {
+    if (serverName && codePattern.test(code)) {
       const codeRef = ref(database, 'servers');
       push(codeRef, {
         serverName: serverName,
         code: code,
-        password: password,
         timestamp: new Date().toISOString()
       })
       .then(() => {
@@ -230,7 +225,6 @@
 
       serverNameInput.value = '';
       codeInput.value = '';
-      passwordInput.value = '';
 
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
@@ -250,27 +244,13 @@
     serverElement.innerHTML = `
       <span>${serverData.serverName}</span>
       <div>
-        <button onclick="showPasswordPrompt('view', '${serverId}', '${serverData.password}', this)">ดูโค้ด</button>
-        <button onclick="showPasswordPrompt('delete', '${serverId}', '${serverData.password}', this)" style="background-color: #ff4f4f;">ลบ</button>
+        <button onclick="toggleCode('${serverId}', this)">ดูโค้ด</button>
+        <button onclick="deleteCode('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
       </div>
     `;
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
   });
-
-  function showPasswordPrompt(action, serverId, correctPassword, button) {
-    const userPassword = prompt("กรุณาใส่รหัสผ่าน 6 หลัก:");
-
-    if (userPassword === correctPassword) {
-      if (action === 'view') {
-        toggleCode(serverId, button);
-      } else if (action === 'delete') {
-        deleteCode(serverId, button);
-      }
-    } else {
-      alert("รหัสผ่านไม่ถูกต้อง!");
-    }
-  }
 
   window.toggleCode = function (serverId, button) {
     const codeRef = ref(database, `servers/${serverId}`);
