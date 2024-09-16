@@ -114,7 +114,7 @@
             width: 100%;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -236,6 +236,7 @@
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
+        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก">
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 </div>
@@ -275,6 +276,7 @@
   const codeForm = document.getElementById('codeForm');
   const serverNameInput = document.getElementById('serverNameInput');
   const codeInput = document.getElementById('codeInput');
+  const passwordInputForm = document.getElementById('passwordInputForm');
   const sendButton = document.getElementById('sendButton');
   const errorMessage = document.getElementById('errorMessage');
   const passwordModal = document.getElementById('passwordModal');
@@ -282,7 +284,6 @@
   const passwordSubmit = document.getElementById('passwordSubmit');
   const passwordError = document.getElementById('passwordError');
 
-  const PASSWORD = "975699";
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
@@ -307,13 +308,15 @@
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
+    const passwordForm = passwordInputForm.value.trim();
 
-    if (serverName && codePattern.test(code)) {
+    if (serverName && codePattern.test(code) && /^\d{6}$/.test(passwordForm)) {
       const codeRef = ref(database, 'servers');
       const timestamp = new Date().toISOString();
       push(codeRef, {
         serverName: serverName,
         code: code,
+        password: passwordForm,
         timestamp: timestamp
       })
       .then(() => {
@@ -325,6 +328,7 @@
 
       serverNameInput.value = '';
       codeInput.value = '';
+      passwordInputForm.value = '';
 
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
@@ -372,18 +376,23 @@
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
     const inputPassword = passwordInput.value;
-    if (inputPassword === PASSWORD) {
-      if (currentAction === 'show') {
-        showCode(currentServerId, currentButton);
-      } else if (currentAction === 'delete') {
-        deleteCode(currentServerId, currentButton);
+    const codeRef = ref(database, `servers/${currentServerId}`);
+
+    onValue(codeRef, (snapshot) => {
+      const serverData = snapshot.val();
+      if (inputPassword === serverData.password) {
+        if (currentAction === 'show') {
+          showCode(currentServerId, currentButton);
+        } else if (currentAction === 'delete') {
+          deleteCode(currentServerId, currentButton);
+        }
+        passwordModal.style.display = 'none';
+        passwordInput.value = '';
+      } else {
+        showPasswordError();
+        passwordInput.value = '';
       }
-      passwordModal.style.display = 'none';
-      passwordInput.value = '';
-    } else {
-      showPasswordError();
-      passwordInput.value = '';
-    }
+    });
   });
 
   // ฟังก์ชันแสดงโค้ด
