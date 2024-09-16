@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
     <title>แหล่งร่วมโค้ดเน็ตฟรี</title>
+    <!-- Font Awesome สำหรับไอคอน Facebook -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1Pfq8wVn4S4oJVV3tk0H+zl7j0oGdr6lyiTquFfN5V++0p9cSD7sSx0jEoXtBtQuM6R4l+jqgC+lZmK0sZ+1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS Styles -->
     <style>
         * {
@@ -257,6 +259,32 @@
             font-weight: bold;
         }
 
+        /* สไตล์สำหรับปุ่ม Facebook */
+        .facebook-button {
+            margin-top: 10px;
+            width: 100%;
+            background-color: #4267B2; /* สีน้ำเงินของ Facebook */
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .facebook-button:hover {
+            background-color: #365899;
+        }
+
+        .facebook-button i {
+            margin-right: 8px;
+        }
+
         /* Media query สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
             .title {
@@ -289,6 +317,15 @@
 
             .modal-content {
                 width: 90%;
+            }
+
+            .facebook-button {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .facebook-button i {
+                margin-right: 5px;
             }
         }
 
@@ -535,6 +572,14 @@
       priceTag.classList.add('price-tag');
       priceTag.textContent = `${serverData.price} บาท`;
 
+      // สร้างปุ่ม Facebook
+      const facebookButton = document.createElement('a');
+      facebookButton.classList.add('facebook-button');
+      facebookButton.href = serverData.facebookLink;
+      facebookButton.target = '_blank';
+      facebookButton.rel = 'noopener noreferrer';
+      facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
+
       serverElement.innerHTML = 
           `${serverName}
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
@@ -547,6 +592,11 @@
 
       // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
+
+      // เพิ่มปุ่ม Facebookหลังป้ายราคา
+      if (serverData.facebookLink) {
+          serverElement.appendChild(facebookButton);
+      }
 
       const countdownElement = serverElement.querySelector('.countdown');
       codeDisplay.appendChild(serverElement);
@@ -703,7 +753,9 @@
       allViewButtons.forEach(button => {
           button.textContent = "ดูโค้ด";
           button.onclick = function () {
-              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
+              const serverIdMatch = button.parentNode.parentNode.querySelector('.countdown').parentNode.getAttribute('onclick');
+              // หรือหาวิธีอื่นในการดึง serverId ที่ถูกต้อง
+              requestPasswordAndShowCode(currentServerId, button);
           };
       });
 
