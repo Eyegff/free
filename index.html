@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
@@ -59,6 +59,7 @@
             padding: 10px;
             border-bottom: 1px solid #444;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .server-item:hover {
@@ -90,6 +91,7 @@
             color: black;
             animation: pulse 2s infinite;
             box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.6);
+            margin: 10px 0;
         }
 
         @keyframes pulse {
@@ -132,6 +134,7 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-top: 10px;
+            border-radius: 5px;
         }
 
         button:hover {
@@ -165,6 +168,7 @@
         #backButton {
             display: none;
             margin-top: 20px;
+            background-color: #ff4f4f;
         }
 
         /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
@@ -187,6 +191,7 @@
             text-align: center;
             color: #000;
             width: 300px;
+            position: relative;
         }
 
         .modal-content input {
@@ -205,10 +210,20 @@
             color: white;
             cursor: pointer;
             border-radius: 5px;
+            margin-right: 10px;
         }
 
         .modal-content button:hover {
             background-color: #007bff;
+        }
+
+        /* ปุ่มยกเลิกในโมดัล */
+        .modal-content .cancel-button {
+            background-color: #ff4f4f;
+        }
+
+        .modal-content .cancel-button:hover {
+            background-color: #e04343;
         }
 
         /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
@@ -226,6 +241,20 @@
             z-index: 1000;
             font-size: 16px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ป้ายแสดงราคา */
+        .price-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff5722;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+            font-weight: bold;
         }
 
         /* Media query สำหรับหน้าจอมือถือ */
@@ -252,6 +281,56 @@
             #codeDisplay {
                 font-size: 12px;
             }
+
+            .price-tag {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+        }
+
+        /* สไตล์สำหรับโค้ดและปุ่มคัดลอก */
+        .code-content {
+            background-color: #1c1c1c;
+            padding: 15px;
+            color: #00ffc6;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-wrap: break-word;
+            border: 1px solid #00ffc6;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .copy-button {
+            margin-top: 10px;
+            width: auto;
+            align-self: flex-start;
+            background-color: #4caf50;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+
+        /* สไตล์สำหรับแสดง/ซ่อนรหัสผ่าน */
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 14px;
+            color: #00adb5;
+        }
+
+        .password-container {
+            position: relative;
         }
     </style>
 </head>
@@ -272,7 +351,10 @@
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <div id="priceError" style="color: red; display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
-        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" inputmode="numeric">
+        <div class="password-container">
+            <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" inputmode="numeric">
+            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+        </div>
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
@@ -285,8 +367,12 @@
 <div id="passwordModal">
     <div class="modal-content">
         <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
-        <input type="password" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric">
+        <div class="password-container">
+            <input type="password" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric">
+            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInput')">แสดง</span>
+        </div>
         <button id="passwordSubmit">ยืนยัน</button>
+        <button class="cancel-button" id="passwordCancel">ยกเลิก</button>
     </div>
 </div>
 
@@ -326,246 +412,303 @@
   const passwordModal = document.getElementById('passwordModal');
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
-  const passwordError = document.getElementById('passwordError');
+  const passwordCancel = document.getElementById('passwordCancel');
+  const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
 
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
 
+  // ฟังก์ชันแสดง/ซ่อนรหัสผ่าน
+  function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      const toggle = input.parentElement.querySelector('.password-toggle');
+      if (input.type === 'password') {
+          input.type = 'text';
+          toggle.textContent = 'ซ่อน';
+      } else {
+          input.type = 'password';
+          toggle.textContent = 'แสดง';
+      }
+  }
+
+  // ตั้งค่าขอบเขตวันหมดอายุให้เฉพาะปีปัจจุบัน
+  function setExpiryDateLimits() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const minDate = `${year}-${month}-${day}T00:00`;
+      const maxDate = `${year}-12-31T23:59`;
+      expiryInput.setAttribute('min', minDate);
+      expiryInput.setAttribute('max', maxDate);
+      expiryInput.value = minDate; // ตั้งค่าเริ่มต้นให้เป็นวันนี้
+  }
+
+  setExpiryDateLimits();
+
   // แสดงฟอร์มส่งโค้ด
   showFormButton.addEventListener('click', () => {
-    codeForm.style.display = 'block';
-    showFormButton.style.display = 'none';
+      codeForm.style.display = 'block';
+      showFormButton.style.display = 'none';
   });
 
   // ตรวจสอบราคาว่าไม่เกิน 200 บาท
   priceInput.addEventListener('change', () => {
-    const price = parseFloat(priceInput.value);
-    if (price > 200) {
-      priceError.style.display = 'block';
-    } else {
-      priceError.style.display = 'none';
-    }
+      const price = parseFloat(priceInput.value);
+      if (price > 200) {
+          priceError.style.display = 'block';
+      } else {
+          priceError.style.display = 'none';
+      }
   });
 
   // ฟังก์ชันแปลงเวลาตามประเทศไทย
   function formatThaiTime(timestamp) {
-    const options = { timeZone: 'Asia/Bangkok', hour12: false };
-    const date = new Date(timestamp).toLocaleString('th-TH', options);
-    return `เวลา: ${date}`;
+      const options = { timeZone: 'Asia/Bangkok', hour12: false };
+      const date = new Date(timestamp).toLocaleString('th-TH', options);
+      return `เวลา: ${date}`;
   }
 
   // ฟังก์ชันการส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
-    const serverName = serverNameInput.value.trim();
-    const code = codeInput.value.trim();
-    const passwordForm = passwordInputForm.value.trim();
-    const facebookLink = facebookInput.value.trim();
-    const expiryTime = expiryInput.value.trim();
-    const price = parseFloat(priceInput.value.trim());
+      const serverName = serverNameInput.value.trim();
+      const code = codeInput.value.trim();
+      const passwordForm = passwordInputForm.value.trim();
+      const facebookLink = facebookInput.value.trim();
+      const expiryTime = expiryInput.value.trim();
+      const price = parseFloat(priceInput.value.trim());
 
-    if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
-      const codeRef = ref(database, 'servers');
-      const timestamp = new Date().toISOString();
-      push(codeRef, {
-        serverName: serverName,
-        code: code,
-        password: passwordForm,
-        facebookLink: facebookLink,
-        expiryTime: expiryTime,
-        timestamp: timestamp,
-        price: price
-      })
-      .then(() => {
-        console.log('ส่งข้อมูลสำเร็จ');
-        resetForm();
-      })
-      .catch((error) => {
-        console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-      });
+      if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
+          const codeRef = ref(database, 'servers');
+          const timestamp = new Date().toISOString();
+          push(codeRef, {
+              serverName: serverName,
+              code: code,
+              password: passwordForm,
+              facebookLink: facebookLink,
+              expiryTime: expiryTime,
+              timestamp: timestamp,
+              price: price
+          })
+          .then(() => {
+              console.log('ส่งข้อมูลสำเร็จ');
+              resetForm();
+          })
+          .catch((error) => {
+              console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+          });
 
-      errorMessage.style.display = 'none';
-    } else {
-      errorMessage.style.display = 'block';
-    }
+          errorMessage.style.display = 'none';
+      } else {
+          errorMessage.style.display = 'block';
+      }
   });
 
   function resetForm() {
-    serverNameInput.value = '';
-    codeInput.value = '';
-    passwordInputForm.value = '';
-    facebookInput.value = '';
-    expiryInput.value = '';
-    priceInput.value = '';
-    codeForm.style.display = 'none';
-    showFormButton.style.display = 'block';
+      serverNameInput.value = '';
+      codeInput.value = '';
+      passwordInputForm.value = '';
+      facebookInput.value = '';
+      expiryInput.value = '';
+      priceInput.value = '';
+      codeForm.style.display = 'none';
+      showFormButton.style.display = 'block';
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
-  const codeRef = ref(database, 'servers');
-  onChildAdded(codeRef, (snapshot) => {
-    const serverData = snapshot.val();
-    const serverId = snapshot.key;
+  const codeRefDB = ref(database, 'servers');
+  onChildAdded(codeRefDB, (snapshot) => {
+      const serverData = snapshot.val();
+      const serverId = snapshot.key;
 
-    const serverElement = document.createElement('div');
-    serverElement.classList.add('server-item');
+      const serverElement = document.createElement('div');
+      serverElement.classList.add('server-item');
 
-    const serverName = serverData.serverName.toLowerCase() === "admin" 
-      ? `<span class="admin-name">${serverData.serverName}</span>` 
-      : `<span>${serverData.serverName}</span>`;
+      const serverName = serverData.serverName.toLowerCase() === "admin" 
+          ? `<span class="admin-name">${serverData.serverName}</span>` 
+          : `<span>${serverData.serverName}</span>`;
 
-    serverElement.innerHTML = 
-      `${serverName}
-      <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-      <span class="countdown"></span>
-      <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
-      <div>
-        <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
-        <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
-      </div>`;
+      // สร้างป้ายราคา
+      const priceTag = document.createElement('div');
+      priceTag.classList.add('price-tag');
+      priceTag.textContent = `${serverData.price} บาท`;
 
-    const countdownElement = serverElement.querySelector('.countdown');
-    codeDisplay.appendChild(serverElement);
-    codeDisplay.scrollTop = codeDisplay.scrollHeight;
+      serverElement.innerHTML = 
+          `${serverName}
+          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+          <span class="countdown"></span>
+          <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
+          <div>
+              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
+              <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
+          </div>`;
 
-    // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
-    updateCountdown(serverId, countdownElement, serverData.expiryTime);
+      // เพิ่มป้ายราคาไปที่ serverElement
+      serverElement.appendChild(priceTag);
+
+      const countdownElement = serverElement.querySelector('.countdown');
+      codeDisplay.appendChild(serverElement);
+      codeDisplay.scrollTop = codeDisplay.scrollHeight;
+
+      // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
+      updateCountdown(serverId, countdownElement, serverData.expiryTime);
   });
 
   // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const expiry = new Date(expiryTime).getTime();
-      const distance = expiry - now;
+      const interval = setInterval(() => {
+          const now = new Date().getTime();
+          const expiry = new Date(expiryTime).getTime();
+          const distance = expiry - now;
 
-      if (distance <= 0) {
-        expiryTimeElement.innerHTML = "หมดอายุ";
-        clearInterval(interval);
-        const codeToRemoveRef = ref(database, `servers/${serverId}`);
-        remove(codeToRemoveRef).then(() => {
-          console.log("ลบโค้ดที่หมดอายุแล้ว");
-        });
-      } else {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          if (distance <= 0) {
+              expiryTimeElement.innerHTML = "หมดอายุ";
+              clearInterval(interval);
+              const codeToRemoveRef = ref(database, `servers/${serverId}`);
+              remove(codeToRemoveRef).then(() => {
+                  console.log("ลบโค้ดที่หมดอายุแล้ว");
+              });
+          } else {
+              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+              const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-      }
-    }, 1000);
+              expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          }
+      }, 1000);
   }
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
   window.requestPasswordAndShowCode = function (serverId, button) {
-    currentServerId = serverId;
-    currentButton = button;
-    currentAction = 'show';
-    passwordModal.style.display = 'flex';
+      currentServerId = serverId;
+      currentButton = button;
+      currentAction = 'show';
+      passwordModal.style.display = 'flex';
   };
 
   // ฟังก์ชันขอรหัสผ่านเพื่อลบ
   window.requestPasswordToDelete = function (serverId, button) {
-    currentServerId = serverId;
-    currentButton = button;
-    currentAction = 'delete';
-    passwordModal.style.display = 'flex';
+      currentServerId = serverId;
+      currentButton = button;
+      currentAction = 'delete';
+      passwordModal.style.display = 'flex';
   };
 
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
-    const inputPassword = passwordInput.value;
-    const codeRef = ref(database, `servers/${currentServerId}`);
+      const inputPassword = passwordInput.value;
+      const codeRefSingle = ref(database, `servers/${currentServerId}`);
 
-    onValue(codeRef, (snapshot) => {
-      const serverData = snapshot.val();
-      if (inputPassword === serverData.password) {
-        if (currentAction === 'show') {
-          showCode(currentServerId, currentButton);
-        } else if (currentAction === 'delete') {
-          deleteCode(currentServerId, currentButton);
-        }
-        passwordModal.style.display = 'none';
-        passwordInput.value = '';
-      } else {
-        showPasswordError();
-        showBackButton();
-        window.open(serverData.facebookLink, '_blank');
-        passwordInput.value = '';
-      }
-    });
+      onValue(codeRefSingle, (snapshot) => {
+          const serverData = snapshot.val();
+          if (inputPassword === serverData.password) {
+              if (currentAction === 'show') {
+                  showCode(currentServerId, currentButton);
+              } else if (currentAction === 'delete') {
+                  deleteCode(currentServerId, currentButton);
+              }
+              passwordModal.style.display = 'none';
+              passwordInput.value = '';
+          } else {
+              showPasswordError();
+              passwordModal.style.display = 'none';
+              passwordInput.value = '';
+          }
+      }, { onlyOnce: true }); // เพิ่ม { onlyOnce: true } เพื่อไม่ให้ฟังก์ชันถูกเรียกซ้ำ
+  });
+
+  // การยกเลิกการยืนยันรหัสผ่าน
+  passwordCancel.addEventListener('click', () => {
+      passwordModal.style.display = 'none';
+      passwordInput.value = '';
   });
 
   // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
-    const codeRef = ref(database, `servers/${serverId}`);
-    const codeElement = document.createElement('p');
-    const copyButton = document.createElement('button');
-    copyButton.textContent = "คัดลอกโค้ด";
-    codeElement.style.backgroundColor = '#1c1c1c';
-    codeElement.style.padding = '15px';
-    codeElement.style.color = '#00ffc6';
-    codeElement.style.fontFamily = "'Courier New', Courier, monospace";
-    codeElement.style.overflowWrap = 'break-word';
+      const codeRefSingle = ref(database, `servers/${serverId}`);
+      const codeElement = document.createElement('p');
+      const copyButton = document.createElement('button');
+      copyButton.textContent = "คัดลอกโค้ด";
+      copyButton.classList.add('copy-button');
+      codeElement.classList.add('code-content');
 
-    button.textContent = "ซ่อนโค้ด";
-    onValue(codeRef, (snapshot) => {
-      const serverData = snapshot.val();
-      codeElement.textContent = serverData.code;
-      button.parentNode.parentNode.appendChild(codeElement);
-      button.parentNode.parentNode.appendChild(copyButton);
+      button.textContent = "ซ่อนโค้ด";
+      onValue(codeRefSingle, (snapshot) => {
+          const serverData = snapshot.val();
+          codeElement.textContent = serverData.code;
+          button.parentNode.parentNode.appendChild(codeElement);
+          button.parentNode.parentNode.appendChild(copyButton);
 
-      // ฟังก์ชันคัดลอกโค้ด
-      copyButton.addEventListener('click', () => {
-        navigator.clipboard.writeText(serverData.code);
-        alert('คัดลอกโค้ดแล้ว!');
+          // ฟังก์ชันคัดลอกโค้ด
+          copyButton.addEventListener('click', () => {
+              navigator.clipboard.writeText(serverData.code);
+              alert('คัดลอกโค้ดแล้ว!');
+              // ซ่อนโค้ดและปุ่มคัดลอกหลังคัดลอก
+              hideCode(button);
+          });
       });
-    });
 
-    button.onclick = () => hideCode(button);
+      button.onclick = () => hideCode(button);
   }
 
   // ฟังก์ชันซ่อนโค้ด
   function hideCode(button) {
-    button.textContent = "ดูโค้ด";
-    const codeToHide = button.parentNode.parentNode.querySelector('p');
-    if (codeToHide) {
-      codeToHide.remove();
-    }
+      button.textContent = "ดูโค้ด";
+      const codeToHide = button.parentNode.parentNode.querySelector('.code-content');
+      const copyButton = button.parentNode.parentNode.querySelector('.copy-button');
+      if (codeToHide) {
+          codeToHide.remove();
+      }
+      if (copyButton) {
+          copyButton.remove();
+      }
 
-    button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
+      button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
   }
 
   // ฟังก์ชันลบโค้ด
   function deleteCode(serverId, button) {
-    const codeToRemoveRef = ref(database, `servers/${serverId}`);
-    remove(codeToRemoveRef)
-      .then(() => {
-        console.log('ลบข้อมูลสำเร็จ');
-        button.parentNode.parentNode.remove();
-      })
-      .catch((error) => {
-        console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
-      });
+      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      remove(codeToRemoveRef)
+          .then(() => {
+              console.log('ลบข้อมูลสำเร็จ');
+              button.parentNode.parentNode.remove();
+          })
+          .catch((error) => {
+              console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
+          });
   }
 
   // ฟังก์ชันแสดงการแจ้งเตือนเมื่อใส่รหัสผ่านผิด
   function showPasswordError() {
-    passwordError.style.display = 'block';
-    setTimeout(() => {
-      passwordError.style.display = 'none';
-    }, 3000);
+      passwordErrorDiv.style.display = 'block';
+      setTimeout(() => {
+          passwordErrorDiv.style.display = 'none';
+      }, 3000);
   }
 
-  // ฟังก์ชันแสดงปุ่มย้อนกลับ
-  function showBackButton() {
-    backButton.style.display = 'block';
-    backButton.addEventListener('click', () => {
-      location.reload();
-    });
-  }
+  // ฟังก์ชันสำหรับปุ่มย้อนกลับ
+  backButton.addEventListener('click', () => {
+      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
+      const allCodeElements = document.querySelectorAll('.code-content');
+      const allCopyButtons = document.querySelectorAll('.copy-button');
+      allCodeElements.forEach(el => el.remove());
+      allCopyButtons.forEach(btn => btn.remove());
+
+      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
+      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
+      allViewButtons.forEach(button => {
+          button.textContent = "ดูโค้ด";
+          button.onclick = function () {
+              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
+          };
+      });
+
+      backButton.style.display = 'none';
+  });
 </script>
 
 </body>
