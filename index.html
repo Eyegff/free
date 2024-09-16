@@ -320,19 +320,21 @@
       currentButton = button;
       passwordModal.style.display = 'flex'; // แสดง modal
     } else {
-      hideCode(button);
+      hideCode(button); // ซ่อนโค้ดโดยไม่ขอรหัสผ่าน
     }
   };
 
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ด
   passwordSubmit.addEventListener('click', () => {
     const inputPassword = passwordInput.value;
+    // ตรวจสอบว่าใส่รหัสถูกต้อง
     if (inputPassword === PASSWORD) {
       showCode(currentServerId, currentButton);
-      passwordModal.style.display = 'none';
+      passwordModal.style.display = 'none'; // ซ่อน modal
       passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
     } else {
-      alert('รหัสผ่านไม่ถูกต้อง');
+      alert('รหัสผ่านไม่ถูกต้อง'); // แสดงแจ้งเตือนรหัสผ่านไม่ถูก
+      passwordInput.value = ''; // รีเซ็ตรหัสเพื่อให้กรอกใหม่
     }
   });
 
