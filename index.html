@@ -236,7 +236,7 @@
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
 <div id="passwordModal">
     <div class="modal-content">
-        <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ด</p>
+        <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
         <button id="passwordSubmit">ยืนยัน</button>
     </div>
@@ -278,6 +278,7 @@
   const PASSWORD = "975699";
   let currentServerId = null;
   let currentButton = null;
+  let currentAction = null; // แยกประเภทการกระทำ (ดูโค้ด หรือลบ)
 
   // แสดงฟอร์มส่งโค้ด
   showFormButton.addEventListener('click', () => {
@@ -328,7 +329,7 @@
       `<span>${serverData.serverName}</span>
       <div>
         <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
-        <button onclick="deleteCode('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
+        <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
       </div>`;
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
@@ -336,21 +337,29 @@
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
   window.requestPasswordAndShowCode = function (serverId, button) {
-    if (button.textContent === "ดูโค้ด") {
-      currentServerId = serverId;
-      currentButton = button;
-      passwordModal.style.display = 'flex'; // แสดง modal
-    } else {
-      hideCode(button); // ซ่อนโค้ดโดยไม่ขอรหัสผ่าน
-    }
+    currentServerId = serverId;
+    currentButton = button;
+    currentAction = 'show'; // กำหนด action ให้เป็นการแสดงโค้ด
+    passwordModal.style.display = 'flex'; // แสดง modal
   };
 
-  // การยืนยันรหัสผ่านเพื่อแสดงโค้ด
+  // ฟังก์ชันขอรหัสผ่านเพื่อลบ
+  window.requestPasswordToDelete = function (serverId, button) {
+    currentServerId = serverId;
+    currentButton = button;
+    currentAction = 'delete'; // กำหนด action ให้เป็นการลบ
+    passwordModal.style.display = 'flex'; // แสดง modal
+  };
+
+  // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
     const inputPassword = passwordInput.value;
-    // ตรวจสอบว่าใส่รหัสถูกต้อง
     if (inputPassword === PASSWORD) {
-      showCode(currentServerId, currentButton);
+      if (currentAction === 'show') {
+        showCode(currentServerId, currentButton);
+      } else if (currentAction === 'delete') {
+        deleteCode(currentServerId, currentButton);
+      }
       passwordModal.style.display = 'none'; // ซ่อน modal
       passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
     } else {
@@ -378,6 +387,8 @@
       codeElement.textContent = serverData.code;
       button.parentNode.parentNode.appendChild(codeElement);
     });
+
+    button.onclick = () => hideCode(button); // เปลี่ยนฟังก์ชันปุ่มเป็นซ่อนโค้ด
   }
 
   // ฟังก์ชันซ่อนโค้ด
@@ -387,6 +398,21 @@
     if (codeToHide) {
       codeToHide.remove();
     }
+
+    button.onclick = () => requestPasswordAndShowCode(currentServerId, button); // เปลี่ยนฟังก์ชันปุ่มกลับเป็นดูโค้ด
+  }
+
+  // ฟังก์ชันลบโค้ด
+  function deleteCode(serverId, button) {
+    const codeToRemoveRef = ref(database, `servers/${serverId}`);
+    remove(codeToRemoveRef)
+      .then(() => {
+        console.log('ลบข้อมูลสำเร็จ');
+        button.parentNode.parentNode.remove();
+      })
+      .catch((error) => {
+        console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
+      });
   }
 
   // ฟังก์ชันแสดงการแจ้งเตือนเมื่อใส่รหัสผ่านผิด
@@ -396,33 +422,6 @@
       passwordError.style.display = 'none'; // ซ่อนหลังจาก 3 วินาที
     }, 3000);
   }
-
-  // การลบโค้ด
-  window.deleteCode = function (serverId, button) {
-    currentServerId = serverId;
-    currentButton = button;
-    passwordModal.style.display = 'flex'; // แสดง modal
-  };
-
-  // การยืนยันรหัสผ่านเพื่อทำการลบโค้ด
-  passwordSubmit.addEventListener('click', () => {
-    const inputPassword = passwordInput.value;
-    if (inputPassword === PASSWORD) {
-      const codeToRemoveRef = ref(database, `servers/${currentServerId}`);
-      remove(codeToRemoveRef)
-        .then(() => {
-          console.log('ลบข้อมูลสำเร็จ');
-          currentButton.parentNode.parentNode.remove();
-          passwordModal.style.display = 'none';
-          passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
-        })
-        .catch((error) => {
-          console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
-        });
-    } else {
-      showPasswordError(); // แสดงแจ้งเตือนรหัสผ่านไม่ถูกต้อง
-    }
-  });
 </script>
 
 </body>
