@@ -199,6 +199,7 @@
   const errorMessage = document.getElementById('errorMessage');
 
   const codePattern = /^vless:\/\/[\w-]+@[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+?.*$/;
+  const PASSWORD = "975699";
 
   showFormButton.addEventListener('click', () => {
     codeForm.style.display = 'block';
@@ -241,55 +242,64 @@
 
     const serverElement = document.createElement('div');
     serverElement.classList.add('server-item');
-    serverElement.innerHTML = `
-      <span>${serverData.serverName}</span>
+    serverElement.innerHTML = 
+      `<span>${serverData.serverName}</span>
       <div>
         <button onclick="toggleCode('${serverId}', this)">ดูโค้ด</button>
         <button onclick="deleteCode('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
-      </div>
-    `;
+      </div>`;
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
   });
 
   window.toggleCode = function (serverId, button) {
-    const codeRef = ref(database, `servers/${serverId}`);
-    const codeElement = document.createElement('p');
-    codeElement.style.backgroundColor = '#1c1c1c';
-    codeElement.style.padding = '15px';
-    codeElement.style.color = '#00ffc6';
-    codeElement.style.fontFamily = "'Courier New', Courier, monospace";
-    codeElement.style.overflowWrap = 'break-word';
-    codeElement.style.wordWrap = 'break-word';
-    codeElement.style.width = '100%';
-    codeElement.style.display = 'block';
+    const inputPassword = prompt('กรุณาใส่รหัสผ่านเพื่อดูโค้ด:');
+    if (inputPassword === PASSWORD) {
+      const codeRef = ref(database, `servers/${serverId}`);
+      const codeElement = document.createElement('p');
+      codeElement.style.backgroundColor = '#1c1c1c';
+      codeElement.style.padding = '15px';
+      codeElement.style.color = '#00ffc6';
+      codeElement.style.fontFamily = "'Courier New', Courier, monospace";
+      codeElement.style.overflowWrap = 'break-word';
+      codeElement.style.wordWrap = 'break-word';
+      codeElement.style.width = '100%';
+      codeElement.style.display = 'block';
 
-    if (button.textContent === "ดูโค้ด") {
-      button.textContent = "ซ่อนโค้ด";
-      onValue(codeRef, (snapshot) => {
-        const serverData = snapshot.val();
-        codeElement.textContent = serverData.code;
-        button.parentNode.parentNode.appendChild(codeElement);
-      });
-    } else {
-      button.textContent = "ดูโค้ด";
-      const codeToHide = button.parentNode.parentNode.querySelector('p');
-      if (codeToHide) {
-        codeToHide.remove();
+      if (button.textContent === "ดูโค้ด") {
+        button.textContent = "ซ่อนโค้ด";
+        onValue(codeRef, (snapshot) => {
+          const serverData = snapshot.val();
+          codeElement.textContent = serverData.code;
+          button.parentNode.parentNode.appendChild(codeElement);
+        });
+      } else {
+        button.textContent = "ดูโค้ด";
+        const codeToHide = button.parentNode.parentNode.querySelector('p');
+        if (codeToHide) {
+          codeToHide.remove();
+        }
       }
+    } else {
+      alert('รหัสผ่านไม่ถูกต้อง');
     }
   };
 
   window.deleteCode = function (serverId, button) {
-    const codeToRemoveRef = ref(database, `servers/${serverId}`);
-    remove(codeToRemoveRef)
-      .then(() => {
-        console.log('ลบข้อมูลสำเร็จ');
-        button.parentNode.parentNode.remove();
-      })
-      .catch((error) => {
-        console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
-      });
+    const inputPassword = prompt('กรุณาใส่รหัสผ่านเพื่อทำการลบโค้ด:');
+    if (inputPassword === PASSWORD) {
+      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      remove(codeToRemoveRef)
+        .then(() => {
+          console.log('ลบข้อมูลสำเร็จ');
+          button.parentNode.parentNode.remove();
+        })
+        .catch((error) => {
+          console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
+        });
+    } else {
+      alert('รหัสผ่านไม่ถูกต้อง');
+    }
   };
 </script>
 
