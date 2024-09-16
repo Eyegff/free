@@ -315,9 +315,13 @@
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
   window.requestPasswordAndShowCode = function (serverId, button) {
-    currentServerId = serverId;
-    currentButton = button;
-    passwordModal.style.display = 'flex'; // แสดง modal
+    if (button.textContent === "ดูโค้ด") {
+      currentServerId = serverId;
+      currentButton = button;
+      passwordModal.style.display = 'flex'; // แสดง modal
+    } else {
+      hideCode(button);
+    }
   };
 
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ด
@@ -345,19 +349,20 @@
     codeElement.style.width = '100%';
     codeElement.style.display = 'block';
 
-    if (button.textContent === "ดูโค้ด") {
-      button.textContent = "ซ่อนโค้ด";
-      onValue(codeRef, (snapshot) => {
-        const serverData = snapshot.val();
-        codeElement.textContent = serverData.code;
-        button.parentNode.parentNode.appendChild(codeElement);
-      });
-    } else {
-      button.textContent = "ดูโค้ด";
-      const codeToHide = button.parentNode.parentNode.querySelector('p');
-      if (codeToHide) {
-        codeToHide.remove();
-      }
+    button.textContent = "ซ่อนโค้ด";
+    onValue(codeRef, (snapshot) => {
+      const serverData = snapshot.val();
+      codeElement.textContent = serverData.code;
+      button.parentNode.parentNode.appendChild(codeElement);
+    });
+  }
+
+  // ฟังก์ชันซ่อนโค้ด
+  function hideCode(button) {
+    button.textContent = "ดูโค้ด";
+    const codeToHide = button.parentNode.parentNode.querySelector('p');
+    if (codeToHide) {
+      codeToHide.remove();
     }
   }
 
