@@ -126,6 +126,50 @@
             font-size: 12px;
         }
 
+        /* แจ้งเตือนรหัสผ่าน */
+        #passwordModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #000;
+            width: 300px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #00adb5;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-content button:hover {
+            background-color: #007bff;
+        }
+
         /* Media query สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
             .title {
@@ -172,6 +216,15 @@
     </div>
 </div>
 
+<!-- Modal แจ้งเตือนรหัสผ่าน -->
+<div id="passwordModal">
+    <div class="modal-content">
+        <p>กรุณาใส่รหัสผ่าน</p>
+        <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
+        <button id="passwordSubmit">ยืนยัน</button>
+    </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -197,18 +250,25 @@
   const codeInput = document.getElementById('codeInput');
   const sendButton = document.getElementById('sendButton');
   const errorMessage = document.getElementById('errorMessage');
+  const passwordModal = document.getElementById('passwordModal');
+  const passwordInput = document.getElementById('passwordInput');
+  const passwordSubmit = document.getElementById('passwordSubmit');
 
-  const codePattern = /^vless:\/\/[\w-]+@[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+?.*$/;
   const PASSWORD = "975699";
+  let currentServerId = null;
+  let currentButton = null;
 
+  // แสดงฟอร์มส่งโค้ด
   showFormButton.addEventListener('click', () => {
     codeForm.style.display = 'block';
     showFormButton.style.display = 'none';
   });
 
+  // การส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
+    const codePattern = /^vless:\/\/[\w-]+@[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+?.*$/;
 
     if (serverName && codePattern.test(code)) {
       const codeRef = ref(database, 'servers');
@@ -235,6 +295,7 @@
     }
   });
 
+  // การเพิ่มโค้ดใน UI
   const codeRef = ref(database, 'servers');
   onChildAdded(codeRef, (snapshot) => {
     const serverData = snapshot.val();
@@ -252,47 +313,53 @@
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
   });
 
+  // การแสดงโค้ด
   window.toggleCode = function (serverId, button) {
-    const inputPassword = prompt('กรุณาใส่รหัสผ่านเพื่อดูโค้ด:');
-    if (inputPassword === PASSWORD) {
-      const codeRef = ref(database, `servers/${serverId}`);
-      const codeElement = document.createElement('p');
-      codeElement.style.backgroundColor = '#1c1c1c';
-      codeElement.style.padding = '15px';
-      codeElement.style.color = '#00ffc6';
-      codeElement.style.fontFamily = "'Courier New', Courier, monospace";
-      codeElement.style.overflowWrap = 'break-word';
-      codeElement.style.wordWrap = 'break-word';
-      codeElement.style.width = '100%';
-      codeElement.style.display = 'block';
+    const codeRef = ref(database, `servers/${serverId}`);
+    const codeElement = document.createElement('p');
+    codeElement.style.backgroundColor = '#1c1c1c';
+    codeElement.style.padding = '15px';
+    codeElement.style.color = '#00ffc6';
+    codeElement.style.fontFamily = "'Courier New', Courier, monospace";
+    codeElement.style.overflowWrap = 'break-word';
+    codeElement.style.wordWrap = 'break-word';
+    codeElement.style.width = '100%';
+    codeElement.style.display = 'block';
 
-      if (button.textContent === "ดูโค้ด") {
-        button.textContent = "ซ่อนโค้ด";
-        onValue(codeRef, (snapshot) => {
-          const serverData = snapshot.val();
-          codeElement.textContent = serverData.code;
-          button.parentNode.parentNode.appendChild(codeElement);
-        });
-      } else {
-        button.textContent = "ดูโค้ด";
-        const codeToHide = button.parentNode.parentNode.querySelector('p');
-        if (codeToHide) {
-          codeToHide.remove();
-        }
-      }
+    if (button.textContent === "ดูโค้ด") {
+      button.textContent = "ซ่อนโค้ด";
+      onValue(codeRef, (snapshot) => {
+        const serverData = snapshot.val();
+        codeElement.textContent = serverData.code;
+        button.parentNode.parentNode.appendChild(codeElement);
+      });
     } else {
-      alert('รหัสผ่านไม่ถูกต้อง');
+      button.textContent = "ดูโค้ด";
+      const codeToHide = button.parentNode.parentNode.querySelector('p');
+      if (codeToHide) {
+        codeToHide.remove();
+      }
     }
   };
 
+  // การลบโค้ด
   window.deleteCode = function (serverId, button) {
-    const inputPassword = prompt('กรุณาใส่รหัสผ่านเพื่อทำการลบโค้ด:');
+    currentServerId = serverId;
+    currentButton = button;
+    passwordModal.style.display = 'flex'; // แสดง modal
+  };
+
+  // การยืนยันรหัสผ่าน
+  passwordSubmit.addEventListener('click', () => {
+    const inputPassword = passwordInput.value;
     if (inputPassword === PASSWORD) {
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      const codeToRemoveRef = ref(database, `servers/${currentServerId}`);
       remove(codeToRemoveRef)
         .then(() => {
           console.log('ลบข้อมูลสำเร็จ');
-          button.parentNode.parentNode.remove();
+          currentButton.parentNode.parentNode.remove();
+          passwordModal.style.display = 'none';
+          passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
         })
         .catch((error) => {
           console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
@@ -300,7 +367,7 @@
     } else {
       alert('รหัสผ่านไม่ถูกต้อง');
     }
-  };
+  });
 </script>
 
 </body>
