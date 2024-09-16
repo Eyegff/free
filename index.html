@@ -104,6 +104,24 @@
             }
         }
 
+        .admin-name {
+            font-size: 24px;
+            color: red;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px orange, 0 0 20px red;
+            animation: fire 2s infinite alternate;
+            font-weight: bold;
+        }
+
+        @keyframes fire {
+            0% {
+                text-shadow: 0 0 10px orange, 0 0 20px red;
+            }
+            100% {
+                text-shadow: 0 0 20px yellow, 0 0 30px red;
+            }
+        }
+
         button {
             width: 100%;
             background-color: #00adb5;
@@ -125,7 +143,7 @@
             width: 100%;
         }
 
-        input[type="text"], input[type="password"], input[type="datetime-local"] {
+        input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"] {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -139,6 +157,14 @@
         .error {
             color: #ff4f4f;
             margin-bottom: 5px;
+            display: none;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .price-error {
+            color: #ff4f4f;
+            margin-top: -10px;
             display: none;
             text-align: center;
             font-size: 12px;
@@ -186,6 +212,21 @@
 
         .modal-content button:hover {
             background-color: #007bff;
+        }
+
+        /* ปุ่มย้อนกลับ */
+        .back-button {
+            background-color: #f44336;
+            padding: 10px 20px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal-content button.back-button:hover {
+            background-color: #d32f2f;
         }
 
         /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
@@ -247,9 +288,18 @@
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
-        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก">
+        <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" autocomplete="off" inputmode="numeric">
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
+        <div>
+            <label for="priceType">ตั้งราคาโค้ด:</label>
+            <select id="priceType">
+                <option value="free">ฟรี</option>
+                <option value="custom">กำหนดเอง</option>
+            </select>
+        </div>
+        <input type="number" id="priceInput" placeholder="กรุณาใส่จำนวนราคา (ห้ามเกิน 200)" style="display:none;" min="0" max="200">
+        <div class="price-error" id="priceError">จำนวนราคาห้ามเกิน 200 บาท</div>
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 </div>
@@ -260,6 +310,7 @@
         <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
         <button id="passwordSubmit">ยืนยัน</button>
+        <button class="back-button" id="backButton">ย้อนกลับ</button>
     </div>
 </div>
 
@@ -292,12 +343,16 @@
   const passwordInputForm = document.getElementById('passwordInputForm');
   const facebookInput = document.getElementById('facebookInput');
   const expiryInput = document.getElementById('expiryInput');
+  const priceType = document.getElementById('priceType');
+  const priceInput = document.getElementById('priceInput');
   const sendButton = document.getElementById('sendButton');
+  const priceError = document.getElementById('priceError');
   const errorMessage = document.getElementById('errorMessage');
   const passwordModal = document.getElementById('passwordModal');
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
   const passwordError = document.getElementById('passwordError');
+  const backButton = document.getElementById('backButton');
 
   let currentServerId = null;
   let currentButton = null;
@@ -309,6 +364,35 @@
     showFormButton.style.display = 'none';
   });
 
+  // แสดง/ซ่อนฟิลด์รหัสผ่านและราคา
+  priceType.addEventListener('change', () => {
+    if (priceType.value === 'free') {
+        passwordInputForm.style.display = 'none';
+        priceInput.style.display = 'none';
+        priceInput.value = ''; // รีเซ็ตค่าในช่องราคา
+    } else if (priceType.value === 'custom') {
+        passwordInputForm.style.display = 'block';
+        priceInput.style.display = 'block';
+    }
+  });
+
+  // ฟังก์ชันย้อนกลับ
+  backButton.addEventListener('click', () => {
+    passwordModal.style.display = 'none';
+    passwordInput.value = '';
+  });
+
+  // ฟังก์ชันตรวจสอบจำนวนราคา
+  function validatePrice() {
+    const price = parseInt(priceInput.value);
+    if (price > 200) {
+        priceError.style.display = 'block'; // แสดงข้อความแจ้งเตือน
+        return false;
+    }
+    priceError.style.display = 'none'; // ซ่อนข้อความแจ้งเตือนถ้าราคาถูกต้อง
+    return true;
+  }
+
   // Regex pattern update to allow both domain names and IP addresses
   const codePattern = /^vless:\/\/[\w-]+@([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[\w.-]+):[0-9]+.*$/;
 
@@ -319,46 +403,52 @@
     return `เวลา: ${date}`;
   }
 
-  // ฟังก์ชันนับถอยหลัง
-  function countdown(expiryTime) {
-    const now = new Date().getTime();
-    const expiry = new Date(expiryTime).getTime();
-    const distance = expiry - now;
+  // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
+  function updateCountdown(serverId, expiryTimeElement, expiryTime) {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const expiry = new Date(expiryTime).getTime();
+      const distance = expiry - now;
 
-    if (distance <= 0) {
-      return "หมดอายุ";
-    }
+      if (distance <= 0) {
+        expiryTimeElement.innerHTML = "หมดอายุ";
+        clearInterval(interval);
+        const codeToRemoveRef = ref(database, `servers/${serverId}`);
+        remove(codeToRemoveRef).then(() => {
+          console.log("ลบโค้ดที่หมดอายุแล้ว");
+        });
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-  }
-
-  // ลบโค้ดเมื่อหมดอายุ
-  function checkExpiryAndDelete(serverId, expiryTime) {
-    const now = new Date().getTime();
-    const expiry = new Date(expiryTime).getTime();
-
-    if (now >= expiry) {
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
-      remove(codeToRemoveRef).then(() => {
-        console.log("ลบโค้ดที่หมดอายุแล้ว");
-      });
-    }
+        expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+      }
+    }, 1000);
   }
 
   // การส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
-    const passwordForm = passwordInputForm.value.trim();
+    let passwordForm = passwordInputForm.value.trim();
     const facebookLink = facebookInput.value.trim();
     const expiryTime = expiryInput.value.trim();
+    const priceTypeValue = priceType.value;
+    const priceValue = priceInput.value.trim();
 
-    if (serverName && codePattern.test(code) && /^\d{6}$/.test(passwordForm) && facebookLink && expiryTime) {
+    // ตรวจสอบว่าราคาที่กรอกถูกต้องหรือไม่
+    if (priceTypeValue === 'custom' && !validatePrice()) {
+      return;
+    }
+
+    // ตรวจสอบว่าตั้งค่าเป็นฟรีหรือกำหนดราคาเอง
+    if (priceTypeValue === 'free') {
+      passwordForm = ""; // ถ้าเป็นฟรี ไม่ต้องใช้รหัสผ่าน
+    }
+
+    if (serverName && codePattern.test(code) && (passwordForm || priceTypeValue === 'free') && facebookLink && expiryTime) {
       const codeRef = ref(database, 'servers');
       const timestamp = new Date().toISOString();
       push(codeRef, {
@@ -367,6 +457,8 @@
         password: passwordForm,
         facebookLink: facebookLink,
         expiryTime: expiryTime,
+        priceType: priceTypeValue,
+        price: priceValue,
         timestamp: timestamp
       })
       .then(() => {
@@ -376,11 +468,13 @@
         console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
       });
 
+      // ล้างค่าช่องข้อมูลหลังส่ง
       serverNameInput.value = '';
       codeInput.value = '';
       passwordInputForm.value = '';
       facebookInput.value = '';
       expiryInput.value = '';
+      priceInput.value = '';
 
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
@@ -398,21 +492,28 @@
 
     const serverElement = document.createElement('div');
     serverElement.classList.add('server-item');
+
+    // เช็คว่าชื่อเป็นแอดมินหรือไม่
+    const serverName = serverData.serverName.toLowerCase() === "admin" 
+      ? `<span class="admin-name">${serverData.serverName}</span>` 
+      : `<span>${serverData.serverName}</span>`;
+
     serverElement.innerHTML = 
-      `<span>${serverData.serverName}</span>
+      `${serverName}
       <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-      <span class="countdown">${countdown(serverData.expiryTime)}</span>
+      <span class="countdown"></span>
       <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
       <div>
         <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
         <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
       </div>`;
 
+    const countdownElement = serverElement.querySelector('.countdown');
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
-    // ตรวจสอบว่าหมดอายุหรือยัง
-    checkExpiryAndDelete(serverId, serverData.expiryTime);
+    // อัปเดตการนับถอยหลังแบบเรียลไทม์
+    updateCountdown(serverId, countdownElement, serverData.expiryTime);
   });
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
@@ -438,7 +539,7 @@
 
     onValue(codeRef, (snapshot) => {
       const serverData = snapshot.val();
-      if (inputPassword === serverData.password) {
+      if (inputPassword === serverData.password || serverData.priceType === "free") {
         if (currentAction === 'show') {
           showCode(currentServerId, currentButton);
         } else if (currentAction === 'delete') {
@@ -467,11 +568,27 @@
     codeElement.style.width = '100%';
     codeElement.style.display = 'block';
 
+    const copyButton = document.createElement('button');
+    copyButton.textContent = "คัดลอกโค้ด";
+    copyButton.style.backgroundColor = "#00adb5";
+    copyButton.style.color = "white";
+    copyButton.style.padding = "10px";
+    copyButton.style.marginTop = "10px";
+    copyButton.style.border = "none";
+    copyButton.style.cursor = "pointer";
+
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeElement.textContent).then(() => {
+        alert('คัดลอกโค้ดเรียบร้อยแล้ว!');
+      });
+    });
+
     button.textContent = "ซ่อนโค้ด";
     onValue(codeRef, (snapshot) => {
       const serverData = snapshot.val();
       codeElement.textContent = serverData.code;
       button.parentNode.parentNode.appendChild(codeElement);
+      button.parentNode.parentNode.appendChild(copyButton); // เพิ่มปุ่มคัดลอกโค้ด
     });
 
     button.onclick = () => hideCode(button);
@@ -481,8 +598,10 @@
   function hideCode(button) {
     button.textContent = "ดูโค้ด";
     const codeToHide = button.parentNode.parentNode.querySelector('p');
+    const copyButtonToHide = button.parentNode.parentNode.querySelector('button');
     if (codeToHide) {
       codeToHide.remove();
+      copyButtonToHide.remove();
     }
 
     button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
