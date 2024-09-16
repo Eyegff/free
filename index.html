@@ -170,6 +170,23 @@
             background-color: #007bff;
         }
 
+        /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
+        #passwordError {
+            display: none;
+            background-color: #ff4f4f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            font-size: 16px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
         /* Media query สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
             .title {
@@ -225,6 +242,9 @@
     </div>
 </div>
 
+<!-- แจ้งเตือนรหัสผ่านผิด -->
+<div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -253,6 +273,7 @@
   const passwordModal = document.getElementById('passwordModal');
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
+  const passwordError = document.getElementById('passwordError'); // เรียกการแจ้งเตือนรหัสผิด
 
   const PASSWORD = "975699";
   let currentServerId = null;
@@ -333,7 +354,7 @@
       passwordModal.style.display = 'none'; // ซ่อน modal
       passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
     } else {
-      alert('รหัสผ่านไม่ถูกต้อง'); // แสดงแจ้งเตือนรหัสผ่านไม่ถูก
+      showPasswordError(); // แสดงแจ้งเตือนรหัสผ่านไม่ถูกต้อง
       passwordInput.value = ''; // รีเซ็ตรหัสเพื่อให้กรอกใหม่
     }
   });
@@ -368,6 +389,14 @@
     }
   }
 
+  // ฟังก์ชันแสดงการแจ้งเตือนเมื่อใส่รหัสผ่านผิด
+  function showPasswordError() {
+    passwordError.style.display = 'block'; // แสดงข้อความแจ้งเตือน
+    setTimeout(() => {
+      passwordError.style.display = 'none'; // ซ่อนหลังจาก 3 วินาที
+    }, 3000);
+  }
+
   // การลบโค้ด
   window.deleteCode = function (serverId, button) {
     currentServerId = serverId;
@@ -391,7 +420,7 @@
           console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
         });
     } else {
-      alert('รหัสผ่านไม่ถูกต้อง');
+      showPasswordError(); // แสดงแจ้งเตือนรหัสผ่านไม่ถูกต้อง
     }
   });
 </script>
