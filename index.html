@@ -76,21 +76,32 @@
             margin-bottom: 10px;
         }
 
-        .server-item button {
-            background-color: #00adb5;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 5px 0;
-            transition: background-color 0.3s ease;
-            width: 100px;
+        .server-item .countdown {
+            font-size: 14px;
+            color: #ff4f4f;
         }
 
-        .server-item button:hover {
-            background-color: #007bff;
+        .server-item .wow-banner {
+            background-color: gold;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            color: black;
+            animation: pulse 2s infinite;
+            box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.6);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         button {
@@ -114,7 +125,7 @@
             width: 100%;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="datetime-local"] {
             width: 100%;
             padding: 12px;
             border-radius: 10px;
@@ -237,6 +248,8 @@
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก">
+        <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
+        <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 </div>
@@ -255,7 +268,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
@@ -277,6 +290,8 @@
   const serverNameInput = document.getElementById('serverNameInput');
   const codeInput = document.getElementById('codeInput');
   const passwordInputForm = document.getElementById('passwordInputForm');
+  const facebookInput = document.getElementById('facebookInput');
+  const expiryInput = document.getElementById('expiryInput');
   const sendButton = document.getElementById('sendButton');
   const errorMessage = document.getElementById('errorMessage');
   const passwordModal = document.getElementById('passwordModal');
@@ -304,19 +319,54 @@
     return `เวลา: ${date}`;
   }
 
+  // ฟังก์ชันนับถอยหลัง
+  function countdown(expiryTime) {
+    const now = new Date().getTime();
+    const expiry = new Date(expiryTime).getTime();
+    const distance = expiry - now;
+
+    if (distance <= 0) {
+      return "หมดอายุ";
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+  }
+
+  // ลบโค้ดเมื่อหมดอายุ
+  function checkExpiryAndDelete(serverId, expiryTime) {
+    const now = new Date().getTime();
+    const expiry = new Date(expiryTime).getTime();
+
+    if (now >= expiry) {
+      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      remove(codeToRemoveRef).then(() => {
+        console.log("ลบโค้ดที่หมดอายุแล้ว");
+      });
+    }
+  }
+
   // การส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
     const serverName = serverNameInput.value.trim();
     const code = codeInput.value.trim();
     const passwordForm = passwordInputForm.value.trim();
+    const facebookLink = facebookInput.value.trim();
+    const expiryTime = expiryInput.value.trim();
 
-    if (serverName && codePattern.test(code) && /^\d{6}$/.test(passwordForm)) {
+    if (serverName && codePattern.test(code) && /^\d{6}$/.test(passwordForm) && facebookLink && expiryTime) {
       const codeRef = ref(database, 'servers');
       const timestamp = new Date().toISOString();
       push(codeRef, {
         serverName: serverName,
         code: code,
         password: passwordForm,
+        facebookLink: facebookLink,
+        expiryTime: expiryTime,
         timestamp: timestamp
       })
       .then(() => {
@@ -329,6 +379,8 @@
       serverNameInput.value = '';
       codeInput.value = '';
       passwordInputForm.value = '';
+      facebookInput.value = '';
+      expiryInput.value = '';
 
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
@@ -338,7 +390,7 @@
     }
   });
 
-  // การเพิ่มโค้ดใน UI พร้อมแสดงเวลา
+  // การเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
   const codeRef = ref(database, 'servers');
   onChildAdded(codeRef, (snapshot) => {
     const serverData = snapshot.val();
@@ -349,12 +401,18 @@
     serverElement.innerHTML = 
       `<span>${serverData.serverName}</span>
       <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+      <span class="countdown">${countdown(serverData.expiryTime)}</span>
+      <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
       <div>
         <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
         <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
       </div>`;
+
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
+
+    // ตรวจสอบว่าหมดอายุหรือยัง
+    checkExpiryAndDelete(serverId, serverData.expiryTime);
   });
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
@@ -390,6 +448,7 @@
         passwordInput.value = '';
       } else {
         showPasswordError();
+        window.open(serverData.facebookLink, '_blank');
         passwordInput.value = '';
       }
     });
