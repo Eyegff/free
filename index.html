@@ -219,7 +219,7 @@
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
 <div id="passwordModal">
     <div class="modal-content">
-        <p>กรุณาใส่รหัสผ่าน</p>
+        <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ด</p>
         <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
         <button id="passwordSubmit">ยืนยัน</button>
     </div>
@@ -306,15 +306,34 @@
     serverElement.innerHTML = 
       `<span>${serverData.serverName}</span>
       <div>
-        <button onclick="toggleCode('${serverId}', this)">ดูโค้ด</button>
+        <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
         <button onclick="deleteCode('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
       </div>`;
     codeDisplay.appendChild(serverElement);
     codeDisplay.scrollTop = codeDisplay.scrollHeight;
   });
 
-  // การแสดงโค้ด
-  window.toggleCode = function (serverId, button) {
+  // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
+  window.requestPasswordAndShowCode = function (serverId, button) {
+    currentServerId = serverId;
+    currentButton = button;
+    passwordModal.style.display = 'flex'; // แสดง modal
+  };
+
+  // การยืนยันรหัสผ่านเพื่อแสดงโค้ด
+  passwordSubmit.addEventListener('click', () => {
+    const inputPassword = passwordInput.value;
+    if (inputPassword === PASSWORD) {
+      showCode(currentServerId, currentButton);
+      passwordModal.style.display = 'none';
+      passwordInput.value = ''; // รีเซ็ตรหัสผ่านใน input field
+    } else {
+      alert('รหัสผ่านไม่ถูกต้อง');
+    }
+  });
+
+  // ฟังก์ชันแสดงโค้ด
+  function showCode(serverId, button) {
     const codeRef = ref(database, `servers/${serverId}`);
     const codeElement = document.createElement('p');
     codeElement.style.backgroundColor = '#1c1c1c';
@@ -340,7 +359,7 @@
         codeToHide.remove();
       }
     }
-  };
+  }
 
   // การลบโค้ด
   window.deleteCode = function (serverId, button) {
@@ -349,7 +368,7 @@
     passwordModal.style.display = 'flex'; // แสดง modal
   };
 
-  // การยืนยันรหัสผ่าน
+  // การยืนยันรหัสผ่านเพื่อทำการลบโค้ด
   passwordSubmit.addEventListener('click', () => {
     const inputPassword = passwordInput.value;
     if (inputPassword === PASSWORD) {
