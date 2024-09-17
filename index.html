@@ -352,14 +352,13 @@
 <!-- แจ้งเตือนรหัสผ่านผิด -->
 <div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-database.js"></script>
 
+<script>
+  // ใส่ Firebase Configuration ของคุณที่นี่
   const firebaseConfig = {
-    // โปรดใส่ข้อมูล Firebase ของคุณที่นี่
-    // แทนที่ YOUR_API_KEY และค่าต่างๆ ด้วยข้อมูลจริงของคุณ
-     const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
     authDomain: "ukgyry.firebaseapp.com",
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
@@ -369,12 +368,9 @@
     appId: "1:782837816686:web:230328cfddb9d70ca8357f",
     measurementId: "G-RP7VJEN1BP"
   };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
-  // โค้ด JavaScript ที่เหลือยังคงเหมือนเดิม
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
   const codeForm = document.getElementById('codeForm');
@@ -462,9 +458,9 @@
           const uploadDelay = Math.floor(Math.random() * 6) + 3;
 
           setTimeout(() => {
-              const codeRef = ref(database, 'servers');
+              const codeRef = database.ref('servers');
               const timestamp = new Date().toISOString();
-              push(codeRef, {
+              codeRef.push({
                   serverName: serverName,
                   code: code,
                   password: passwordForm,
@@ -518,8 +514,8 @@
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
-  const codeRefDB = ref(database, 'servers');
-  onChildAdded(codeRefDB, (snapshot) => {
+  const codeRefDB = database.ref('servers');
+  codeRefDB.on('child_added', (snapshot) => {
       const serverData = snapshot.val();
       const serverId = snapshot.key;
 
@@ -608,8 +604,8 @@
           if (distance <= 0) {
               expiryTimeElement.innerHTML = "หมดอายุ";
               clearInterval(interval);
-              const codeToRemoveRef = ref(database, `servers/${serverId}`);
-              remove(codeToRemoveRef).then(() => {
+              const codeToRemoveRef = database.ref(`servers/${serverId}`);
+              codeToRemoveRef.remove().then(() => {
                   console.log("ลบโค้ดที่หมดอายุแล้ว");
               });
           } else {
@@ -642,9 +638,9 @@
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
       const inputPassword = passwordInput.value;
-      const codeRefSingle = ref(database, `servers/${currentServerId}`);
+      const codeRefSingle = database.ref(`servers/${currentServerId}`);
 
-      onValue(codeRefSingle, (snapshot) => {
+      codeRefSingle.once('value', (snapshot) => {
           const serverData = snapshot.val();
           if (inputPassword === serverData.password) {
               if (currentAction === 'show') {
@@ -659,7 +655,7 @@
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           }
-      }, { onlyOnce: true });
+      });
   });
 
   // การยกเลิกการยืนยันรหัสผ่าน
@@ -671,7 +667,7 @@
   // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
       currentServerId = serverId;
-      const codeRefSingle = ref(database, `servers/${serverId}`);
+      const codeRefSingle = database.ref(`servers/${serverId}`);
       const codeElement = document.createElement('p');
       const copyButton = document.createElement('button');
       copyButton.textContent = "คัดลอกโค้ด";
@@ -679,7 +675,7 @@
       codeElement.classList.add('code-content');
 
       button.textContent = "ซ่อนโค้ด";
-      onValue(codeRefSingle, (snapshot) => {
+      codeRefSingle.once('value', (snapshot) => {
           const serverData = snapshot.val();
           codeElement.textContent = serverData.code;
           button.parentNode.parentNode.appendChild(codeElement);
@@ -706,8 +702,8 @@
       button.parentNode.parentNode.appendChild(successMessage);
 
       // ลบโค้ดออกจากฐานข้อมูล
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
-      remove(codeToRemoveRef).then(() => {
+      const codeToRemoveRef = database.ref(`servers/${serverId}`);
+      codeToRemoveRef.remove().then(() => {
           console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
       });
 
@@ -735,8 +731,8 @@
 
   // ฟังก์ชันลบโค้ด
   function deleteCode(serverId, button) {
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
-      remove(codeToRemoveRef)
+      const codeToRemoveRef = database.ref(`servers/${serverId}`);
+      codeToRemoveRef.remove()
           .then(() => {
               console.log('ลบข้อมูลสำเร็จ');
               button.parentNode.parentNode.remove();
