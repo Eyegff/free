@@ -3,25 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <title>แหล่งร่วมโค้ดเน็ตฟรี</title>
-    <!-- Font Awesome สำหรับไอคอน Facebook -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1Pfq8wVn4S4oJVV3tk0H+zl7j0oGdr6lyiTquFfN5V++0p9cSD7sSx0jEoXtBtQuM6R4l+jqgC+lZmK0sZ+1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>แหล่งรวมโค้ดเน็ตฟรี</title>
+    <!-- Font Awesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS Styles -->
     <style>
-        /* ... สไตล์เดิมของคุณ ... */
+        /* สไตล์พื้นหลังและตัวอักษร */
+        body {
+            background-color: #0e0e0e;
+            color: #fff;
+            font-family: 'Kanit', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1f1f1f, #3d3d3d);
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px #00ffff;
+            position: relative;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -15px;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #00ffff;
+            border-radius: 5px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input {
+            background-color: #2b2b2b;
+            color: #fff;
+        }
+
+        button {
+            background-color: #00ffff;
+            color: #000;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #00bfbf;
+            transform: scale(1.03);
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .server-item {
+            background-color: #1a1a1a;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        .server-item .timestamp, .server-item .countdown {
+            display: block;
+            margin-top: 8px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .server-item button {
+            width: 48%;
+            margin-right: 2%;
+            margin-top: 15px;
+            background-color: #00ffff;
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-weight: bold;
+        }
+
+        .server-item button:hover {
+            background-color: #00bfbf;
+            transform: scale(1.03);
+        }
+
+        .server-item button:last-child {
+            margin-right: 0;
+            background-color: #ff4f4f;
+            color: #fff;
+        }
+
+        .server-item .wow-banner {
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            display: none; /* จะถูกแสดงแบบสุ่ม */
+            animation: glow 2s infinite;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #ffd700; }
+            50% { text-shadow: 0 0 20px #ffd700; }
+            100% { text-shadow: 0 0 5px #ffd700; }
+        }
+
+        .price-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #00ffff;
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .copy-button {
+            margin-top: 15px;
+            background-color: #00ff00;
+            color: #000;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-weight: bold;
+        }
+
+        .copy-button:hover {
+            background-color: #00cc00;
+            transform: scale(1.03);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 16px;
+            cursor: pointer;
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        #passwordModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(14, 14, 14, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        #passwordModal .modal-content {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: #fff;
+            width: 80%;
+            max-width: 350px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .cancel-button {
+            background-color: #ff4f4f;
+            color: #fff;
+            margin-top: 15px;
+        }
+
+        #passwordError {
+            background-color: #ff4f4f;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            display: none;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        #backButton {
+            background-color: #555;
+            color: #fff;
+        }
 
         /* สไตล์สำหรับปุ่ม Facebook */
         .facebook-button {
-            margin-top: 10px;
+            margin-top: 15px;
             width: 100%;
             background-color: #4267B2; /* สีน้ำเงินของ Facebook */
             color: white;
-            padding: 10px;
-            font-size: 14px;
+            padding: 12px;
+            font-size: 16px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            border-radius: 5px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -33,108 +248,32 @@
         }
 
         .facebook-button i {
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
-        /* Media query สำหรับหน้าจอมือถือ */
-        @media (max-width: 768px) {
-            /* ... สไตล์เดิมของคุณ ... */
-
-            .facebook-button {
-                padding: 8px;
-                font-size: 12px;
-            }
-
-            .facebook-button i {
-                margin-right: 5px;
-            }
-        }
-
-        /* สไตล์สำหรับข้อความแจ้งเตือน */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50; /* สีเขียว */
-            color: white;
-            padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            z-index: 1000;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .notification.hide {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-
-        /* สไตล์สำหรับโมดัลโหลด */
-        .loading-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-            display: none; /* ซ่อนเป็นค่าเริ่มต้น */
-        }
-
-        .loading-content {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ปรับปรุงสไตล์ปุ่มย้อนกลับ */
-        #backButton {
+        /* สไตล์สำหรับข้อความ "ซื้อสำเร็จ" */
+        .purchase-successful {
+            font-size: 28px;
+            color: #00FF00; /* สีเขียวนีออน */
+            text-align: center;
             margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #555;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none; /* ซ่อนเป็นค่าเริ่มต้น */
-            transition: background-color 0.3s ease;
+            animation: glow 1s infinite;
+            font-weight: bold;
         }
 
-        #backButton:hover {
-            background-color: #333;
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
+            50% { text-shadow: 0 0 20px #00FF00, 0 0 30px #00FF00, 0 0 40px #00FF00; }
+            100% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
         }
     </style>
+    <!-- ใส่ฟอนต์ Kanit เพื่อความสวยงาม -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
-    <div class="title">แหล่งร่วมโค้ดเน็ตฟรี</div>
+    <div class="title">แหล่งรวมโค้ดเน็ตฟรี</div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -142,7 +281,7 @@
 
     <button id="showFormButton">ปล่อยโค้ด</button>
 
-    <div id="codeForm">
+    <div id="codeForm" style="display: none;">
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
@@ -157,7 +296,7 @@
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 
-    <button id="backButton">ย้อนกลับ</button>
+    <button id="backButton" style="display: none;">ย้อนกลับ</button>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
@@ -175,17 +314,6 @@
 
 <!-- แจ้งเตือนรหัสผ่านผิด -->
 <div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
-
-<!-- Notification สำหรับข้อความซื้อสำเร็จ -->
-<div id="notification" class="notification">ซื้อสำเร็จ!</div>
-
-<!-- โมดัลโหลดสำหรับส่งโค้ด -->
-<div class="loading-modal" id="loadingModal">
-    <div class="loading-content">
-        <div class="spinner"></div>
-        <div>กำลังอัพโค้ดขึ้นไป...</div>
-    </div>
-</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -223,8 +351,6 @@
   const passwordCancel = document.getElementById('passwordCancel');
   const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
-  const notification = document.getElementById('notification');
-  const loadingModal = document.getElementById('loadingModal');
 
   let currentServerId = null;
   let currentButton = null;
@@ -291,11 +417,20 @@
       const price = parseFloat(priceInput.value.trim());
 
       if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
-          // แสดงโมดัลโหลด
-          loadingModal.style.display = 'flex';
+          // แสดงข้อความกำลังอัพโค้ด...
+          sendButton.disabled = true;
+          sendButton.textContent = 'กำลังอัพโค้ด...';
 
-          // จำลองเวลาการอัพโหลด (3-8 วินาที)
-          const uploadTime = Math.floor(Math.random() * (8000 - 3000 + 1)) + 3000;
+          // ปิดการใช้งานอินพุตอื่น ๆ
+          serverNameInput.disabled = true;
+          codeInput.disabled = true;
+          passwordInputForm.disabled = true;
+          facebookInput.disabled = true;
+          expiryInput.disabled = true;
+          priceInput.disabled = true;
+
+          // สุ่มเวลาระหว่าง 3-8 วินาที
+          const uploadDelay = Math.floor(Math.random() * 6) + 3;
 
           setTimeout(() => {
               const codeRef = ref(database, 'servers');
@@ -312,18 +447,31 @@
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
                   resetForm();
-                  showNotification('อัพโค้ดสำเร็จ!');
+                  // รีเซ็ตปุ่มและอินพุต
+                  sendButton.disabled = false;
+                  sendButton.textContent = 'ส่งโค้ด';
+                  serverNameInput.disabled = false;
+                  codeInput.disabled = false;
+                  passwordInputForm.disabled = false;
+                  facebookInput.disabled = false;
+                  expiryInput.disabled = false;
+                  priceInput.disabled = false;
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-                  showNotification('เกิดข้อผิดพลาดในการอัพโค้ด!', true);
-              })
-              .finally(() => {
-                  loadingModal.style.display = 'none';
+                  // รีเซ็ตปุ่มและอินพุต
+                  sendButton.disabled = false;
+                  sendButton.textContent = 'ส่งโค้ด';
+                  serverNameInput.disabled = false;
+                  codeInput.disabled = false;
+                  passwordInputForm.disabled = false;
+                  facebookInput.disabled = false;
+                  expiryInput.disabled = false;
+                  priceInput.disabled = false;
               });
+          }, uploadDelay * 1000);
 
-              errorMessage.style.display = 'none';
-          }, uploadTime);
+          errorMessage.style.display = 'none';
       } else {
           errorMessage.style.display = 'block';
       }
@@ -349,9 +497,36 @@
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
-      const serverName = serverData.serverName.toLowerCase() === "admin" 
-          ? `<span class="admin-name">${serverData.serverName}</span>` 
-          : `<span>${serverData.serverName}</span>`;
+      // รายชื่อเซิร์ฟเวอร์ที่เกี่ยวกับเน็ต
+      const serverNames = [
+          "เน็ตแรงทะลุฟ้า",
+          "สปีดเทพ",
+          "ซุปเปอร์สปีด",
+          "ไฟเบอร์สุดแรง",
+          "อินเตอร์เน็ตสายฟ้า",
+          "สปีดแรงเวอร์",
+          "สปีดเน็ตแรงมาก",
+          "อินเตอร์เน็ตความเร็วสูง",
+          "อินเตอร์เน็ตระดับพรีเมียม",
+          "สปีดแรงไม่สะดุด",
+          "สปีดไวไฟขั้นเทพ",
+          "ความเร็วสูงระดับ 5G"
+      ];
+
+      const randomIndex = Math.floor(Math.random() * serverNames.length);
+      const randomServerName = serverNames[randomIndex];
+
+      const serverName = serverData.serverName || randomServerName;
+
+      // สร้างป้าย "ว้าว! เน็ตคุณแรงมาก"
+      const wowBanner = document.createElement('div');
+      wowBanner.classList.add('wow-banner');
+      wowBanner.textContent = 'ว้าว! เน็ตคุณแรงมากเลย';
+
+      // สุ่มแสดงป้าย "ว้าว! เน็ตคุณแรงมาก"
+      if (Math.random() < 0.3) { // โอกาส 30%
+          wowBanner.style.display = 'block';
+      }
 
       // สร้างป้ายราคา
       const priceTag = document.createElement('div');
@@ -367,10 +542,9 @@
       facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
 
       serverElement.innerHTML = 
-          `${serverName}
+          `<span style="font-size: 20px; font-weight: bold;">${serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
-          <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
           <div>
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
@@ -383,6 +557,9 @@
       if (serverData.facebookLink) {
           serverElement.appendChild(facebookButton);
       }
+
+      // เพิ่มป้าย "ว้าว! เน็ตคุณแรงมาก" ไปที่ serverElement
+      serverElement.appendChild(wowBanner);
 
       const countdownElement = serverElement.querySelector('.countdown');
       codeDisplay.appendChild(serverElement);
@@ -453,7 +630,7 @@
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           }
-      }, { onlyOnce: true }); // เพิ่ม { onlyOnce: true } เพื่อไม่ให้ฟังก์ชันถูกเรียกซ้ำ
+      }, { onlyOnce: true });
   });
 
   // การยกเลิกการยืนยันรหัสผ่าน
@@ -464,6 +641,7 @@
 
   // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
+      currentServerId = serverId;
       const codeRefSingle = ref(database, `servers/${serverId}`);
       const codeElement = document.createElement('p');
       const copyButton = document.createElement('button');
@@ -481,19 +659,34 @@
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
               navigator.clipboard.writeText(serverData.code);
-              // แสดงข้อความซื้อสำเร็จ
-              showNotification('ซื้อสำเร็จ!');
-              // ลบโค้ดและปุ่มคัดลอกจาก UI
-              hideCode(button);
-              // ลบข้อมูลจากฐานข้อมูลหลังจากแสดงข้อความซื้อสำเร็จ
-              const codeToRemoveRef = ref(database, `servers/${serverId}`);
-              remove(codeToRemoveRef).then(() => {
-                  console.log("ลบโค้ดหลังคัดลอกแล้ว");
-              });
+              showPurchaseSuccessful(button, serverId);
           });
       });
 
       button.onclick = () => hideCode(button);
+  }
+
+  // ฟังก์ชันแสดงข้อความ "ซื้อสำเร็จ"
+  function showPurchaseSuccessful(button, serverId) {
+      // แสดงข้อความ "ซื้อสำเร็จ" แบบเท่ๆ
+      const successMessage = document.createElement('div');
+      successMessage.classList.add('purchase-successful');
+      successMessage.textContent = 'ซื้อสำเร็จ';
+
+      // เพิ่มข้อความไปยัง parent element
+      button.parentNode.parentNode.appendChild(successMessage);
+
+      // ลบโค้ดออกจากฐานข้อมูล
+      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      remove(codeToRemoveRef).then(() => {
+          console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
+      });
+
+      // ลบข้อความและองค์ประกอบออกจาก UI หลังจาก 3 วินาที
+      setTimeout(() => {
+          successMessage.remove();
+          button.parentNode.parentNode.remove();
+      }, 3000);
   }
 
   // ฟังก์ชันซ่อนโค้ด
@@ -529,18 +722,6 @@
       passwordErrorDiv.style.display = 'block';
       setTimeout(() => {
           passwordErrorDiv.style.display = 'none';
-      }, 3000);
-  }
-
-  // ฟังก์ชันแสดงข้อความแจ้งเตือน
-  function showNotification(message, isError = false) {
-      notification.textContent = message;
-      notification.style.backgroundColor = isError ? '#f44336' : '#4CAF50'; // สีแดงสำหรับข้อผิดพลาด
-      notification.classList.add('show');
-
-      // ซ่อนข้อความหลังจาก 3 วินาที
-      setTimeout(() => {
-          notification.classList.remove('show');
       }, 3000);
   }
 
