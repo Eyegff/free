@@ -361,8 +361,12 @@
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
         <div class="password-container">
-            <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" inputmode="numeric" pattern="[0-9]*">
+            <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
             <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+        </div>
+        <div class="password-container">
+            <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
+            <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
         </div>
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
@@ -376,7 +380,7 @@
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
 <div id="passwordModal">
     <div class="modal-content">
-        <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
+        <p id="passwordPrompt">กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <div class="password-container">
             <input type="tel" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric" pattern="[0-9]*">
             <span class="password-toggle" onclick="togglePasswordVisibility('passwordInput')">แสดง</span>
@@ -399,7 +403,7 @@
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
     projectId: "ukgyry",
     storageBucket: "ukgyry.appspot.com",
-messagingSenderId: "782837816686",
+    messagingSenderId: "782837816686",
     appId: "1:782837816686:web:230328cfddb9d70ca8357f",
     measurementId: "G-RP7VJEN1BP"
   };
@@ -413,6 +417,7 @@ messagingSenderId: "782837816686",
   const serverNameInput = document.getElementById('serverNameInput');
   const codeInput = document.getElementById('codeInput');
   const passwordInputForm = document.getElementById('passwordInputForm');
+  const deletePasswordInputForm = document.getElementById('deletePasswordInputForm');
   const facebookInput = document.getElementById('facebookInput');
   const expiryInput = document.getElementById('expiryInput');
   const sendButton = document.getElementById('sendButton');
@@ -424,6 +429,7 @@ messagingSenderId: "782837816686",
   const passwordSubmit = document.getElementById('passwordSubmit');
   const passwordCancel = document.getElementById('passwordCancel');
   const backButton = document.getElementById('backButton');
+  const passwordPrompt = document.getElementById('passwordPrompt');
 
   let currentServerId = null;
   let currentButton = null;
@@ -493,11 +499,12 @@ messagingSenderId: "782837816686",
       const serverName = serverNameInput.value.trim();
       const code = codeInput.value.trim();
       const passwordForm = passwordInputForm.value.trim();
+      const deletePasswordForm = deletePasswordInputForm.value.trim();
       const facebookLink = facebookInput.value.trim();
       const expiryTime = expiryInput.value.trim();
       const price = parseFloat(priceInput.value.trim());
 
-      if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
+      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200) {
           // แสดงข้อความกำลังอัพโค้ด...
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
@@ -506,6 +513,7 @@ messagingSenderId: "782837816686",
           serverNameInput.disabled = true;
           codeInput.disabled = true;
           passwordInputForm.disabled = true;
+          deletePasswordInputForm.disabled = true;
           facebookInput.disabled = true;
           expiryInput.disabled = true;
           priceInput.disabled = true;
@@ -520,6 +528,7 @@ messagingSenderId: "782837816686",
                   serverName: serverName,
                   code: code,
                   password: passwordForm,
+                  deletePassword: deletePasswordForm,
                   facebookLink: facebookLink,
                   expiryTime: expiryTime,
                   timestamp: timestamp,
@@ -535,6 +544,7 @@ messagingSenderId: "782837816686",
                   serverNameInput.disabled = false;
                   codeInput.disabled = false;
                   passwordInputForm.disabled = false;
+                  deletePasswordInputForm.disabled = false;
                   facebookInput.disabled = false;
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
@@ -548,6 +558,7 @@ messagingSenderId: "782837816686",
                   serverNameInput.disabled = false;
                   codeInput.disabled = false;
                   passwordInputForm.disabled = false;
+                  deletePasswordInputForm.disabled = false;
                   facebookInput.disabled = false;
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
@@ -564,6 +575,7 @@ messagingSenderId: "782837816686",
       serverNameInput.value = '';
       codeInput.value = '';
       passwordInputForm.value = '';
+      deletePasswordInputForm.value = '';
       facebookInput.value = '';
       expiryInput.value = '';
       priceInput.value = '';
@@ -689,14 +701,16 @@ messagingSenderId: "782837816686",
       currentServerId = serverId;
       currentButton = button;
       currentAction = 'show';
+      passwordPrompt.textContent = 'กรุณาใส่รหัสผ่านเพื่อดูโค้ด';
       passwordModal.style.display = 'flex';
   };
 
-// ฟังก์ชันขอรหัสผ่านเพื่อลบ
+  // ฟังก์ชันขอรหัสผ่านเพื่อลบ
   window.requestPasswordToDelete = function (serverId, button) {
       currentServerId = serverId;
       currentButton = button;
       currentAction = 'delete';
+      passwordPrompt.textContent = 'กรุณาใส่รหัสผ่านเพื่อลบโค้ด';
       passwordModal.style.display = 'flex';
   };
 
@@ -707,12 +721,12 @@ messagingSenderId: "782837816686",
 
       onValue(codeRefSingle, (snapshot) => {
           const serverData = snapshot.val();
-          if (inputPassword === serverData.password) {
-              if (currentAction === 'show') {
-                  showCode(currentServerId, currentButton);
-              } else if (currentAction === 'delete') {
-                  deleteCode(currentServerId, currentButton);
-              }
+          if (currentAction === 'show' && inputPassword === serverData.password) {
+              showCode(currentServerId, currentButton);
+              passwordModal.style.display = 'none';
+              passwordInput.value = '';
+          } else if (currentAction === 'delete' && inputPassword === serverData.deletePassword) {
+              deleteCode(currentServerId, currentButton);
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           } else {
