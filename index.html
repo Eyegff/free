@@ -207,7 +207,7 @@
             font-weight: bold;
         }
 
-        #passwordModal {
+        #passwordModal, #loginModal, #registerModal {
             position: fixed;
             top: 0;
             left: 0;
@@ -220,7 +220,7 @@
             z-index: 1000;
         }
 
-        #passwordModal .modal-content {
+        #passwordModal .modal-content, #loginModal .modal-content, #registerModal .modal-content {
             background-color: #1a1a1a;
             padding: 30px;
             border-radius: 10px;
@@ -310,6 +310,25 @@
             font-size: 1.2em;
         }
 
+        .profile-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .profile-name {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
         @media (max-width: 600px) {
             .container {
                 margin: 20px auto;
@@ -350,37 +369,52 @@
 <div class="container">
     <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
 
-    <div id="codeDisplay">
-        <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
+    <div id="loginContainer" style="display: block;">
+        <input type="text" id="usernameInput" placeholder="ชื่อผู้ใช้">
+        <input type="password" id="passwordInput" placeholder="รหัสผ่าน">
+        <button id="loginButton">เข้าสู่ระบบ</button>
+        <button id="registerButton">สมัครสมาชิก</button>
     </div>
 
-    <div id="codeForm" style="display: none;">
-        <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
-        <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
-        <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
-        <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
-        <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
-        <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
-        <div class="password-container">
-            <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+    <div id="mainContent" style="display: none;">
+        <div class="profile-container">
+            <img src="/api/placeholder/50/50" alt="Profile Picture" class="profile-picture" id="profilePicture">
+            <span class="profile-name" id="profileName"></span>
         </div>
-        <div class="password-container">
-            <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
-        </div>
-        <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
-        <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
-        <button id="sendButton">ส่งโค้ด</button>
-        <button id="backButton" style="display: none;">ย้อนกลับ</button>
-    </div>
 
-    <button id="showFormButton">ปล่อยโค้ด</button>
+        <div id="codeDisplay">
+            <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
+        </div>
+
+        <div id="codeForm" style="display: none;">
+            <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
+            <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
+            <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
+            <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
+            <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
+            <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
+            <div class="password-container">
+                <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
+                <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+            </div>
+            <div class="password-container">
+                <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
+                <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
+            </div>
+            <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
+            <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
+            <button id="sendButton">ส่งโค้ด</button>
+            <button id="backButton" style="display: none;">ย้อนกลับ</button>
+        </div>
+
+        <button id="showFormButton">ปล่อยโค้ด</button>
+        <button id="logoutButton">ออกจากระบบ</button>
+    </div>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
 <div id="passwordModal">
-    <div class="modal-content">
+<div class="modal-content">
         <p id="passwordPrompt">กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <div class="password-container">
             <input type="tel" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric" pattern="[0-9]*">
@@ -391,12 +425,37 @@
     </div>
 </div>
 
+<!-- Modal สำหรับล็อกอิน -->
+<div id="loginModal">
+    <div class="modal-content">
+        <h2>เข้าสู่ระบบ</h2>
+        <input type="text" id="loginUsername" placeholder="ชื่อผู้ใช้">
+        <input type="password" id="loginPassword" placeholder="รหัสผ่าน">
+        <button id="loginSubmit">เข้าสู่ระบบ</button>
+        <button class="cancel-button" id="loginCancel">ยกเลิก</button>
+    </div>
+</div>
+
+<!-- Modal สำหรับสมัครสมาชิก -->
+<div id="registerModal">
+    <div class="modal-content">
+        <h2>สมัครสมาชิก</h2>
+        <input type="text" id="registerUsername" placeholder="ชื่อผู้ใช้ (ภาษาไทย)">
+        <input type="password" id="registerPassword" placeholder="รหัสผ่าน">
+        <input type="file" id="profilePictureInput" accept="image/*">
+        <button id="registerSubmit">สมัครสมาชิก</button>
+        <button class="cancel-button" id="registerCancel">ยกเลิก</button>
+    </div>
+</div>
+
 <!-- แจ้งเตือนใหม่ -->
 <div id="notification" class="notification"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -411,7 +470,11 @@
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
+  const loginContainer = document.getElementById('loginContainer');
+  const mainContent = document.getElementById('mainContent');
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
   const codeForm = document.getElementById('codeForm');
@@ -432,7 +495,20 @@
   const backButton = document.getElementById('backButton');
   const passwordPrompt = document.getElementById('passwordPrompt');
   const copyLimitInput = document.getElementById('copyLimitInput');
+  const loginButton = document.getElementById('loginButton');
+  const registerButton = document.getElementById('registerButton');
+  const loginModal = document.getElementById('loginModal');
+  const registerModal = document.getElementById('registerModal');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const registerSubmit = document.getElementById('registerSubmit');
+  const loginCancel = document.getElementById('loginCancel');
+  const registerCancel = document.getElementById('registerCancel');
+  const logoutButton = document.getElementById('logoutButton');
+  const profilePicture = document.getElementById('profilePicture');
+  const profileName = document.getElementById('profileName');
+  const profilePictureInput = document.getElementById('profilePictureInput');
 
+  let currentUser = null;
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
@@ -441,11 +517,11 @@
   window.togglePasswordVisibility = function(inputId) {
       const input = document.getElementById(inputId);
       const toggle = input.parentElement.querySelector('.password-toggle');
-      if (input.type === 'tel') {
+      if (input.type === 'password') {
           input.type = 'text';
           toggle.textContent = 'ซ่อน';
       } else {
-          input.type = 'tel';
+          input.type = 'password';
           toggle.textContent = 'แสดง';
       }
   }
@@ -498,6 +574,11 @@
 
   // ฟังก์ชันการส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
+      if (!currentUser) {
+          showNotification('กรุณาเข้าสู่ระบบก่อนปล่อยโค้ด', 'error');
+          return;
+      }
+
       const serverName = serverNameInput.value.trim();
       const code = codeInput.value.trim();
       const passwordForm = passwordInputForm.value.trim();
@@ -538,7 +619,10 @@
                   timestamp: timestamp,
                   price: price,
                   copyLimit: copyLimit,
-                  copyCount: 0
+                  copyCount: 0,
+                  userId: currentUser.uid,
+                  userName: currentUser.displayName,
+                  userPhotoURL: currentUser.photoURL
               })
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
@@ -618,7 +702,7 @@
           "ความเร็วสูงระดับ 5G"
       ];
 
-      const randomIndex = Math.floor(Math.random() * serverNames.length);
+     const randomIndex = Math.floor(Math.random() * serverNames.length);
       const randomServerName = serverNames[randomIndex];
 
       const serverName = serverData.serverName || randomServerName;
@@ -652,6 +736,10 @@
       facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
 
       serverElement.innerHTML = `
+          <div class="profile-container">
+              <img src="${serverData.userPhotoURL || '/api/placeholder/30/30'}" alt="Profile Picture" class="profile-picture" style="width: 30px; height: 30px;">
+              <span class="profile-name">${serverData.userName || 'ผู้ใช้'}</span>
+          </div>
           <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
@@ -736,9 +824,15 @@
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           } else if (currentAction === 'delete' && inputPassword === serverData.deletePassword) {
-              deleteCode(currentServerId, currentButton);
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
+              if (currentUser && currentUser.uid === serverData.userId) {
+                  deleteCode(currentServerId, currentButton);
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              } else {
+                  showNotification('คุณไม่มีสิทธิ์ลบโค้ดนี้', 'error');
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              }
           } else {
               showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
               passwordModal.style.display = 'none';
@@ -854,6 +948,135 @@
       setTimeout(() => {
           notification.className = 'notification';
       }, 3000);
+  }
+
+  // ฟังก์ชันล็อกอิน
+  loginButton.addEventListener('click', () => {
+      loginModal.style.display = 'flex';
+  });
+
+  loginSubmit.addEventListener('click', () => {
+      const email = document.getElementById('loginUsername').value + '@example.com';
+      const password = document.getElementById('loginPassword').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+              const user = userCredential.user;
+              showNotification('เข้าสู่ระบบสำเร็จ', 'success');
+              loginModal.style.display = 'none';
+              loginContainer.style.display = 'none';
+              mainContent.style.display = 'block';
+              updateUserProfile(user);
+          })
+          .catch((error) => {
+              console.error('เกิดข้อผิดพลาดในการเข้าสู่ระบบ:', error);
+              showNotification('เกิดข้อผิดพลาดในการเข้าสู่ระบบ', 'error');
+          });
+  });
+
+  // ฟังก์ชันสมัครสมาชิก
+  registerButton.addEventListener('click', () => {
+      registerModal.style.display = 'flex';
+  });
+
+  registerSubmit.addEventListener('click', () => {
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+      const email = username + '@example.com';
+
+      createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+              const user = userCredential.user;
+              const file = profilePictureInput.files[0];
+              if (file) {
+                  const storageReference = storageRef(storage, 'profile_pictures/' + user.uid);
+                  uploadBytes(storageReference, file).then((snapshot) => {
+                      getDownloadURL(snapshot.ref).then((downloadURL) => {
+                          updateProfile(user, {
+                              displayName: username,
+                              photoURL: downloadURL
+                          }).then(() => {
+                              showNotification('สมัครสมาชิกสำเร็จ', 'success');
+                              registerModal.style.display = 'none';
+                              loginContainer.style.display = 'none';
+                              mainContent.style.display = 'block';
+                              updateUserProfile(user);
+                          });
+                   });
+              } else {
+                  updateProfile(user, {
+                      displayName: username
+                  }).then(() => {
+                      showNotification('สมัครสมาชิกสำเร็จ', 'success');
+                      registerModal.style.display = 'none';
+                      loginContainer.style.display = 'none';
+                      mainContent.style.display = 'block';
+                      updateUserProfile(user);
+                  });
+              }
+          })
+          .catch((error) => {
+              console.error('เกิดข้อผิดพลาดในการสมัครสมาชิก:', error);
+              showNotification('เกิดข้อผิดพลาดในการสมัครสมาชิก', 'error');
+          });
+  });
+
+  // ฟังก์ชันออกจากระบบ
+  logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+          showNotification('ออกจากระบบสำเร็จ', 'success');
+          loginContainer.style.display = 'block';
+          mainContent.style.display = 'none';
+          currentUser = null;
+      }).catch((error) => {
+          console.error('เกิดข้อผิดพลาดในการออกจากระบบ:', error);
+          showNotification('เกิดข้อผิดพลาดในการออกจากระบบ', 'error');
+      });
+  });
+
+  // ฟังก์ชันอัปเดตโปรไฟล์ผู้ใช้
+  function updateUserProfile(user) {
+      currentUser = user;
+      profileName.textContent = user.displayName || 'ผู้ใช้';
+      if (user.photoURL) {
+          profilePicture.src = user.photoURL;
+      } else {
+          profilePicture.src = '/api/placeholder/50/50';
+      }
+  }
+
+  // ตรวจสอบสถานะการเข้าสู่ระบบ
+  onAuthStateChanged(auth, (user) => {
+      if (user) {
+          loginContainer.style.display = 'none';
+          mainContent.style.display = 'block';
+          updateUserProfile(user);
+      } else {
+          loginContainer.style.display = 'block';
+          mainContent.style.display = 'none';
+      }
+  });
+
+  // ปิด Modal
+  loginCancel.addEventListener('click', () => {
+      loginModal.style.display = 'none';
+  });
+
+  registerCancel.addEventListener('click', () => {
+      registerModal.style.display = 'none';
+  });
+
+  // ปิด Modal เมื่อคลิกนอกกรอบ
+  window.onclick = function(event) {
+      if (event.target == loginModal) {
+          loginModal.style.display = "none";
+      }
+      if (event.target == registerModal) {
+          registerModal.style.display = "none";
+      }
+      if (event.target == passwordModal) {
+          passwordModal.style.display = "none";
+      }
   }
 </script>
 
