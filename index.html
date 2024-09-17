@@ -643,6 +643,25 @@
       // แสดงรูปโปรไฟล์ถ้ามี
       const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
+      // สร้างป้ายราคา
+      const priceTag = document.createElement('div');
+      priceTag.classList.add('price-tag');
+      priceTag.textContent = `${serverData.price} บาท`;
+
+      // สร้างป้ายเพิ่มเติม
+      const extraTags = [
+          "คนนี้เน็ตแรงมากเลย",
+          "ความเร็วระดับเทพ",
+          "สปีดเน็ตเหนือชั้น",
+          "อินเทอร์เน็ตเร็วปรี๊ด",
+          "ความเร็วไม่ตก",
+          "เน็ตแรงทะลุพิกัด"
+      ];
+      const randomTagIndex = Math.floor(Math.random() * extraTags.length);
+      const extraTag = document.createElement('div');
+      extraTag.classList.add('extra-tag');
+      extraTag.textContent = extraTags[randomTagIndex];
+
       serverElement.innerHTML = `
           ${profileImage}
           <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
@@ -654,6 +673,12 @@
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>
       `;
+
+      // เพิ่มป้ายราคาไปที่ serverElement
+      serverElement.appendChild(priceTag);
+
+      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
+      serverElement.appendChild(extraTag);
 
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
