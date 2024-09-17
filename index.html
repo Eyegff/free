@@ -104,6 +104,8 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            display: flex;
+            align-items: center;
         }
 
         .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
@@ -329,6 +331,8 @@
             .server-item {
                 padding: 15px;
                 margin-bottom: 10px;
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .price-tag {
@@ -342,6 +346,45 @@
                 padding: 8px;
                 font-size: 0.8em;
             }
+
+            .server-item .avatar {
+                margin-right: 10px;
+            }
+
+            .server-item .server-details {
+                display: flex;
+                align-items: center;
+                width: 100%;
+            }
+        }
+
+        /* สไตล์สำหรับ Avatar */
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* จัดเรียงชื่อเซิร์ฟเวอร์และ Avatar */
+        .server-details {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .server-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            position: relative;
         }
     </style>
 </head>
@@ -357,6 +400,7 @@
     <div id="codeForm" style="display: none;">
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
+        <input type="url" id="imageInput" placeholder="ใส่ลิงก์รูปภาพ (URL)" pattern="https?://.+">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
@@ -369,7 +413,7 @@
             <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
             <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
         </div>
-        <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
+        <input type="url" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook" pattern="https?://.+">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
         <button id="backButton" style="display: none;">ย้อนกลับ</button>
@@ -399,7 +443,7 @@
   import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "API_KEY",
+    apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
     authDomain: "ukgyry.firebaseapp.com",
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
     projectId: "ukgyry",
@@ -416,6 +460,7 @@
   const showFormButton = document.getElementById('showFormButton');
   const codeForm = document.getElementById('codeForm');
   const serverNameInput = document.getElementById('serverNameInput');
+  const imageInput = document.getElementById('imageInput');
   const codeInput = document.getElementById('codeInput');
   const passwordInputForm = document.getElementById('passwordInputForm');
   const deletePasswordInputForm = document.getElementById('deletePasswordInputForm');
@@ -499,6 +544,7 @@
   // ฟังก์ชันการส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
       const serverName = serverNameInput.value.trim();
+      const imageURL = imageInput.value.trim();
       const code = codeInput.value.trim();
       const passwordForm = passwordInputForm.value.trim();
       const deletePasswordForm = deletePasswordInputForm.value.trim();
@@ -507,13 +553,18 @@
       const price = parseFloat(priceInput.value.trim());
       const copyLimit = parseInt(copyLimitInput.value.trim());
 
-      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0) {
+      // ตรวจสอบความถูกต้องของ URL รูปภาพ (ถ้ามี)
+      const imagePattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|bmp|webp)$/i;
+      const isImageValid = imageURL === '' || imagePattern.test(imageURL);
+
+      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0 && isImageValid) {
           // แสดงข้อความกำลังอัพโค้ด...
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
 
           // ปิดการใช้งานอินพุตอื่น ๆ
           serverNameInput.disabled = true;
+          imageInput.disabled = true;
           codeInput.disabled = true;
           passwordInputForm.disabled = true;
           deletePasswordInputForm.disabled = true;
@@ -530,6 +581,7 @@
               const timestamp = new Date().toISOString();
               push(codeRef, {
                   serverName: serverName,
+                  imageURL: imageURL || '', // เพิ่มลิงก์รูปภาพ
                   code: code,
                   password: passwordForm,
                   deletePassword: deletePasswordForm,
@@ -548,6 +600,7 @@
                   sendButton.disabled = false;
                   sendButton.textContent = 'ส่งโค้ด';
                   serverNameInput.disabled = false;
+                  imageInput.disabled = false;
                   codeInput.disabled = false;
                   passwordInputForm.disabled = false;
                   deletePasswordInputForm.disabled = false;
@@ -563,6 +616,7 @@
                   sendButton.disabled = false;
                   sendButton.textContent = 'ส่งโค้ด';
                   serverNameInput.disabled = false;
+                  imageInput.disabled = false;
                   codeInput.disabled = false;
                   passwordInputForm.disabled = false;
                   deletePasswordInputForm.disabled = false;
@@ -575,12 +629,16 @@
 
           errorMessage.style.display = 'none';
       } else {
+          if (!isImageValid) {
+              showNotification('ลิงก์รูปภาพไม่ถูกต้อง! กรุณาใส่ URL ของภาพที่ถูกต้อง (jpg, jpeg, png, gif, bmp, webp)', 'error');
+          }
           errorMessage.style.display = 'block';
       }
   });
 
   function resetForm() {
       serverNameInput.value = '';
+      imageInput.value = '';
       codeInput.value = '';
       passwordInputForm.value = '';
       deletePasswordInputForm.value = '';
@@ -651,16 +709,50 @@
       facebookButton.rel = 'noopener noreferrer';
       facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
 
-      serverElement.innerHTML = `
-          <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
-          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-          <span class="countdown"></span>
-          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
-          <div>
-              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
-              <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
-          </div>
-      `;
+      // สร้าง Avatar
+      const avatarDiv = document.createElement('div');
+      avatarDiv.classList.add('avatar');
+      const img = document.createElement('img');
+      img.src = serverData.imageURL || 'https://via.placeholder.com/50'; // ใช้ placeholder ถ้าไม่มีรูป
+      img.alt = 'Avatar';
+      avatarDiv.appendChild(img);
+
+      // สร้างส่วนรายละเอียดเซิร์ฟเวอร์
+      const serverDetails = document.createElement('div');
+      serverDetails.classList.add('server-details');
+
+      const serverNameSpan = document.createElement('span');
+      serverNameSpan.classList.add('server-name');
+      serverNameSpan.textContent = serverName;
+
+      const timestampSpan = document.createElement('span');
+      timestampSpan.classList.add('timestamp');
+      timestampSpan.textContent = formatThaiTime(serverData.timestamp);
+
+      const countdownSpan = document.createElement('span');
+      countdownSpan.classList.add('countdown');
+
+      const copyCountSpan = document.createElement('span');
+      copyCountSpan.classList.add('copy-count');
+      copyCountSpan.textContent = `คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)`;
+
+      serverDetails.appendChild(serverNameSpan);
+      serverDetails.appendChild(timestampSpan);
+      serverDetails.appendChild(countdownSpan);
+      serverDetails.appendChild(copyCountSpan);
+
+      // สร้างปุ่ม
+      const buttonsDiv = document.createElement('div');
+      const viewButton = document.createElement('button');
+      viewButton.textContent = "ดูโค้ด";
+      viewButton.onclick = () => requestPasswordAndShowCode(serverId, viewButton);
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = "ลบ";
+      deleteButton.style.backgroundColor = '#ff4f4f';
+      deleteButton.style.color = '#fff';
+      deleteButton.onclick = () => requestPasswordToDelete(serverId, deleteButton);
+      buttonsDiv.appendChild(viewButton);
+      buttonsDiv.appendChild(deleteButton);
 
       // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
@@ -668,12 +760,18 @@
       // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
       serverElement.appendChild(extraTag);
 
+      // เพิ่ม Avatar และรายละเอียดเซิร์ฟเวอร์
+      serverElement.appendChild(avatarDiv);
+      serverElement.appendChild(serverDetails);
+
       // เพิ่มปุ่ม Facebook
       if (serverData.facebookLink) {
           serverElement.appendChild(facebookButton);
       }
 
-      const countdownElement = serverElement.querySelector('.countdown');
+      serverElement.appendChild(buttonsDiv);
+
+      const countdownElement = countdownSpan;
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
@@ -685,25 +783,25 @@
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
       const interval = setInterval(() => {
           const now = new Date().getTime();
-      const expiry = new Date(expiryTime).getTime();
-      const distance = expiry - now;
+          const expiry = new Date(expiryTime).getTime();
+          const distance = expiry - now;
 
-      if (distance <= 0) {
-          expiryTimeElement.innerHTML = "หมดอายุ";
-          clearInterval(interval);
-          const codeToRemoveRef = ref(database, `servers/${serverId}`);
-          remove(codeToRemoveRef).then(() => {
-              console.log("ลบโค้ดที่หมดอายุแล้ว");
-          });
-      } else {
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          if (distance <= 0) {
+              expiryTimeElement.innerHTML = "หมดอายุ";
+              clearInterval(interval);
+              const codeToRemoveRef = ref(database, `servers/${serverId}`);
+              remove(codeToRemoveRef).then(() => {
+                  console.log("ลบโค้ดที่หมดอายุแล้ว");
+              });
+          } else {
+              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+              const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-      }
-  }, 1000);
+              expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          }
+      }, 1000);
   }
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
