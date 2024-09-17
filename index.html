@@ -8,151 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1Pfq8wVn4S4oJVV3tk0H+zl7j0oGdr6lyiTquFfN5V++0p9cSD7sSx0jEoXtBtQuM6R4l+jqgC+lZmK0sZ+1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS Styles -->
     <style>
-        /* เริ่มต้นการออกแบบสมัยใหม่ */
-        body {
-            background-color: #1e1e2f;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+        /* ... สไตล์เดิมของคุณ ... */
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .title {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #00bfff;
-        }
-
-        #codeDisplay {
-            background-color: #2e2e3d;
-            padding: 15px;
-            border-radius: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .server-item {
-            background-color: #3e3e4d;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            position: relative;
-            transition: transform 0.3s;
-        }
-
-        .server-item:hover {
-            transform: scale(1.02);
-        }
-
-        .server-item span {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .admin-name {
-            color: #ff4757;
-            font-weight: bold;
-        }
-
-        .timestamp, .countdown {
-            font-size: 0.9em;
-            color: #a4b0be;
-        }
-
-        .wow-banner {
-            background-color: #ff6b81;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #ffffff;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .price-tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: #2ed573;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        button, .facebook-button {
-            background-color: #1e90ff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 5px;
-            font-size: 1em;
-        }
-
-        button:hover, .facebook-button:hover {
-            background-color: #3742fa;
-        }
-
-        #showFormButton, #backButton {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        #codeForm {
-            display: none;
-            background-color: #2e2e3d;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        #codeForm input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .password-container {
-            position: relative;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #1e90ff;
-        }
-
-        .error {
-            color: #ff4757;
-            display: none;
-            margin-bottom: 10px;
-        }
-
-        /* ปุ่ม Facebook */
+        /* สไตล์สำหรับปุ่ม Facebook */
         .facebook-button {
             margin-top: 10px;
             width: 100%;
@@ -178,102 +36,10 @@
             margin-right: 8px;
         }
 
-        /* แถบโหลด */
-        .loader {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #1e90ff;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 2s linear infinite;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 1000;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ข้อความแจ้งเตือน */
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #2ed573;
-            color: white;
-            text-align: center;
-            border-radius: 5px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1001;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 17px;
-        }
-
-        .toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-
-        @keyframes fadein {
-            from { bottom: 0; opacity: 0; }
-            to { bottom: 30px; opacity: 1; }
-        }
-
-        @keyframes fadeout {
-            from { bottom: 30px; opacity: 1; }
-            to { bottom: 0; opacity: 0; }
-        }
-
-        /* Modal */
-        #passwordModal {
-            display: none;
-            position: fixed;
-            z-index: 1002;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #2e2e3d;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .modal-content p {
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        .cancel-button {
-            background-color: #ff4f4f;
-        }
-
-        /* จำนวนผู้ใช้งาน */
-        .user-count {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: #1e90ff;
-        }
-
-        /* Responsive */
+        /* Media query สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
+            /* ... สไตล์เดิมของคุณ ... */
+
             .facebook-button {
                 padding: 8px;
                 font-size: 12px;
@@ -282,29 +48,93 @@
             .facebook-button i {
                 margin-right: 5px;
             }
+        }
 
-            .loader {
-                width: 40px;
-                height: 40px;
-                border-width: 6px;
-            }
+        /* สไตล์สำหรับข้อความแจ้งเตือน */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* สีเขียว */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            z-index: 1000;
+        }
 
-            .toast {
-                min-width: 200px;
-                font-size: 15px;
-            }
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        /* สไตล์สำหรับโมดัลโหลด */
+        .loading-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            display: none; /* ซ่อนเป็นค่าเริ่มต้น */
+        }
+
+        .loading-content {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ปรับปรุงสไตล์ปุ่มย้อนกลับ */
+        #backButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* ซ่อนเป็นค่าเริ่มต้น */
+            transition: background-color 0.3s ease;
+        }
+
+        #backButton:hover {
+            background-color: #333;
         }
     </style>
 </head>
 <body>
 
-<div class="loader" id="loader"></div>
-
-<div class="toast" id="toast">ซื้อสำเร็จ!</div>
-
 <div class="container">
     <div class="title">แหล่งร่วมโค้ดเน็ตฟรี</div>
-    <div class="user-count">ผู้ใช้งานปัจจุบัน: <span id="userCount">0</span></div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -327,7 +157,7 @@
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 
-    <button id="backButton" style="display: none;">ย้อนกลับ</button>
+    <button id="backButton">ย้อนกลับ</button>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
@@ -344,13 +174,22 @@
 </div>
 
 <!-- แจ้งเตือนรหัสผ่านผิด -->
-<div id="passwordError" style="position: fixed; top: 20px; right: 20px; background-color: #ff4757; color: white; padding: 10px 20px; border-radius: 5px; display: none; z-index: 1003;">
-    รหัสผ่านไม่ถูกต้อง!
+<div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
+
+<!-- Notification สำหรับข้อความซื้อสำเร็จ -->
+<div id="notification" class="notification">ซื้อสำเร็จ!</div>
+
+<!-- โมดัลโหลดสำหรับส่งโค้ด -->
+<div class="loading-modal" id="loadingModal">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <div>กำลังอัพโค้ดขึ้นไป...</div>
+    </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
@@ -384,9 +223,8 @@
   const passwordCancel = document.getElementById('passwordCancel');
   const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
-  const loader = document.getElementById('loader');
-  const toast = document.getElementById('toast');
-  const userCountSpan = document.getElementById('userCount');
+  const notification = document.getElementById('notification');
+  const loadingModal = document.getElementById('loadingModal');
 
   let currentServerId = null;
   let currentButton = null;
@@ -424,27 +262,6 @@
   showFormButton.addEventListener('click', () => {
       codeForm.style.display = 'block';
       showFormButton.style.display = 'none';
-      backButton.style.display = 'block';
-  });
-
-  // ปุ่มย้อนกลับ
-  backButton.addEventListener('click', () => {
-      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
-      const allCodeElements = document.querySelectorAll('.code-content');
-      const allCopyButtons = document.querySelectorAll('.copy-button');
-      allCodeElements.forEach(el => el.remove());
-      allCopyButtons.forEach(btn => btn.remove());
-
-      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
-      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
-      allViewButtons.forEach(button => {
-          button.textContent = "ดูโค้ด";
-          button.onclick = function () {
-              requestPasswordAndShowCode(button.getAttribute('data-serverid'), button);
-          };
-      });
-
-      backButton.style.display = 'none';
   });
 
   // ตรวจสอบราคาว่าไม่เกิน 200 บาท
@@ -474,11 +291,11 @@
       const price = parseFloat(priceInput.value.trim());
 
       if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
-          // แสดง loader
-          loader.style.display = 'block';
+          // แสดงโมดัลโหลด
+          loadingModal.style.display = 'flex';
 
-          // จำลองเวลาอัพโหลด 3-8 วินาที
-          const uploadTime = Math.floor(Math.random() * 5000) + 3000; // 3000ms - 8000ms
+          // จำลองเวลาการอัพโหลด (3-8 วินาที)
+          const uploadTime = Math.floor(Math.random() * (8000 - 3000 + 1)) + 3000;
 
           setTimeout(() => {
               const codeRef = ref(database, 'servers');
@@ -495,11 +312,14 @@
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
                   resetForm();
-                  loader.style.display = 'none';
+                  showNotification('อัพโค้ดสำเร็จ!');
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-                  loader.style.display = 'none';
+                  showNotification('เกิดข้อผิดพลาดในการอัพโค้ด!', true);
+              })
+              .finally(() => {
+                  loadingModal.style.display = 'none';
               });
 
               errorMessage.style.display = 'none';
@@ -518,7 +338,6 @@
       priceInput.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
-      backButton.style.display = 'none';
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
@@ -553,7 +372,7 @@
           <span class="countdown"></span>
           <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
           <div>
-              <button data-serverid="${serverId}" onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
+              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>`;
 
@@ -662,10 +481,15 @@
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
               navigator.clipboard.writeText(serverData.code);
-              showToast("ซื้อสำเร็จ!");
+              // แสดงข้อความซื้อสำเร็จ
+              showNotification('ซื้อสำเร็จ!');
+              // ลบโค้ดและปุ่มคัดลอกจาก UI
               hideCode(button);
-              // ลบโค้ดจากฐานข้อมูลหลังการคัดลอก
-              deleteCode(serverId, button);
+              // ลบข้อมูลจากฐานข้อมูลหลังจากแสดงข้อความซื้อสำเร็จ
+              const codeToRemoveRef = ref(database, `servers/${serverId}`);
+              remove(codeToRemoveRef).then(() => {
+                  console.log("ลบโค้ดหลังคัดลอกแล้ว");
+              });
           });
       });
 
@@ -708,39 +532,36 @@
       }, 3000);
   }
 
-  // ฟังก์ชันแสดง toast
-  function showToast(message) {
-      toast.textContent = message;
-      toast.className = "toast show";
+  // ฟังก์ชันแสดงข้อความแจ้งเตือน
+  function showNotification(message, isError = false) {
+      notification.textContent = message;
+      notification.style.backgroundColor = isError ? '#f44336' : '#4CAF50'; // สีแดงสำหรับข้อผิดพลาด
+      notification.classList.add('show');
+
+      // ซ่อนข้อความหลังจาก 3 วินาที
       setTimeout(() => {
-          toast.className = toast.className.replace("show", "");
+          notification.classList.remove('show');
       }, 3000);
   }
 
-  // แสดงจำนวนผู้ใช้งาน
-  const userCountRef = ref(database, 'userCount');
-  onValue(userCountRef, (snapshot) => {
-      const count = snapshot.val() || 0;
-      userCountSpan.textContent = count;
-  });
+  // ฟังก์ชันสำหรับปุ่มย้อนกลับ
+  backButton.addEventListener('click', () => {
+      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
+      const allCodeElements = document.querySelectorAll('.code-content');
+      const allCopyButtons = document.querySelectorAll('.copy-button');
+      allCodeElements.forEach(el => el.remove());
+      allCopyButtons.forEach(btn => btn.remove());
 
-  // เพิ่มและลบจำนวนผู้ใช้งานเมื่อมีการเชื่อมต่อและตัดการเชื่อมต่อ
-  const connectionsRef = ref(database, 'connections');
-  const connectedRef = ref(database, '.info/connected');
+      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
+      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
+      allViewButtons.forEach(button => {
+          button.textContent = "ดูโค้ด";
+          button.onclick = function () {
+              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
+          };
+      });
 
-  onValue(connectedRef, (snapshot) => {
-      if (snapshot.val() === true) {
-          const con = push(connectionsRef);
-          onDisconnect(con).remove();
-          // เพิ่มจำนวนผู้ใช้งาน
-          push(ref(database, 'userCount'), 1).then(() => {
-              // นับจำนวนการเชื่อมต่อปัจจุบัน
-              onValue(connectionsRef, (snap) => {
-                  const count = snap.numChildren();
-                  set(ref(database, 'userCount'), count);
-              });
-          });
-      }
+      backButton.style.display = 'none';
   });
 </script>
 
