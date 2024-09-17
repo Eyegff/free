@@ -361,6 +361,10 @@
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
+
+        <!-- ฟิลด์อัปโหลดรูปภาพ -->
+        <input type="file" id="profilePictureInput" accept="image/*">
+
         <div class="password-container">
             <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
             <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
@@ -432,6 +436,7 @@
   const backButton = document.getElementById('backButton');
   const passwordPrompt = document.getElementById('passwordPrompt');
   const copyLimitInput = document.getElementById('copyLimitInput');
+  const profilePictureInput = document.getElementById('profilePictureInput');
 
   let currentServerId = null;
   let currentButton = null;
@@ -464,6 +469,31 @@
   }
 
   setExpiryDateLimits();
+
+  // ฟังก์ชันการอัปโหลดรูปภาพ
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgPreview = document.createElement('img');
+            imgPreview.src = e.target.result;
+            imgPreview.style.width = '50px';
+            imgPreview.style.height = '50px';
+            imgPreview.style.borderRadius = '50%';
+            imgPreview.style.objectFit = 'cover';
+            imgPreview.style.marginRight = '10px';
+            imgPreview.alt = 'Profile Image';
+
+            // แสดงรูปภาพข้างเซิร์ฟเวอร์เนม
+            const serverNameDiv = document.getElementById('serverNameDisplay');
+            serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
+        };
+        reader.readAsDataURL(file);
+    }
+  }
+
+  profilePictureInput.addEventListener('change', handleImageUpload);
 
   // แสดงฟอร์มส่งโค้ด
   showFormButton.addEventListener('click', () => {
@@ -498,6 +528,7 @@
 
   // ฟังก์ชันการส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
+      const profileImage = profilePictureInput.files[0];
       const serverName = serverNameInput.value.trim();
       const code = codeInput.value.trim();
       const passwordForm = passwordInputForm.value.trim();
@@ -522,58 +553,64 @@
           priceInput.disabled = true;
           copyLimitInput.disabled = true;
 
-          // สุ่มเวลาระหว่าง 3-8 วินาที
-          const uploadDelay = Math.floor(Math.random() * 6) + 3;
+          const reader = new FileReader();
+          reader.onloadend = function() {
+              // สุ่มเวลาระหว่าง 3-8 วินาที
+              const uploadDelay = Math.floor(Math.random() * 6) + 3;
 
-          setTimeout(() => {
-              const codeRef = ref(database, 'servers');
-              const timestamp = new Date().toISOString();
-              push(codeRef, {
-                  serverName: serverName,
-                  code: code,
-                  password: passwordForm,
-                  deletePassword: deletePasswordForm,
-                  facebookLink: facebookLink,
-                  expiryTime: expiryTime,
-                  timestamp: timestamp,
-                  price: price,
-                  copyLimit: copyLimit,
-                  copyCount: 0
-              })
-              .then(() => {
-                  console.log('ส่งข้อมูลสำเร็จ');
-                  showNotification('ส่งโค้ดสำเร็จ', 'success');
-                  resetForm();
-                  // รีเซ็ตปุ่มและอินพุต
-                  sendButton.disabled = false;
-                  sendButton.textContent = 'ส่งโค้ด';
-                  serverNameInput.disabled = false;
-                  codeInput.disabled = false;
-                  passwordInputForm.disabled = false;
-                  deletePasswordInputForm.disabled = false;
-                  facebookInput.disabled = false;
-                  expiryInput.disabled = false;
-                  priceInput.disabled = false;
-                  copyLimitInput.disabled = false;
-              })
-              .catch((error) => {
-                  console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-                  showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-                  // รีเซ็ตปุ่มและอินพุต
-                  sendButton.disabled = false;
-                  sendButton.textContent = 'ส่งโค้ด';
-                  serverNameInput.disabled = false;
-                  codeInput.disabled = false;
-                  passwordInputForm.disabled = false;
-                  deletePasswordInputForm.disabled = false;
-                  facebookInput.disabled = false;
-                  expiryInput.disabled = false;
-                  priceInput.disabled = false;
-                  copyLimitInput.disabled = false;
-              });
-          }, uploadDelay * 1000);
+              setTimeout(() => {
+                  const codeRef = ref(database, 'servers');
+                  const timestamp = new Date().toISOString();
+                  push(codeRef, {
+                      serverName: serverName,
+                      code: code,
+                      password: passwordForm,
+                      deletePassword: deletePasswordForm,
+                      facebookLink: facebookLink,
+                      expiryTime: expiryTime,
+                      timestamp: timestamp,
+                      price: price,
+                      copyLimit: copyLimit,
+                      copyCount: 0,
+                      profileImage: reader.result // รูปภาพที่แปลงเป็น base64
+                  })
+                  .then(() => {
+                      console.log('ส่งข้อมูลสำเร็จ');
+                      showNotification('ส่งโค้ดสำเร็จ', 'success');
+                      resetForm();
+                      // รีเซ็ตปุ่มและอินพุต
+                      sendButton.disabled = false;
+                      sendButton.textContent = 'ส่งโค้ด';
+                      serverNameInput.disabled = false;
+                      codeInput.disabled = false;
+                      passwordInputForm.disabled = false;
+                      deletePasswordInputForm.disabled = false;
+                      facebookInput.disabled = false;
+                      expiryInput.disabled = false;
+                      priceInput.disabled = false;
+                      copyLimitInput.disabled = false;
+                  })
+                  .catch((error) => {
+                      console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+                      showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+                      // รีเซ็ตปุ่มและอินพุต
+                      sendButton.disabled = false;
+                      sendButton.textContent = 'ส่งโค้ด';
+                      serverNameInput.disabled = false;
+                      codeInput.disabled = false;
+                      passwordInputForm.disabled = false;
+                      deletePasswordInputForm.disabled = false;
+                      facebookInput.disabled = false;
+                      expiryInput.disabled = false;
+                      priceInput.disabled = false;
+                      copyLimitInput.disabled = false;
+                  });
+              }, uploadDelay * 1000);
 
-          errorMessage.style.display = 'none';
+              errorMessage.style.display = 'none';
+          };
+
+          reader.readAsDataURL(profileImage);
       } else {
           errorMessage.style.display = 'block';
       }
@@ -588,6 +625,7 @@
       expiryInput.value = '';
       priceInput.value = '';
       copyLimitInput.value = '';
+      profilePictureInput.value = ''; // ล้างรูปภาพหลังส่ง
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
       backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับเมื่อส่งโค้ดเสร็จ
@@ -602,57 +640,12 @@
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
-      // รายชื่อเซิร์ฟเวอร์ที่เกี่ยวกับเน็ต
-      const serverNames = [
-          "เน็ตแรงทะลุฟ้า",
-          "สปีดเทพ",
-          "ซุปเปอร์สปีด",
-          "ไฟเบอร์สุดแรง",
-          "อินเตอร์เน็ตสายฟ้า",
-          "สปีดแรงเวอร์",
-          "สปีดเน็ตแรงมาก",
-          "อินเตอร์เน็ตความเร็วสูง",
-          "อินเตอร์เน็ตระดับพรีเมียม",
-          "สปีดแรงไม่สะดุด",
-          "สปีดไวไฟขั้นเทพ",
-          "ความเร็วสูงระดับ 5G"
-      ];
-
-      const randomIndex = Math.floor(Math.random() * serverNames.length);
-      const randomServerName = serverNames[randomIndex];
-
-      const serverName = serverData.serverName || randomServerName;
-
-      // สร้างป้ายเพิ่มเติมแบบสุ่มใต้ป้ายราคา
-      const extraTags = [
-          "คนนี้เน็ตแรงมากเลย",
-          "ความเร็วระดับเทพ",
-          "สปีดเน็ตเหนือชั้น",
-          "อินเทอร์เน็ตเร็วปรี๊ด",
-          "ความเร็วไม่ตก",
-          "เน็ตแรงทะลุพิกัด"
-      ];
-
-      const randomTagIndex = Math.floor(Math.random() * extraTags.length);
-      const extraTag = document.createElement('div');
-      extraTag.classList.add('extra-tag');
-      extraTag.textContent = extraTags[randomTagIndex];
-
-      // สร้างป้ายราคา
-      const priceTag = document.createElement('div');
-      priceTag.classList.add('price-tag');
-      priceTag.textContent = `${serverData.price} บาท`;
-
-      // สร้างปุ่ม Facebook
-      const facebookButton = document.createElement('a');
-      facebookButton.classList.add('facebook-button');
-      facebookButton.href = serverData.facebookLink;
-      facebookButton.target = '_blank';
-      facebookButton.rel = 'noopener noreferrer';
-      facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
+      // แสดงรูปโปรไฟล์ถ้ามี
+      const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
       serverElement.innerHTML = `
-          <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
+          ${profileImage}
+          <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
           <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
@@ -662,23 +655,11 @@
           </div>
       `;
 
-      // เพิ่มป้ายราคาไปที่ serverElement
-      serverElement.appendChild(priceTag);
-
-      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
-      serverElement.appendChild(extraTag);
-
-      // เพิ่มปุ่ม Facebook
-      if (serverData.facebookLink) {
-          serverElement.appendChild(facebookButton);
-      }
-
-      const countdownElement = serverElement.querySelector('.countdown');
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
       // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
-      updateCountdown(serverId, countdownElement, serverData.expiryTime);
+      updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
   });
 
   // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
