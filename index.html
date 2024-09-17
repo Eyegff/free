@@ -24,14 +24,14 @@
             padding: 20px;
             background: linear-gradient(135deg, #1f1f1f, #3d3d3d);
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
         }
 
         .title {
             text-align: center;
             font-size: 36px;
             margin-bottom: 30px;
-            text-shadow: 0 0 20px #00ffff;
+            text-shadow: 0 0 20px #ffd700;
             position: relative;
         }
 
@@ -43,7 +43,7 @@
             transform: translateX(-50%);
             width: 80px;
             height: 3px;
-            background-color: #00ffff;
+            background-color: #ffd700;
             border-radius: 5px;
         }
 
@@ -62,7 +62,7 @@
         }
 
         button {
-            background-color: #00ffff;
+            background-color: #ffd700;
             color: #000;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s;
@@ -70,7 +70,7 @@
         }
 
         button:hover {
-            background-color: #00bfbf;
+            background-color: #e6b800;
             transform: scale(1.03);
         }
 
@@ -88,7 +88,7 @@
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
         }
 
         .server-item .timestamp, .server-item .countdown {
@@ -102,7 +102,7 @@
             width: 48%;
             margin-right: 2%;
             margin-top: 15px;
-            background-color: #00ffff;
+            background-color: #ffd700;
             color: #000;
             border: none;
             padding: 10px;
@@ -113,7 +113,7 @@
         }
 
         .server-item button:hover {
-            background-color: #00bfbf;
+            background-color: #e6b800;
             transform: scale(1.03);
         }
 
@@ -146,12 +146,12 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #00ffff;
+            background-color: #ffd700;
             color: #000;
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .copy-button {
@@ -176,7 +176,7 @@
             right: 10px;
             top: 16px;
             cursor: pointer;
-            color: #00ffff;
+            color: #ffd700;
             font-weight: bold;
         }
 
@@ -201,7 +201,7 @@
             color: #fff;
             width: 80%;
             max-width: 350px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
         }
 
         .cancel-button {
@@ -257,14 +257,50 @@
             color: #00FF00; /* สีเขียวนีออน */
             text-align: center;
             margin-top: 20px;
-            animation: glow 1s infinite;
+            animation: glow-green 1s infinite;
             font-weight: bold;
         }
 
-        @keyframes glow {
+        @keyframes glow-green {
             0% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
             50% { text-shadow: 0 0 20px #00FF00, 0 0 30px #00FF00, 0 0 40px #00FF00; }
             100% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
+        }
+
+        /* ทำให้ responsive สำหรับมือถือ */
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .title {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+
+            input, button {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .server-item {
+                padding: 15px;
+            }
+
+            .server-item button {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .purchase-successful {
+                font-size: 24px;
+            }
+
+            .facebook-button {
+                padding: 10px;
+                font-size: 14px;
+            }
         }
     </style>
     <!-- ใส่ฟอนต์ Kanit เพื่อความสวยงาม -->
@@ -288,8 +324,9 @@
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <div id="priceError" style="color: red; display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
         <div class="password-container">
-            <input type="password" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก" inputmode="numeric">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+            <!-- เปลี่ยน input รหัสผ่านเป็น type="number" -->
+            <input type="number" id="passwordInputForm" placeholder="ตั้งรหัสผ่าน 6 หลัก">
+            <!-- ไม่ต้องใช้ปุ่มแสดงรหัสผ่านเพราะเป็นตัวเลข -->
         </div>
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
@@ -304,8 +341,8 @@
     <div class="modal-content">
         <p>กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <div class="password-container">
-            <input type="password" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInput')">แสดง</span>
+            <!-- เปลี่ยน input รหัสผ่านเป็น type="number" -->
+            <input type="number" id="passwordInput" placeholder="รหัสผ่าน">
         </div>
         <button id="passwordSubmit">ยืนยัน</button>
         <button class="cancel-button" id="passwordCancel">ยกเลิก</button>
@@ -320,19 +357,21 @@
   import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
-    authDomain: "ukgyry.firebaseapp.com",
-    databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
-    projectId: "ukgyry",
-    storageBucket: "ukgyry.appspot.com",
-    messagingSenderId: "782837816686",
-    appId: "1:782837816686:web:230328cfddb9d70ca8357f",
-    measurementId: "G-RP7VJEN1BP"
+    // โปรดใส่ข้อมูล Firebase ของคุณที่นี่
+    // แทนที่ YOUR_API_KEY และค่าต่างๆ ด้วยข้อมูลจริงของคุณ
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
 
+  // โค้ด JavaScript ที่เหลือยังคงเหมือนเดิม
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
   const codeForm = document.getElementById('codeForm');
@@ -355,19 +394,6 @@
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
-
-  // ฟังก์ชันแสดง/ซ่อนรหัสผ่าน
-  function togglePasswordVisibility(inputId) {
-      const input = document.getElementById(inputId);
-      const toggle = input.parentElement.querySelector('.password-toggle');
-      if (input.type === 'password') {
-          input.type = 'text';
-          toggle.textContent = 'ซ่อน';
-      } else {
-          input.type = 'password';
-          toggle.textContent = 'แสดง';
-      }
-  }
 
   // ตั้งค่าขอบเขตวันหมดอายุให้เฉพาะปีปัจจุบัน
   function setExpiryDateLimits() {
