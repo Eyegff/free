@@ -30,7 +30,7 @@
 
         .title {
             text-align: center;
-            font-size: 2em;
+            font-size: 1.8em; /* ปรับขนาดให้เล็กลง */
             margin-bottom: 20px;
             text-shadow: 0 0 20px #00ffff;
             position: relative;
@@ -54,7 +54,7 @@
             margin-bottom: 15px;
             border: none;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 0.95em; /* ปรับขนาดให้เล็กลง */
         }
 
         input {
@@ -109,7 +109,7 @@
             display: block;
             margin-top: 8px;
             color: #ccc;
-            font-size: 0.9em;
+            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
         }
 
         .server-item button {
@@ -144,7 +144,7 @@
             border-radius: 8px;
             margin-top: 10px;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
             font-weight: bold;
             animation: pulse 2s infinite;
         }
@@ -248,7 +248,7 @@
             background-color: #4267B2;
             color: white;
             padding: 10px;
-            font-size: 0.9em;
+            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -270,7 +270,7 @@
 
         /* สไตล์สำหรับข้อความ "ซื้อสำเร็จ" */
         .purchase-successful {
-            font-size: 1.5em;
+            font-size: 1.3em; /* ปรับขนาดให้เล็กลง */
             color: #00FF00;
             text-align: center;
             margin-top: 20px;
@@ -291,13 +291,13 @@
             }
 
             .title {
-                font-size: 1.5em;
+                font-size: 1.3em; /* ปรับขนาดให้เล็กลง */
                 margin-bottom: 20px;
             }
 
             input, button {
                 padding: 10px;
-                font-size: 0.9em;
+                font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
             }
 
             .server-item {
@@ -309,7 +309,7 @@
                 top: 15px;
                 right: 15px;
                 padding: 6px 10px;
-                font-size: 0.9em;
+                font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
             }
 
             .facebook-button {
@@ -598,14 +598,15 @@
       facebookButton.rel = 'noopener noreferrer';
       facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
 
-      serverElement.innerHTML = 
-          `<span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
+      serverElement.innerHTML = `
+          <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
           <div>
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
-          </div>`;
+          </div>
+      `;
 
       // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
