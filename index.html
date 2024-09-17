@@ -349,11 +349,6 @@
 
 <div class="container">
     <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
-    
-    <!-- แสดงจำนวนผู้เข้าชม -->
-    <div style="text-align:center; font-size: 1.2em; margin-bottom: 10px;">
-        จำนวนผู้เข้าชม: <span id="visitorCount">0</span> คน
-    </div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -405,7 +400,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -423,16 +418,29 @@
 
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
-  const visitorCount = document.getElementById('visitorCount');
+  const codeForm = document.getElementById('codeForm');
+  const serverNameInput = document.getElementById('serverNameInput');
+  const codeInput = document.getElementById('codeInput');
+  const passwordInputForm = document.getElementById('passwordInputForm');
+  const deletePasswordInputForm = document.getElementById('deletePasswordInputForm');
+  const facebookInput = document.getElementById('facebookInput');
+  const expiryInput = document.getElementById('expiryInput');
+  const sendButton = document.getElementById('sendButton');
+  const errorMessage = document.getElementById('errorMessage');
+  const priceInput = document.getElementById('priceInput');
+  const priceError = document.getElementById('priceError');
+  const passwordModal = document.getElementById('passwordModal');
+  const passwordInput = document.getElementById('passwordInput');
+  const passwordSubmit = document.getElementById('passwordSubmit');
+  const passwordCancel = document.getElementById('passwordCancel');
+  const backButton = document.getElementById('backButton');
+  const passwordPrompt = document.getElementById('passwordPrompt');
+  const copyLimitInput = document.getElementById('copyLimitInput');
+  const profilePictureInput = document.getElementById('profilePictureInput');
 
-  // ฟังก์ชันนับจำนวนผู้เข้าชม
-  const visitorsRef = ref(database, 'visitors');
-  update(visitorsRef, { count: increment(1) });
-
-  onValue(visitorsRef, (snapshot) => {
-      const data = snapshot.val();
-      visitorCount.textContent = data.count;
-  });
+  let currentServerId = null;
+  let currentButton = null;
+  let currentAction = null;
 
   // ฟังก์ชันแสดง/ซ่อนรหัสผ่าน
   window.togglePasswordVisibility = function(inputId) {
@@ -683,25 +691,25 @@
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
       const interval = setInterval(() => {
           const now = new Date().getTime();
-          const expiry = new Date(expiryTime).getTime();
-          const distance = expiry - now;
+      const expiry = new Date(expiryTime).getTime();
+      const distance = expiry - now;
 
-          if (distance <= 0) {
-              expiryTimeElement.innerHTML = "หมดอายุ";
-              clearInterval(interval);
-              const codeToRemoveRef = ref(database, `servers/${serverId}`);
-              remove(codeToRemoveRef).then(() => {
-                  console.log("ลบโค้ดที่หมดอายุแล้ว");
-              });
-          } else {
-              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-              const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      if (distance <= 0) {
+          expiryTimeElement.innerHTML = "หมดอายุ";
+          clearInterval(interval);
+          const codeToRemoveRef = ref(database, `servers/${serverId}`);
+          remove(codeToRemoveRef).then(() => {
+              console.log("ลบโค้ดที่หมดอายุแล้ว");
+          });
+      } else {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-              expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-          }
-      }, 1000);
+          expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+      }
+  }, 1000);
   }
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
@@ -751,23 +759,24 @@
       passwordInput.value = '';
   });
 
-  // ฟังก์ชันแสดงโค้ดและซ่อนเมื่อคัดลอก
+  // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
+      currentServerId = serverId;
       const codeRefSingle = ref(database, `servers/${serverId}`);
       const codeElement = document.createElement('p');
       const copyButton = document.createElement('button');
       copyButton.textContent = "คัดลอกโค้ด";
       copyButton.classList.add('copy-button');
+      codeElement.classList.add('code-content');
 
       button.textContent = "ซ่อนโค้ด";
-
       onValue(codeRefSingle, (snapshot) => {
           const serverData = snapshot.val();
           codeElement.textContent = serverData.code;
           button.parentNode.parentNode.appendChild(codeElement);
           button.parentNode.parentNode.appendChild(copyButton);
 
-          // ฟังก์ชันคัดลอกโค้ดแล้วซ่อน
+          // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
               navigator.clipboard.writeText(serverData.code);
               const newCopyCount = (serverData.copyCount || 0) + 1;
@@ -776,7 +785,8 @@
               } else {
                   update(codeRefSingle, { copyCount: newCopyCount });
                   showNotification('คัดลอกโค้ดสำเร็จ', 'success');
-                  hideCode(button); // ซ่อนโค้ดทุกครั้งที่คัดลอก
+                  const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
+                  copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
               }
           });
       });
