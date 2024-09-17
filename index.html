@@ -361,6 +361,14 @@
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
+
+        <!-- เพิ่มฟังก์ชันตั้งชื่อเล่น -->
+        <input type="text" id="nicknameInput" placeholder="ตั้งชื่อเล่น">
+        
+        <!-- เพิ่มฟังก์ชันเลือกรูปโปรไฟล์ -->
+        <input type="file" id="profilePicInput" accept="image/*">
+        <img id="previewImage" style="max-width: 100%; margin-top: 10px; display: none;">
+
         <div class="password-container">
             <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
             <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
@@ -432,6 +440,9 @@
   const backButton = document.getElementById('backButton');
   const passwordPrompt = document.getElementById('passwordPrompt');
   const copyLimitInput = document.getElementById('copyLimitInput');
+  const nicknameInput = document.getElementById('nicknameInput');
+  const profilePicInput = document.getElementById('profilePicInput');
+  const previewImage = document.getElementById('previewImage');
 
   let currentServerId = null;
   let currentButton = null;
@@ -506,8 +517,9 @@
       const expiryTime = expiryInput.value.trim();
       const price = parseFloat(priceInput.value.trim());
       const copyLimit = parseInt(copyLimitInput.value.trim());
+      const nickname = nicknameInput.value.trim();
 
-      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0) {
+      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0 && nickname) {
           // แสดงข้อความกำลังอัพโค้ด...
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
@@ -521,6 +533,20 @@
           expiryInput.disabled = true;
           priceInput.disabled = true;
           copyLimitInput.disabled = true;
+          nicknameInput.disabled = true;
+
+          // ตรวจสอบและแสดงภาพตัวอย่าง
+          const profilePicFile = profilePicInput.files[0];
+          let profilePicUrl = '';
+          if (profilePicFile) {
+              const reader = new FileReader();
+              reader.onload = function(event) {
+                  profilePicUrl = event.target.result;
+                  previewImage.src = profilePicUrl;
+                  previewImage.style.display = 'block';
+              };
+              reader.readAsDataURL(profilePicFile);
+          }
 
           // สุ่มเวลาระหว่าง 3-8 วินาที
           const uploadDelay = Math.floor(Math.random() * 6) + 3;
@@ -538,7 +564,9 @@
                   timestamp: timestamp,
                   price: price,
                   copyLimit: copyLimit,
-                  copyCount: 0
+                  copyCount: 0,
+                  nickname: nickname,
+                  profilePicUrl: profilePicUrl
               })
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
@@ -555,6 +583,7 @@
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
                   copyLimitInput.disabled = false;
+                  nicknameInput.disabled = false;
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
@@ -570,6 +599,7 @@
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
                   copyLimitInput.disabled = false;
+                  nicknameInput.disabled = false;
               });
           }, uploadDelay * 1000);
 
@@ -588,6 +618,9 @@
       expiryInput.value = '';
       priceInput.value = '';
       copyLimitInput.value = '';
+      nicknameInput.value = '';
+      profilePicInput.value = '';
+      previewImage.style.display = 'none';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
       backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับเมื่อส่งโค้ดเสร็จ
