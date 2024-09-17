@@ -8,258 +8,98 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1Pfq8wVn4S4oJVV3tk0H+zl7j0oGdr6lyiTquFfN5V++0p9cSD7sSx0jEoXtBtQuM6R4l+jqgC+lZmK0sZ+1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS Styles -->
     <style>
-        * {
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e2f;
+            color: #ffffff;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
-            height: 100%;
-            width: 100%;
-            font-family: 'Arial', sans-serif;
-            background-color: #1c1c1c;
-            color: #fff;
-            overflow-x: hidden;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ffcc;
             text-align: center;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #00d1b2;
+            text-shadow: 2px 2px 4px #000000;
+        }
+
+        #userCount {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #ffdd57;
         }
 
         #codeDisplay {
-            flex: 1;
-            background-color: #1c1c1c;
+            background-color: #2e2e3e;
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 400px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            font-size: 14px;
-            color: #00ffc6;
-            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .server-item {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            background-color: transparent;
-            padding: 10px;
-            border-bottom: 1px solid #444;
-            transition: all 0.3s ease;
+            background-color: #3e3e5e;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
             position: relative;
+            transition: transform 0.3s;
         }
 
         .server-item:hover {
-            background-color: #454a54;
-        }
-
-        .server-item span {
-            margin-bottom: 5px;
-        }
-
-        .server-item .timestamp {
-            font-size: 12px;
-            color: #999;
-            font-family: 'Arial', sans-serif;
-            margin-bottom: 10px;
-        }
-
-        .server-item .countdown {
-            font-size: 14px;
-            color: #ff4f4f;
-        }
-
-        .server-item .wow-banner {
-            background-color: gold;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            text-align: center;
-            color: black;
-            animation: pulse 2s infinite;
-            box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.6);
-            margin: 10px 0;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
+            transform: scale(1.02);
         }
 
         .admin-name {
-            font-size: 24px;
-            color: red;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px orange, 0 0 20px red;
-            animation: fire 2s infinite alternate;
+            color: #ff3860;
             font-weight: bold;
         }
 
-        @keyframes fire {
-            0% {
-                text-shadow: 0 0 10px orange, 0 0 20px red;
-            }
-            100% {
-                text-shadow: 0 0 20px yellow, 0 0 30px red;
-            }
+        .timestamp {
+            display: block;
+            font-size: 0.9em;
+            color: #bbbbbb;
+            margin-top: 5px;
         }
 
-        button {
-            width: 100%;
-            background-color: #00adb5;
-            color: white;
-            padding: 15px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .countdown {
+            font-size: 0.9em;
+            color: #ffdd57;
+            margin-top: 5px;
+        }
+
+        .wow-banner {
+            background: linear-gradient(45deg, #ff6ec4, #7873f5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
             margin-top: 10px;
-            border-radius: 5px;
+            font-size: 0.9em;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        button:hover {
-            background-color: #007bff;
-        }
-
-        #codeForm {
-            display: none;
-            width: 100%;
-        }
-
-        input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-size: 14px;
-            background-color: #393e46;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .error {
-            color: #ff4f4f;
-            margin-bottom: 5px;
-            display: none;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        #backButton {
-            display: none;
-            margin-top: 20px;
-            background-color: #ff4f4f;
-        }
-
-        /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
-        #passwordModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: #000;
-            width: 300px;
-            position: relative;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        .modal-content button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #00adb5;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .modal-content button:hover {
-            background-color: #007bff;
-        }
-
-        /* ปุ่มยกเลิกในโมดัล */
-        .modal-content .cancel-button {
-            background-color: #ff4f4f;
-        }
-
-        .modal-content .cancel-button:hover {
-            background-color: #e04343;
-        }
-
-        /* สไตล์การแจ้งเตือนรหัสผ่านผิด */
-        #passwordError {
-            display: none;
-            background-color: #ff4f4f;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            font-size: 16px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ป้ายแสดงราคา */
         .price-tag {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ff5722;
-            color: white;
+            top: 15px;
+            right: 15px;
+            background-color: #ffdd57;
+            color: #333333;
             padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+            border-radius: 5px;
             font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* สไตล์สำหรับปุ่ม Facebook */
         .facebook-button {
             margin-top: 10px;
             width: 100%;
@@ -285,40 +125,139 @@
             margin-right: 8px;
         }
 
+        button {
+            background-color: #00d1b2;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px 0 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background-color: #00a89c;
+        }
+
+        #backButton {
+            display: none;
+            background-color: #ff4f4f;
+        }
+
+        #passwordModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #2e2e3e;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .password-container {
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding: 10px;
+            padding-right: 60px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #00d1b2;
+            user-select: none;
+        }
+
+        .error {
+            color: #ff3860;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .copy-button {
+            background-color: #ffdd57;
+            color: #333333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .copy-button:hover {
+            background-color: #e0c847;
+        }
+
+        /* Loading Bar Styles */
+        #loadingBar {
+            display: none;
+            width: 100%;
+            background-color: #3e3e5e;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        #loadingBar div {
+            height: 10px;
+            width: 0;
+            background-color: #00d1b2;
+            transition: width 0.4s ease;
+        }
+
+        /* สไตล์สำหรับข้อความแจ้งซื้อสำเร็จ */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 209, 178, 0.9);
+            color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            opacity: 0;
+            z-index: 1001;
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeout {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
         /* Media query สำหรับหน้าจอมือถือ */
         @media (max-width: 768px) {
-            .title {
-                font-size: 20px;
-            }
-
-            button {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            input[type="text"] {
-                padding: 10px;
-                font-size: 14px;
-            }
-
-            .server-item button {
-                padding: 5px;
-                font-size: 12px;
-            }
-
-            #codeDisplay {
-                font-size: 12px;
-            }
-
-            .price-tag {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-
-            .modal-content {
-                width: 90%;
-            }
-
             .facebook-button {
                 padding: 8px;
                 font-size: 12px;
@@ -327,47 +266,14 @@
             .facebook-button i {
                 margin-right: 5px;
             }
-        }
 
-        /* สไตล์สำหรับโค้ดและปุ่มคัดลอก */
-        .code-content {
-            background-color: #1c1c1c;
-            padding: 15px;
-            color: #00ffc6;
-            font-family: 'Courier New', Courier, monospace;
-            overflow-wrap: break-word;
-            border: 1px solid #00ffc6;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
+            .title {
+                font-size: 1.5em;
+            }
 
-        .copy-button {
-            margin-top: 10px;
-            width: auto;
-            align-self: flex-start;
-            background-color: #4caf50;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 5px;
-        }
-
-        .copy-button:hover {
-            background-color: #45a049;
-        }
-
-        /* สไตล์สำหรับแสดง/ซ่อนรหัสผ่าน */
-        .password-toggle {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 14px;
-            color: #00adb5;
-        }
-
-        .password-container {
-            position: relative;
+            #userCount {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -375,7 +281,7 @@
 
 <div class="container">
     <div class="title">แหล่งร่วมโค้ดเน็ตฟรี</div>
-
+    <div id="userCount">จำนวนผู้เข้าใช้งาน: 0</div>
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
     </div>
@@ -394,6 +300,10 @@
         </div>
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
+        
+        <!-- Loading Bar -->
+        <div id="loadingBar"><div></div></div>
+        
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 
@@ -416,9 +326,12 @@
 <!-- แจ้งเตือนรหัสผ่านผิด -->
 <div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
 
+<!-- ข้อความแจ้งซื้อสำเร็จ -->
+<div class="success-message" id="successMessage">ซื้อสำเร็จ!</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
@@ -452,6 +365,10 @@
   const passwordCancel = document.getElementById('passwordCancel');
   const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
+  const userCountDisplay = document.getElementById('userCount');
+  const loadingBar = document.getElementById('loadingBar');
+  const loadingBarInner = loadingBar.querySelector('div');
+  const successMessage = document.getElementById('successMessage');
 
   let currentServerId = null;
   let currentButton = null;
@@ -508,7 +425,7 @@
       return `เวลา: ${date}`;
   }
 
-  // ฟังก์ชันการส่งข้อมูลโค้ด
+  // ฟังก์ชันการส่งข้อมูลโค้ด พร้อมแสดง loading bar
   sendButton.addEventListener('click', () => {
       const serverName = serverNameInput.value.trim();
       const code = codeInput.value.trim();
@@ -518,26 +435,43 @@
       const price = parseFloat(priceInput.value.trim());
 
       if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
-          const codeRef = ref(database, 'servers');
-          const timestamp = new Date().toISOString();
-          push(codeRef, {
-              serverName: serverName,
-              code: code,
-              password: passwordForm,
-              facebookLink: facebookLink,
-              expiryTime: expiryTime,
-              timestamp: timestamp,
-              price: price
-          })
-          .then(() => {
-              console.log('ส่งข้อมูลสำเร็จ');
-              resetForm();
-          })
-          .catch((error) => {
-              console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-          });
+          // แสดง loading bar
+          loadingBar.style.display = 'block';
+          loadingBarInner.style.width = '0%';
+          let progress = 0;
+          const interval = setInterval(() => {
+              progress += Math.random() * 20; // เพิ่มความก้าวหน้าแบบสุ่ม
+              if (progress >= 100) {
+                  progress = 100;
+                  clearInterval(interval);
+                  loadingBar.style.display = 'none';
+              }
+              loadingBarInner.style.width = `${progress}%`;
+          }, 300); // ใช้เวลาใกล้เคียง 3 วินาที
 
-          errorMessage.style.display = 'none';
+          // ส่งข้อมูลไปยัง Firebase หลังจาก loading
+          setTimeout(() => {
+              const codeRef = ref(database, 'servers');
+              const timestamp = serverTimestamp();
+              push(codeRef, {
+                  serverName: serverName,
+                  code: code,
+                  password: passwordForm,
+                  facebookLink: facebookLink,
+                  expiryTime: expiryTime,
+                  timestamp: timestamp,
+                  price: price
+              })
+              .then(() => {
+                  console.log('ส่งข้อมูลสำเร็จ');
+                  resetForm();
+              })
+              .catch((error) => {
+                  console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+              });
+
+              errorMessage.style.display = 'none';
+          }, 3000); // เวลาในการจำลองการอัพโหลด 3 วินาที
       } else {
           errorMessage.style.display = 'block';
       }
@@ -680,10 +614,10 @@
   function showCode(serverId, button) {
       const codeRefSingle = ref(database, `servers/${serverId}`);
       const codeElement = document.createElement('p');
+      codeElement.classList.add('code-content');
       const copyButton = document.createElement('button');
       copyButton.textContent = "คัดลอกโค้ด";
       copyButton.classList.add('copy-button');
-      codeElement.classList.add('code-content');
 
       button.textContent = "ซ่อนโค้ด";
       onValue(codeRefSingle, (snapshot) => {
@@ -694,10 +628,14 @@
 
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
-              navigator.clipboard.writeText(serverData.code);
-              alert('คัดลอกโค้ดแล้ว!');
-              // ซ่อนโค้ดและปุ่มคัดลอกหลังคัดลอก
-              hideCode(button);
+              navigator.clipboard.writeText(serverData.code).then(() => {
+                  showSuccessMessage();
+                  hideCode(button);
+                  // ลบโค้ดออกจากฐานข้อมูลหลังจากคัดลอก
+                  deleteCode(serverId, button);
+              }).catch(err => {
+                  console.error('Failed to copy: ', err);
+              });
           });
       });
 
@@ -753,14 +691,42 @@
       allViewButtons.forEach(button => {
           button.textContent = "ดูโค้ด";
           button.onclick = function () {
-              const serverIdMatch = button.parentNode.parentNode.querySelector('.countdown').parentNode.getAttribute('onclick');
-              // หรือหาวิธีอื่นในการดึง serverId ที่ถูกต้อง
-              requestPasswordAndShowCode(currentServerId, button);
+              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
           };
       });
 
       backButton.style.display = 'none';
   });
+
+  // ฟังก์ชันแสดงจำนวนผู้เข้าใช้งาน
+  function updateUserCount() {
+      const usersRef = ref(database, 'activeUsers');
+      onValue(usersRef, (snapshot) => {
+          const count = snapshot.val() || 0;
+          userCountDisplay.textContent = `จำนวนผู้เข้าใช้งาน: ${count}`;
+      });
+  }
+
+  // เพิ่มการนับจำนวนผู้เข้าใช้งานโดยใช้ presence
+  const userStatusDatabaseRef = ref(database, 'activeUsers');
+
+  // เพิ่มผู้ใช้เมื่อโหลดหน้า
+  const userRef = ref(database, 'activeUsers/currentUser');
+  const userPresenceRef = ref(database, `activeUsers/user_${Date.now()}`);
+
+  onDisconnect(userPresenceRef).remove();
+  push(userStatusDatabaseRef, true);
+
+  // อัพเดทจำนวนผู้ใช้
+  updateUserCount();
+
+  // ฟังก์ชันแสดงข้อความซื้อสำเร็จ
+  function showSuccessMessage() {
+      successMessage.style.opacity = '1';
+      setTimeout(() => {
+          successMessage.style.opacity = '0';
+      }, 3000);
+  }
 </script>
 
 </body>
