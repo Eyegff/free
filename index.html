@@ -25,14 +25,14 @@
             padding: 20px;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); /* เปลี่ยนสีเงาเป็นสีทอง */
         }
 
         .title {
             text-align: center;
-            font-size: 1.8em; /* ปรับขนาดให้เล็กลง */
+            font-size: 1.8em;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px #00ffff;
+            text-shadow: 0 0 20px #FFD700; /* เปลี่ยนสีเงาเป็นสีทอง */
             position: relative;
         }
 
@@ -44,7 +44,7 @@
             transform: translateX(-50%);
             width: 80px;
             height: 3px;
-            background-color: #00ffff;
+            background-color: #FFD700; /* เปลี่ยนสีเส้นเป็นสีทอง */
             border-radius: 5px;
         }
 
@@ -54,7 +54,7 @@
             margin-bottom: 15px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95em; /* ปรับขนาดให้เล็กลง */
+            font-size: 0.95em;
         }
 
         input {
@@ -102,14 +102,14 @@
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); /* เปลี่ยนสีเงาเป็นสีทอง */
         }
 
         .server-item .timestamp, .server-item .countdown {
             display: block;
             margin-top: 8px;
             color: #ccc;
-            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
+            font-size: 0.85em;
         }
 
         .server-item button {
@@ -138,33 +138,46 @@
         }
 
         .server-item .extra-tag {
-            background-color: rgba(0, 255, 255, 0.1);
-            color: #00ffff;
-            padding: 8px 12px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #FFD700, #FFA500); /* เปลี่ยนพื้นหลังเป็นสีทองไล่สี */
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
             margin-top: 10px;
             text-align: center;
-            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
+            font-size: 1em;
             font-weight: bold;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* เพิ่มเงาให้ดูสวยงาม */
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 5px #00ffff; }
-            50% { box-shadow: 0 0 15px #00ffff; }
-            100% { box-shadow: 0 0 5px #00ffff; }
+        .server-item .extra-tag::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-100%, -100%); }
+            100% { transform: rotate(45deg) translate(100%, 100%); }
         }
 
         .price-tag {
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #ff9800;
+            background-color: #FFD700; /* เปลี่ยนสีป้ายราคาเป็นสีทอง */
             color: #fff;
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .copy-button {
@@ -248,7 +261,7 @@
             background-color: #4267B2;
             color: white;
             padding: 10px;
-            font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
+            font-size: 0.85em;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -270,7 +283,7 @@
 
         /* สไตล์สำหรับข้อความ "ซื้อสำเร็จ" */
         .purchase-successful {
-            font-size: 1.3em; /* ปรับขนาดให้เล็กลง */
+            font-size: 1.3em;
             color: #00FF00;
             text-align: center;
             margin-top: 20px;
@@ -291,13 +304,13 @@
             }
 
             .title {
-                font-size: 1.3em; /* ปรับขนาดให้เล็กลง */
+                font-size: 1.3em;
                 margin-bottom: 20px;
             }
 
             input, button {
                 padding: 10px;
-                font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
+                font-size: 0.85em;
             }
 
             .server-item {
@@ -309,7 +322,7 @@
                 top: 15px;
                 right: 15px;
                 padding: 6px 10px;
-                font-size: 0.85em; /* ปรับขนาดให้เล็กลง */
+                font-size: 0.85em;
             }
 
             .facebook-button {
@@ -343,12 +356,11 @@
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
+        <button id="backButton" style="display: none;">ย้อนกลับ</button>
     </div>
 
     <!-- ปุ่มปล่อยโค้ดย้ายมาด้านล่าง -->
     <button id="showFormButton">ปล่อยโค้ด</button>
-
-    <button id="backButton" style="display: none;">ย้อนกลับ</button>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
@@ -372,7 +384,7 @@
   import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
+    apiKey: "API_KEY",
     authDomain: "ukgyry.firebaseapp.com",
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
     projectId: "ukgyry",
@@ -440,6 +452,14 @@
   showFormButton.addEventListener('click', () => {
       codeForm.style.display = 'block';
       showFormButton.style.display = 'none';
+      backButton.style.display = 'block'; // แสดงปุ่มย้อนกลับ
+  });
+
+  // ปุ่มย้อนกลับ
+  backButton.addEventListener('click', () => {
+      codeForm.style.display = 'none';
+      showFormButton.style.display = 'block';
+      backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับ
   });
 
   // ตรวจสอบราคาว่าไม่เกิน 200 บาท
@@ -538,6 +558,7 @@
       priceInput.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
+      backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับเมื่อส่งโค้ดเสร็จ
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
@@ -782,26 +803,6 @@
           passwordErrorDiv.style.display = 'none';
       }, 3000);
   }
-
-  // ฟังก์ชันสำหรับปุ่มย้อนกลับ
-  backButton.addEventListener('click', () => {
-      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
-      const allCodeElements = document.querySelectorAll('.code-content');
-      const allCopyButtons = document.querySelectorAll('.copy-button');
-      allCodeElements.forEach(el => el.remove());
-      allCopyButtons.forEach(btn => btn.remove());
-
-      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
-      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
-      allViewButtons.forEach(button => {
-          button.textContent = "ดูโค้ด";
-          button.onclick = function () {
-              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
-          };
-      });
-
-      backButton.style.display = 'none';
-  });
 </script>
 
 </body>
