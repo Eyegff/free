@@ -9,29 +9,38 @@
     <!-- ใส่ฟอนต์ Kanit -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
-            color: #fff;
-            font-family: 'Kanit', sans-serif;
-            overflow-x: hidden;
+        /* Reset CSS */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        .container {
-            max-width: 600px;
-            width: 90%;
-            margin: 20px auto;
+        body {
+            background: linear-gradient(135deg, #1c1c1c, #2c2c2c);
+            color: #ffffff;
+            font-family: 'Kanit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            padding: 30px;
         }
 
         .title {
             text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 20px;
+            font-size: 2em;
+            margin-bottom: 30px;
             text-shadow: 0 0 20px #FFD700;
             position: relative;
         }
@@ -40,52 +49,69 @@
             content: '';
             position: absolute;
             left: 50%;
-            bottom: -15px;
+            bottom: -20px;
             transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
+            width: 100px;
+            height: 4px;
             background-color: #FFD700;
             border-radius: 5px;
         }
 
-        input, button {
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, button, select {
             width: 100%;
             padding: 14px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95em;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ffff;
         }
 
         input {
-            background-color: #2b2b2b;
+            background-color: #3a3a3a;
             color: #fff;
+        }
+
+        input::placeholder {
+            color: #bbb;
         }
 
         button {
             background-color: #00ffff;
             color: #000;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button:hover {
             background-color: #00bfbf;
-            transform: scale(1.03);
+            transform: scale(1.05);
         }
 
         .error {
             background-color: rgba(255, 0, 0, 0.1);
             color: #ff4f4f;
             border: 1px solid #ff4f4f;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             text-align: center;
             display: none;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             animation: shake 0.3s;
-            font-size: 0.85em;
+            font-size: 0.9em;
         }
 
         @keyframes shake {
@@ -96,117 +122,23 @@
             100% { transform: translateX(0); }
         }
 
-        .server-item {
-            background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
+        .password-container {
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             display: flex;
             align-items: center;
         }
 
-        .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
-            display: block;
-            margin-top: 8px;
-            color: #ccc;
-            font-size: 0.85em;
-        }
-
-        .server-item button {
-            width: 48%;
-            margin-right: 2%;
-            margin-top: 15px;
-            background-color: #00ffff;
-            color: #000;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
-            font-weight: bold;
-        }
-
-        .server-item button:hover {
-            background-color: #00bfbf;
-            transform: scale(1.03);
-        }
-
-        .server-item button:last-child {
-            margin-right: 0;
-            background-color: #ff4f4f;
-            color: #fff;
-        }
-
-        .server-item .extra-tag {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 1em;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .server-item .extra-tag::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: rotate(45deg) translate(-100%, -100%); }
-            100% { transform: rotate(45deg) translate(100%, 100%); }
-        }
-
-        .price-tag {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #FFD700;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .copy-button {
-            margin-top: 15px;
-            background-color: #00ff00;
-            color: #000;
-            transition: background-color 0.3s ease, transform 0.2s;
-            font-weight: bold;
-        }
-
-        .copy-button:hover {
-            background-color: #00cc00;
-            transform: scale(1.03);
-        }
-
-        .password-container {
-            position: relative;
+        .password-container input {
+            flex: 1;
         }
 
         .password-toggle {
             position: absolute;
-            right: 10px;
-            top: 16px;
+            right: 15px;
             cursor: pointer;
             color: #00ffff;
             font-weight: bold;
+            user-select: none;
         }
 
         #passwordModal {
@@ -215,7 +147,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(14, 14, 14, 0.95);
+            background: rgba(28, 28, 28, 0.95);
             display: none;
             align-items: center;
             justify-content: center;
@@ -228,33 +160,215 @@
             border-radius: 10px;
             text-align: center;
             color: #fff;
-            width: 80%;
-            max-width: 350px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
         }
 
-        .cancel-button {
+        .cancel-button, #backButton {
             background-color: #ff4f4f;
             color: #fff;
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        .cancel-button:hover, #backButton:hover {
+            background-color: #e04343;
+            transform: scale(1.02);
+        }
+
+        #showFormButton {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #showFormButton:hover {
+            background-color: #45a049;
+            transform: scale(1.02);
+        }
+
+        .server-list {
+            margin-top: 30px;
+        }
+
+        .server-item {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .server-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .server-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-right: 20px;
+            border: 2px solid #FFD700;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .server-details {
+            flex: 1;
+        }
+
+        .server-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .server-name::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #FFD700;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .timestamp, .countdown, .copy-count {
+            color: #ccc;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 10px;
             margin-top: 15px;
         }
 
-        #backButton {
-            background-color: #555;
+        .server-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .server-actions .view-button {
+            background-color: #00ffff;
+            color: #000;
+        }
+
+        .server-actions .view-button:hover {
+            background-color: #00bfbf;
+            transform: scale(1.02);
+        }
+
+        .server-actions .delete-button {
+            background-color: #ff4f4f;
             color: #fff;
-            margin-top: 15px;
+        }
+
+        .server-actions .delete-button:hover {
+            background-color: #e04343;
+            transform: scale(1.02);
+        }
+
+        .extra-tag {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-top: 10px;
+            animation: shimmer 3s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .extra-tag::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .price-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #FFD700;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 1em;
         }
 
         .facebook-button {
             margin-top: 15px;
-            width: 100%;
             background-color: #4267B2;
             color: white;
-            padding: 10px;
-            font-size: 0.85em;
+            padding: 12px;
+            font-size: 1em;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -265,29 +379,43 @@
 
         .facebook-button:hover {
             background-color: #365899;
+            transform: scale(1.02);
         }
 
         .facebook-button i {
             margin-right: 10px;
         }
 
+        .copy-button {
+            background-color: #4CAF50;
+            color: #fff;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-weight: bold;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+            transform: scale(1.02);
+        }
+
+        /* Notification Styles */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-radius: 8px;
-            font-size: 0.85em;
+            font-size: 1em;
             font-weight: 500;
             color: #fff;
             opacity: 0;
             transform: translateY(-20px);
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s, transform 0.5s;
+            z-index: 1001;
             display: flex;
             align-items: center;
-            max-width: 300px;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .notification.show {
@@ -308,83 +436,28 @@
         }
 
         .notification-icon {
-            margin-right: 10px;
             font-size: 1.2em;
         }
 
-        @media (max-width: 600px) {
+        /* Responsive Design */
+        @media (max-width: 768px) {
             .container {
-                margin: 20px auto;
-                padding: 10px;
+                padding: 20px;
             }
 
-            .title {
-                font-size: 1.3em;
-                margin-bottom: 20px;
-            }
-
-            input, button {
-                padding: 10px;
-                font-size: 0.85em;
-            }
-
-            .server-item {
-                padding: 15px;
-                margin-bottom: 10px;
+            .server-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .price-tag {
-                top: 15px;
-                right: 15px;
-                padding: 6px 10px;
-                font-size: 0.85em;
+            .avatar {
+                margin-bottom: 15px;
             }
 
-            .facebook-button {
-                padding: 8px;
-                font-size: 0.8em;
+            .server-actions {
+                flex-direction: column;
+                gap: 10px;
             }
-
-            .server-item .avatar {
-                margin-right: 10px;
-            }
-
-            .server-item .server-details {
-                display: flex;
-                align-items: center;
-                width: 100%;
-            }
-        }
-
-        /* สไตล์สำหรับ Avatar */
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-            margin-right: 15px;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* จัดเรียงชื่อเซิร์ฟเวอร์และ Avatar */
-        .server-details {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .server-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            position: relative;
         }
     </style>
 </head>
@@ -393,33 +466,35 @@
 <div class="container">
     <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
 
-    <div id="codeDisplay">
-        <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
-    </div>
-
     <div id="codeForm" style="display: none;">
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
-        <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
-        <input type="url" id="imageInput" placeholder="ใส่ลิงก์รูปภาพ (URL)" pattern="https?://.+">
-        <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
-        <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
-        <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
-        <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
-        <div class="password-container">
-            <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
-        </div>
-        <div class="password-container">
-            <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
-        </div>
-        <input type="url" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook" pattern="https?://.+">
-        <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
-        <button id="sendButton">ส่งโค้ด</button>
-        <button id="backButton" style="display: none;">ย้อนกลับ</button>
+        <form>
+            <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์" required>
+            <input type="url" id="imageInput" placeholder="ใส่ลิงก์รูปภาพ (URL)" pattern="https?://.+\.(jpg|jpeg|png|gif|bmp|webp)" title="กรุณาใส่ URL ของรูปภาพที่ถูกต้อง (jpg, jpeg, png, gif, bmp, webp)">
+            <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)" required>
+            <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด (ไม่เกิน 200 บาท)" min="1" max="200" required>
+            <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้" min="1" required>
+            <div id="priceError" class="error">ห้ามตั้งราคาเกิน 200 บาท!</div>
+            <div class="password-container">
+                <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]{6}" required>
+                <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+            </div>
+            <div class="password-container">
+                <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]{6}" required>
+                <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
+            </div>
+            <input type="url" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook" pattern="https?://.+" required>
+            <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ" required>
+            <button type="button" id="sendButton">ส่งโค้ด</button>
+            <button type="button" id="backButton" style="display: none;">ย้อนกลับ</button>
+        </form>
     </div>
 
     <button id="showFormButton">ปล่อยโค้ด</button>
+
+    <div class="server-list" id="codeDisplay">
+        <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
+    </div>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
@@ -427,7 +502,7 @@
     <div class="modal-content">
         <p id="passwordPrompt">กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
         <div class="password-container">
-            <input type="tel" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric" pattern="[0-9]*">
+            <input type="tel" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric" pattern="[0-9]{6}" required>
             <span class="password-toggle" onclick="togglePasswordVisibility('passwordInput')">แสดง</span>
         </div>
         <button id="passwordSubmit">ยืนยัน</button>
@@ -435,7 +510,7 @@
     </div>
 </div>
 
-<!-- แจ้งเตือนใหม่ -->
+<!-- แจ้งเตือน -->
 <div id="notification" class="notification"></div>
 
 <script type="module">
@@ -443,7 +518,7 @@
   import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
+    apiKey: "API_KEY",
     authDomain: "ukgyry.firebaseapp.com",
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
     projectId: "ukgyry",
@@ -660,28 +735,14 @@
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
-      // รายชื่อเซิร์ฟเวอร์ที่เกี่ยวกับเน็ต
-      const serverNames = [
-          "เน็ตแรงทะลุฟ้า",
-          "สปีดเทพ",
-          "ซุปเปอร์สปีด",
-          "ไฟเบอร์สุดแรง",
-          "อินเตอร์เน็ตสายฟ้า",
-          "สปีดแรงเวอร์",
-          "สปีดเน็ตแรงมาก",
-          "อินเตอร์เน็ตความเร็วสูง",
-          "อินเตอร์เน็ตระดับพรีเมียม",
-          "สปีดแรงไม่สะดุด",
-          "สปีดไวไฟขั้นเทพ",
-          "ความเร็วสูงระดับ 5G"
-      ];
+      // สร้างป้ายราคา
+      const priceTag = document.createElement('div');
+      priceTag.classList.add('price-tag');
+      priceTag.textContent = `${serverData.price} บาท`;
 
-      const randomIndex = Math.floor(Math.random() * serverNames.length);
-      const randomServerName = serverNames[randomIndex];
-
-      const serverName = serverData.serverName || randomServerName;
-
-      // สร้างป้ายเพิ่มเติมแบบสุ่มใต้ป้ายราคา
+      // สร้างป้ายเพิ่มเติม
+      const extraTag = document.createElement('div');
+      extraTag.classList.add('extra-tag');
       const extraTags = [
           "คนนี้เน็ตแรงมากเลย",
           "ความเร็วระดับเทพ",
@@ -690,16 +751,8 @@
           "ความเร็วไม่ตก",
           "เน็ตแรงทะลุพิกัด"
       ];
-
       const randomTagIndex = Math.floor(Math.random() * extraTags.length);
-      const extraTag = document.createElement('div');
-      extraTag.classList.add('extra-tag');
       extraTag.textContent = extraTags[randomTagIndex];
-
-      // สร้างป้ายราคา
-      const priceTag = document.createElement('div');
-      priceTag.classList.add('price-tag');
-      priceTag.textContent = `${serverData.price} บาท`;
 
       // สร้างปุ่ม Facebook
       const facebookButton = document.createElement('a');
@@ -713,7 +766,7 @@
       const avatarDiv = document.createElement('div');
       avatarDiv.classList.add('avatar');
       const img = document.createElement('img');
-      img.src = serverData.imageURL || 'https://via.placeholder.com/50'; // ใช้ placeholder ถ้าไม่มีรูป
+      img.src = serverData.imageURL || 'https://via.placeholder.com/60'; // ใช้ placeholder ถ้าไม่มีรูป
       img.alt = 'Avatar';
       avatarDiv.appendChild(img);
 
@@ -723,7 +776,7 @@
 
       const serverNameSpan = document.createElement('span');
       serverNameSpan.classList.add('server-name');
-      serverNameSpan.textContent = serverName;
+      serverNameSpan.textContent = serverData.serverName;
 
       const timestampSpan = document.createElement('span');
       timestampSpan.classList.add('timestamp');
@@ -743,33 +796,32 @@
 
       // สร้างปุ่ม
       const buttonsDiv = document.createElement('div');
+      buttonsDiv.classList.add('server-actions');
+
       const viewButton = document.createElement('button');
-      viewButton.textContent = "ดูโค้ด";
+      viewButton.classList.add('view-button');
+      viewButton.innerHTML = `<i class="fas fa-eye"></i> ดูโค้ด`;
       viewButton.onclick = () => requestPasswordAndShowCode(serverId, viewButton);
+
       const deleteButton = document.createElement('button');
-      deleteButton.textContent = "ลบ";
-      deleteButton.style.backgroundColor = '#ff4f4f';
-      deleteButton.style.color = '#fff';
+      deleteButton.classList.add('delete-button');
+      deleteButton.innerHTML = `<i class="fas fa-trash-alt"></i> ลบ`;
       deleteButton.onclick = () => requestPasswordToDelete(serverId, deleteButton);
+
       buttonsDiv.appendChild(viewButton);
       buttonsDiv.appendChild(deleteButton);
 
-      // เพิ่มป้ายราคาไปที่ serverElement
+      // เพิ่มส่วนต่างๆ ลงใน serverElement
       serverElement.appendChild(priceTag);
-
-      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
       serverElement.appendChild(extraTag);
-
-      // เพิ่ม Avatar และรายละเอียดเซิร์ฟเวอร์
       serverElement.appendChild(avatarDiv);
       serverElement.appendChild(serverDetails);
+      serverElement.appendChild(buttonsDiv);
 
       // เพิ่มปุ่ม Facebook
       if (serverData.facebookLink) {
           serverElement.appendChild(facebookButton);
       }
-
-      serverElement.appendChild(buttonsDiv);
 
       const countdownElement = countdownSpan;
       codeDisplay.appendChild(serverElement);
@@ -860,8 +912,16 @@
       copyButton.textContent = "คัดลอกโค้ด";
       copyButton.classList.add('copy-button');
       codeElement.classList.add('code-content');
+      codeElement.style.marginTop = '10px';
+      codeElement.style.backgroundColor = '#3a3a3a';
+      codeElement.style.padding = '10px';
+      codeElement.style.borderRadius = '8px';
+      codeElement.style.fontFamily = 'monospace';
+      codeElement.style.wordBreak = 'break-all';
 
       button.textContent = "ซ่อนโค้ด";
+      button.innerHTML = `<i class="fas fa-eye-slash"></i> ซ่อนโค้ด`;
+
       onValue(codeRefSingle, (snapshot) => {
           const serverData = snapshot.val();
           codeElement.textContent = serverData.code;
@@ -870,16 +930,22 @@
 
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
-              navigator.clipboard.writeText(serverData.code);
-              const newCopyCount = (serverData.copyCount || 0) + 1;
-              if (newCopyCount >= serverData.copyLimit) {
-                  showPurchaseSuccessful(button, serverId);
-              } else {
-                  update(codeRefSingle, { copyCount: newCopyCount });
-                  showNotification('คัดลอกโค้ดสำเร็จ', 'success');
-                  const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
-                  copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
-              }
+              navigator.clipboard.writeText(serverData.code)
+                  .then(() => {
+                      const newCopyCount = (serverData.copyCount || 0) + 1;
+                      if (newCopyCount >= serverData.copyLimit) {
+                          showPurchaseSuccessful(button, serverId);
+                      } else {
+                          update(codeRefSingle, { copyCount: newCopyCount });
+                          showNotification('คัดลอกโค้ดสำเร็จ', 'success');
+                          const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
+                          copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
+                      }
+                  })
+                  .catch((err) => {
+                      console.error('ไม่สามารถคัดลอกโค้ดได้:', err);
+                      showNotification('ไม่สามารถคัดลอกโค้ดได้', 'error');
+                  });
           });
       });
 
@@ -905,6 +971,7 @@
   // ฟังก์ชันซ่อนโค้ด
   function hideCode(button) {
       button.textContent = "ดูโค้ด";
+      button.innerHTML = `<i class="fas fa-eye"></i> ดูโค้ด`;
       const codeToHide = button.parentNode.parentNode.querySelector('.code-content');
       const copyButton = button.parentNode.parentNode.querySelector('.copy-button');
       if (codeToHide) {
@@ -948,7 +1015,7 @@
       }
       notification.innerHTML = `${icon}<span>${message}</span>`;
       notification.className = `notification ${type} show`;
-      
+
       setTimeout(() => {
           notification.className = 'notification';
       }, 3000);
