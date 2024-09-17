@@ -343,20 +343,6 @@
                 font-size: 0.8em;
             }
         }
-
-        .profile-img {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            margin-right: 10px;
-        }
-
-        .profile-container {
-            display: flex;
-            align-items: center;
-        }
-
     </style>
 </head>
 <body>
@@ -616,29 +602,48 @@
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
-      const profileImg = document.createElement('img');
-      profileImg.src = "https://via.placeholder.com/40"; // ใส่ลิงก์รูปโปรไฟล์
-      profileImg.alt = "โปรไฟล์";
-      profileImg.classList.add('profile-img');
+      // รายชื่อเซิร์ฟเวอร์ที่เกี่ยวกับเน็ต
+      const serverNames = [
+          "เน็ตแรงทะลุฟ้า",
+          "สปีดเทพ",
+          "ซุปเปอร์สปีด",
+          "ไฟเบอร์สุดแรง",
+          "อินเตอร์เน็ตสายฟ้า",
+          "สปีดแรงเวอร์",
+          "สปีดเน็ตแรงมาก",
+          "อินเตอร์เน็ตความเร็วสูง",
+          "อินเตอร์เน็ตระดับพรีเมียม",
+          "สปีดแรงไม่สะดุด",
+          "สปีดไวไฟขั้นเทพ",
+          "ความเร็วสูงระดับ 5G"
+      ];
 
-      const serverNameElement = document.createElement('span');
-      serverNameElement.style.fontSize = '1.2em';
-      serverNameElement.style.fontWeight = 'bold';
-      serverNameElement.textContent = serverData.serverName;
+      const randomIndex = Math.floor(Math.random() * serverNames.length);
+      const randomServerName = serverNames[randomIndex];
 
-      const profileContainer = document.createElement('div');
-      profileContainer.classList.add('profile-container');
-      profileContainer.appendChild(profileImg);
-      profileContainer.appendChild(serverNameElement);
+      const serverName = serverData.serverName || randomServerName;
 
+      // สร้างป้ายเพิ่มเติมแบบสุ่มใต้ป้ายราคา
+      const extraTags = [
+          "คนนี้เน็ตแรงมากเลย",
+          "ความเร็วระดับเทพ",
+          "สปีดเน็ตเหนือชั้น",
+          "อินเทอร์เน็ตเร็วปรี๊ด",
+          "ความเร็วไม่ตก",
+          "เน็ตแรงทะลุพิกัด"
+      ];
+
+      const randomTagIndex = Math.floor(Math.random() * extraTags.length);
+      const extraTag = document.createElement('div');
+      extraTag.classList.add('extra-tag');
+      extraTag.textContent = extraTags[randomTagIndex];
+
+      // สร้างป้ายราคา
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
       priceTag.textContent = `${serverData.price} บาท`;
 
-      const extraTag = document.createElement('div');
-      extraTag.classList.add('extra-tag');
-      extraTag.textContent = "สปีดแรงทะลุฟ้า";
-
+      // สร้างปุ่ม Facebook
       const facebookButton = document.createElement('a');
       facebookButton.classList.add('facebook-button');
       facebookButton.href = serverData.facebookLink;
@@ -646,41 +651,33 @@
       facebookButton.rel = 'noopener noreferrer';
       facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟส`;
 
-      const countdownElement = document.createElement('span');
-      countdownElement.classList.add('countdown');
+      serverElement.innerHTML = `
+          <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
+          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+          <span class="countdown"></span>
+          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
+          <div>
+              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
+              <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
+          </div>
+      `;
 
-      const timestampElement = document.createElement('span');
-      timestampElement.classList.add('timestamp');
-      timestampElement.textContent = formatThaiTime(serverData.timestamp);
-
-      const copyCountElement = document.createElement('span');
-      copyCountElement.classList.add('copy-count');
-      copyCountElement.textContent = `คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit}`;
-
-      const showCodeButton = document.createElement('button');
-      showCodeButton.textContent = "ดูโค้ด";
-      showCodeButton.onclick = () => requestPasswordAndShowCode(serverId, showCodeButton);
-
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = "ลบ";
-      deleteButton.style.backgroundColor = "#ff4f4f";
-      deleteButton.onclick = () => requestPasswordToDelete(serverId, deleteButton);
-
-      const buttonContainer = document.createElement('div');
-      buttonContainer.appendChild(showCodeButton);
-      buttonContainer.appendChild(deleteButton);
-
-      serverElement.appendChild(profileContainer);
-      serverElement.appendChild(timestampElement);
-      serverElement.appendChild(countdownElement);
-      serverElement.appendChild(copyCountElement);
-      serverElement.appendChild(buttonContainer);
+      // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
+
+      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
       serverElement.appendChild(extraTag);
-      serverElement.appendChild(facebookButton);
 
+      // เพิ่มปุ่ม Facebook
+      if (serverData.facebookLink) {
+          serverElement.appendChild(facebookButton);
+      }
+
+      const countdownElement = serverElement.querySelector('.countdown');
       codeDisplay.appendChild(serverElement);
+      codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
+      // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
       updateCountdown(serverId, countdownElement, serverData.expiryTime);
   });
 
@@ -784,8 +781,6 @@
                   showNotification('คัดลอกโค้ดสำเร็จ', 'success');
                   const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
                   copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
-                  // ซ่อนโค้ดทันทีหลังคัดลอก
-                  hideCode(button);
               }
           });
       });
