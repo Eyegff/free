@@ -106,7 +106,7 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
-        .server-item .timestamp, .server-item .countdown {
+        .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
             display: block;
             margin-top: 8px;
             color: #ccc;
@@ -359,6 +359,7 @@
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
+        <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
         <div class="password-container">
             <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
@@ -395,7 +396,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -430,6 +431,7 @@
   const passwordCancel = document.getElementById('passwordCancel');
   const backButton = document.getElementById('backButton');
   const passwordPrompt = document.getElementById('passwordPrompt');
+  const copyLimitInput = document.getElementById('copyLimitInput');
 
   let currentServerId = null;
   let currentButton = null;
@@ -503,8 +505,9 @@
       const facebookLink = facebookInput.value.trim();
       const expiryTime = expiryInput.value.trim();
       const price = parseFloat(priceInput.value.trim());
+      const copyLimit = parseInt(copyLimitInput.value.trim());
 
-      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200) {
+      if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0) {
           // แสดงข้อความกำลังอัพโค้ด...
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
@@ -517,6 +520,7 @@
           facebookInput.disabled = true;
           expiryInput.disabled = true;
           priceInput.disabled = true;
+          copyLimitInput.disabled = true;
 
           // สุ่มเวลาระหว่าง 3-8 วินาที
           const uploadDelay = Math.floor(Math.random() * 6) + 3;
@@ -532,7 +536,9 @@
                   facebookLink: facebookLink,
                   expiryTime: expiryTime,
                   timestamp: timestamp,
-                  price: price
+                  price: price,
+                  copyLimit: copyLimit,
+                  copyCount: 0
               })
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
@@ -548,6 +554,7 @@
                   facebookInput.disabled = false;
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
+                  copyLimitInput.disabled = false;
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
@@ -562,6 +569,7 @@
                   facebookInput.disabled = false;
                   expiryInput.disabled = false;
                   priceInput.disabled = false;
+                  copyLimitInput.disabled = false;
               });
           }, uploadDelay * 1000);
 
@@ -579,6 +587,7 @@
       facebookInput.value = '';
       expiryInput.value = '';
       priceInput.value = '';
+      copyLimitInput.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
       backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับเมื่อส่งโค้ดเสร็จ
@@ -646,6 +655,7 @@
           <span style="font-size: 1.2em; font-weight: bold;">${serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
+          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
           <div>
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
@@ -675,25 +685,25 @@
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
       const interval = setInterval(() => {
           const now = new Date().getTime();
-          const expiry = new Date(expiryTime).getTime();
-          const distance = expiry - now;
+      const expiry = new Date(expiryTime).getTime();
+      const distance = expiry - now;
 
-          if (distance <= 0) {
-              expiryTimeElement.innerHTML = "หมดอายุ";
-              clearInterval(interval);
-              const codeToRemoveRef = ref(database, `servers/${serverId}`);
-              remove(codeToRemoveRef).then(() => {
-                  console.log("ลบโค้ดที่หมดอายุแล้ว");
-              });
-          } else {
-              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-              const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      if (distance <= 0) {
+          expiryTimeElement.innerHTML = "หมดอายุ";
+          clearInterval(interval);
+          const codeToRemoveRef = ref(database, `servers/${serverId}`);
+          remove(codeToRemoveRef).then(() => {
+              console.log("ลบโค้ดที่หมดอายุแล้ว");
+          });
+      } else {
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-              expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-          }
-      }, 1000);
+          expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+      }
+  }, 1000);
   }
 
   // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
@@ -763,7 +773,15 @@
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
               navigator.clipboard.writeText(serverData.code);
-              showPurchaseSuccessful(button, serverId);
+              const newCopyCount = (serverData.copyCount || 0) + 1;
+              if (newCopyCount >= serverData.copyLimit) {
+                  showPurchaseSuccessful(button, serverId);
+              } else {
+                  update(codeRefSingle, { copyCount: newCopyCount });
+                  showNotification('คัดลอกโค้ดสำเร็จ', 'success');
+                  const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
+                  copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
+              }
           });
       });
 
