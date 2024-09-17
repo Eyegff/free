@@ -461,8 +461,8 @@
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
-      const minDate = `${year}-${month}-${day}T00:00`;
-      const maxDate = `${year}-12-31T23:59`;
+      const minDate = ${year}-${month}-${day}T00:00;
+      const maxDate = ${year}-12-31T23:59;
       expiryInput.setAttribute('min', minDate);
       expiryInput.setAttribute('max', maxDate);
       expiryInput.value = minDate; // ตั้งค่าเริ่มต้นให้เป็นวันนี้
@@ -523,7 +523,7 @@
   function formatThaiTime(timestamp) {
       const options = { timeZone: 'Asia/Bangkok', hour12: false };
       const date = new Date(timestamp).toLocaleString('th-TH', options);
-      return `เวลา: ${date}`;
+      return เวลา: ${date};
   }
 
   // ฟังก์ชันการส่งข้อมูลโค้ด
@@ -641,12 +641,12 @@
       serverElement.classList.add('server-item');
 
       // แสดงรูปโปรไฟล์ถ้ามี
-      const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
+      const profileImage = serverData.profileImage ? <img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"> : '';
 
       // สร้างป้ายราคา
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
-      priceTag.textContent = `${serverData.price} บาท`;
+      priceTag.textContent = ${serverData.price} บาท;
 
       // สร้างป้ายเพิ่มเติม
       const extraTags = [
@@ -662,7 +662,7 @@
       extraTag.classList.add('extra-tag');
       extraTag.textContent = extraTags[randomTagIndex];
 
-      serverElement.innerHTML = `
+      serverElement.innerHTML = 
           ${profileImage}
           <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
@@ -672,7 +672,7 @@
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>
-      `;
+      ;
 
       // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
@@ -697,7 +697,7 @@
       if (distance <= 0) {
           expiryTimeElement.innerHTML = "หมดอายุ";
           clearInterval(interval);
-          const codeToRemoveRef = ref(database, `servers/${serverId}`);
+          const codeToRemoveRef = ref(database, servers/${serverId});
           remove(codeToRemoveRef).then(() => {
               console.log("ลบโค้ดที่หมดอายุแล้ว");
           });
@@ -707,7 +707,7 @@
           const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-          expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          expiryTimeElement.innerHTML = ${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที;
       }
   }, 1000);
   }
@@ -733,7 +733,7 @@
   // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
       const inputPassword = passwordInput.value;
-      const codeRefSingle = ref(database, `servers/${currentServerId}`);
+      const codeRefSingle = ref(database, servers/${currentServerId});
 
       onValue(codeRefSingle, (snapshot) => {
           const serverData = snapshot.val();
@@ -762,7 +762,7 @@
   // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
       currentServerId = serverId;
-      const codeRefSingle = ref(database, `servers/${serverId}`);
+      const codeRefSingle = ref(database, servers/${serverId});
       const codeElement = document.createElement('p');
       const copyButton = document.createElement('button');
       copyButton.textContent = "คัดลอกโค้ด";
@@ -786,7 +786,7 @@
                   update(codeRefSingle, { copyCount: newCopyCount });
                   showNotification('คัดลอกโค้ดสำเร็จ', 'success');
                   const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
-                  copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
+                  copyCountElement.textContent = คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง);
               }
           });
       });
@@ -799,7 +799,7 @@
       showNotification('ซื้อสำเร็จ', 'success');
 
       // ลบโค้ดออกจากฐานข้อมูล
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      const codeToRemoveRef = ref(database, servers/${serverId});
       remove(codeToRemoveRef).then(() => {
           console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
       });
@@ -827,7 +827,7 @@
 
   // ฟังก์ชันลบโค้ด
   function deleteCode(serverId, button) {
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
+      const codeToRemoveRef = ref(database, servers/${serverId});
       remove(codeToRemoveRef)
           .then(() => {
               console.log('ลบข้อมูลสำเร็จ');
@@ -854,8 +854,8 @@
           default:
               icon = '<i class="fas fa-info-circle notification-icon"></i>';
       }
-      notification.innerHTML = `${icon}<span>${message}</span>`;
-      notification.className = `notification ${type} show`;
+      notification.innerHTML = ${icon}<span>${message}</span>;
+      notification.className = notification ${type} show;
       
       setTimeout(() => {
           notification.className = 'notification';
