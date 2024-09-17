@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
     <title>แหล่งรวมโค้ดเน็ตฟรี</title>
     <!-- Font Awesome สำหรับไอคอน -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- CSS Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- ใส่ฟอนต์ Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* สไตล์พื้นหลังและตัวอักษร */
         body {
             background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
             color: #fff;
@@ -25,14 +25,14 @@
             padding: 20px;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); /* เปลี่ยนสีเงาเป็นสีทอง */
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
         }
 
         .title {
             text-align: center;
             font-size: 1.8em;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px #FFD700; /* เปลี่ยนสีเงาเป็นสีทอง */
+            text-shadow: 0 0 20px #FFD700;
             position: relative;
         }
 
@@ -44,7 +44,7 @@
             transform: translateX(-50%);
             width: 80px;
             height: 3px;
-            background-color: #FFD700; /* เปลี่ยนสีเส้นเป็นสีทอง */
+            background-color: #FFD700;
             border-radius: 5px;
         }
 
@@ -85,6 +85,7 @@
             display: none;
             margin-bottom: 15px;
             animation: shake 0.3s;
+            font-size: 0.85em;
         }
 
         @keyframes shake {
@@ -102,7 +103,7 @@
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); /* เปลี่ยนสีเงาเป็นสีทอง */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         .server-item .timestamp, .server-item .countdown {
@@ -138,7 +139,7 @@
         }
 
         .server-item .extra-tag {
-            background: linear-gradient(135deg, #FFD700, #FFA500); /* เปลี่ยนพื้นหลังเป็นสีทองไล่สี */
+            background: linear-gradient(135deg, #FFD700, #FFA500);
             color: #fff;
             padding: 10px 15px;
             border-radius: 10px;
@@ -146,7 +147,7 @@
             text-align: center;
             font-size: 1em;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* เพิ่มเงาให้ดูสวยงาม */
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             position: relative;
             overflow: hidden;
         }
@@ -172,7 +173,7 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #FFD700; /* เปลี่ยนสีป้ายราคาเป็นสีทอง */
+            background-color: #FFD700;
             color: #fff;
             padding: 8px 12px;
             border-radius: 8px;
@@ -236,25 +237,12 @@
             margin-top: 15px;
         }
 
-        #passwordError {
-            background-color: rgba(255, 0, 0, 0.1);
-            color: #ff4f4f;
-            border: 1px solid #ff4f4f;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            display: none;
-            margin-bottom: 15px;
-            animation: shake 0.3s;
-        }
-
         #backButton {
             background-color: #555;
             color: #fff;
             margin-top: 15px;
         }
 
-        /* สไตล์สำหรับปุ่ม Facebook */
         .facebook-button {
             margin-top: 15px;
             width: 100%;
@@ -281,20 +269,45 @@
             margin-right: 10px;
         }
 
-        /* สไตล์สำหรับข้อความ "ซื้อสำเร็จ" */
-        .purchase-successful {
-            font-size: 1.3em;
-            color: #00FF00;
-            text-align: center;
-            margin-top: 20px;
-            animation: glow 1s infinite;
-            font-weight: bold;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            max-width: 300px;
         }
 
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
-            50% { text-shadow: 0 0 20px #00FF00, 0 0 30px #00FF00, 0 0 40px #00FF00; }
-            100% { text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00; }
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #F44336;
+        }
+
+        .notification.info {
+            background-color: #2196F3;
+        }
+
+        .notification-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
         }
 
         @media (max-width: 600px) {
@@ -331,8 +344,6 @@
             }
         }
     </style>
-    <!-- ใส่ฟอนต์ Kanit เพื่อความสวยงาม -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -359,7 +370,6 @@
         <button id="backButton" style="display: none;">ย้อนกลับ</button>
     </div>
 
-    <!-- ปุ่มปล่อยโค้ดย้ายมาด้านล่าง -->
     <button id="showFormButton">ปล่อยโค้ด</button>
 </div>
 
@@ -376,8 +386,8 @@
     </div>
 </div>
 
-<!-- แจ้งเตือนรหัสผ่านผิด -->
-<div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
+<!-- แจ้งเตือนใหม่ -->
+<div id="notification" class="notification"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -389,7 +399,7 @@
     databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
     projectId: "ukgyry",
     storageBucket: "ukgyry.appspot.com",
-    messagingSenderId: "782837816686",
+messagingSenderId: "782837816686",
     appId: "1:782837816686:web:230328cfddb9d70ca8357f",
     measurementId: "G-RP7VJEN1BP"
   };
@@ -413,7 +423,6 @@
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
   const passwordCancel = document.getElementById('passwordCancel');
-  const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
 
   let currentServerId = null;
@@ -421,7 +430,7 @@
   let currentAction = null;
 
   // ฟังก์ชันแสดง/ซ่อนรหัสผ่าน
-  function togglePasswordVisibility(inputId) {
+  window.togglePasswordVisibility = function(inputId) {
       const input = document.getElementById(inputId);
       const toggle = input.parentElement.querySelector('.password-toggle');
       if (input.type === 'tel') {
@@ -518,6 +527,7 @@
               })
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
+                  showNotification('ส่งโค้ดสำเร็จ', 'success');
                   resetForm();
                   // รีเซ็ตปุ่มและอินพุต
                   sendButton.disabled = false;
@@ -531,6 +541,7 @@
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+                  showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
                   // รีเซ็ตปุ่มและอินพุต
                   sendButton.disabled = false;
                   sendButton.textContent = 'ส่งโค้ด';
@@ -681,7 +692,7 @@
       passwordModal.style.display = 'flex';
   };
 
-  // ฟังก์ชันขอรหัสผ่านเพื่อลบ
+// ฟังก์ชันขอรหัสผ่านเพื่อลบ
   window.requestPasswordToDelete = function (serverId, button) {
       currentServerId = serverId;
       currentButton = button;
@@ -705,7 +716,7 @@
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           } else {
-              showPasswordError();
+              showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
               passwordModal.style.display = 'none';
               passwordInput.value = '';
           }
@@ -747,13 +758,7 @@
 
   // ฟังก์ชันแสดงข้อความ "ซื้อสำเร็จ"
   function showPurchaseSuccessful(button, serverId) {
-      // แสดงข้อความ "ซื้อสำเร็จ" แบบเท่ๆ
-      const successMessage = document.createElement('div');
-      successMessage.classList.add('purchase-successful');
-      successMessage.textContent = 'ซื้อสำเร็จ';
-
-      // เพิ่มข้อความไปยัง parent element
-      button.parentNode.parentNode.appendChild(successMessage);
+      showNotification('ซื้อสำเร็จ', 'success');
 
       // ลบโค้ดออกจากฐานข้อมูล
       const codeToRemoveRef = ref(database, `servers/${serverId}`);
@@ -761,9 +766,8 @@
           console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
       });
 
-      // ลบข้อความและองค์ประกอบออกจาก UI หลังจาก 3 วินาที
+      // ลบองค์ประกอบออกจาก UI หลังจาก 3 วินาที
       setTimeout(() => {
-          successMessage.remove();
           button.parentNode.parentNode.remove();
       }, 3000);
   }
@@ -789,18 +793,34 @@
       remove(codeToRemoveRef)
           .then(() => {
               console.log('ลบข้อมูลสำเร็จ');
+              showNotification('ลบโค้ดสำเร็จ', 'success');
               button.parentNode.parentNode.remove();
           })
           .catch((error) => {
               console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
+              showNotification('เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
           });
   }
 
-  // ฟังก์ชันแสดงการแจ้งเตือนเมื่อใส่รหัสผ่านผิด
-  function showPasswordError() {
-      passwordErrorDiv.style.display = 'block';
+  // ฟังก์ชันแสดงการแจ้งเตือน
+  function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      let icon = '';
+      switch (type) {
+          case 'success':
+              icon = '<i class="fas fa-check-circle notification-icon"></i>';
+              break;
+          case 'error':
+              icon = '<i class="fas fa-exclamation-circle notification-icon"></i>';
+              break;
+          default:
+              icon = '<i class="fas fa-info-circle notification-icon"></i>';
+      }
+      notification.innerHTML = `${icon}<span>${message}</span>`;
+      notification.className = `notification ${type} show`;
+      
       setTimeout(() => {
-          passwordErrorDiv.style.display = 'none';
+          notification.className = 'notification';
       }, 3000);
   }
 </script>
