@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1Pfq8wVn4S4oJVV3tk0H+zl7j0oGdr6lyiTquFfN5V++0p9cSD7sSx0jEoXtBtQuM6R4l+jqgC+lZmK0sZ+1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS Styles -->
     <style>
+        /* เริ่มต้นการออกแบบสมัยใหม่ */
         body {
-            font-family: 'Arial', sans-serif;
             background-color: #1e1e2f;
             color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -20,37 +21,30 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            text-align: center;
         }
 
         .title {
-            text-align: center;
             font-size: 2em;
             margin-bottom: 20px;
-            color: #00d1b2;
-            text-shadow: 2px 2px 4px #000000;
-        }
-
-        #userCount {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: #ffdd57;
+            color: #00bfff;
         }
 
         #codeDisplay {
-            background-color: #2e2e3e;
+            background-color: #2e2e3d;
             padding: 15px;
             border-radius: 10px;
             max-height: 400px;
             overflow-y: auto;
+            margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .server-item {
-            background-color: #3e3e5e;
+            background-color: #3e3e4d;
             padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             position: relative;
             transition: transform 0.3s;
         }
@@ -59,47 +53,106 @@
             transform: scale(1.02);
         }
 
+        .server-item span {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
         .admin-name {
-            color: #ff3860;
+            color: #ff4757;
             font-weight: bold;
         }
 
-        .timestamp {
-            display: block;
+        .timestamp, .countdown {
             font-size: 0.9em;
-            color: #bbbbbb;
-            margin-top: 5px;
-        }
-
-        .countdown {
-            font-size: 0.9em;
-            color: #ffdd57;
-            margin-top: 5px;
+            color: #a4b0be;
         }
 
         .wow-banner {
-            background: linear-gradient(45deg, #ff6ec4, #7873f5);
+            background-color: #ff6b81;
             padding: 5px 10px;
             border-radius: 5px;
             display: inline-block;
             margin-top: 10px;
             font-size: 0.9em;
             color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .price-tag {
             position: absolute;
             top: 15px;
             right: 15px;
-            background-color: #ffdd57;
-            color: #333333;
+            background-color: #2ed573;
             padding: 5px 10px;
             border-radius: 5px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
+        button, .facebook-button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+            font-size: 1em;
+        }
+
+        button:hover, .facebook-button:hover {
+            background-color: #3742fa;
+        }
+
+        #showFormButton, #backButton {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #codeForm {
+            display: none;
+            background-color: #2e2e3d;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        #codeForm input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #1e90ff;
+        }
+
+        .error {
+            color: #ff4757;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        /* ปุ่ม Facebook */
         .facebook-button {
             margin-top: 10px;
             width: 100%;
@@ -125,138 +178,101 @@
             margin-right: 8px;
         }
 
-        button {
-            background-color: #00d1b2;
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            margin: 10px 5px 0 0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        button:hover {
-            background-color: #00a89c;
-        }
-
-        #backButton {
-            display: none;
-            background-color: #ff4f4f;
-        }
-
-        #passwordModal {
+        /* แถบโหลด */
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #1e90ff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             display: none;
-            align-items: center;
-            justify-content: center;
             z-index: 1000;
         }
 
-        .modal-content {
-            background-color: #2e2e3e;
-            padding: 20px;
-            border-radius: 10px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ข้อความแจ้งเตือน */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #2ed573;
+            color: white;
             text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .password-container {
-            position: relative;
-            margin: 15px 0;
-        }
-
-        .password-container input {
-            width: 100%;
-            padding: 10px;
-            padding-right: 60px;
-            border: none;
             border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #00d1b2;
-            user-select: none;
-        }
-
-        .error {
-            color: #ff3860;
-            display: none;
-            margin-bottom: 10px;
-        }
-
-        .copy-button {
-            background-color: #ffdd57;
-            color: #333333;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .copy-button:hover {
-            background-color: #e0c847;
-        }
-
-        /* Loading Bar Styles */
-        #loadingBar {
-            display: none;
-            width: 100%;
-            background-color: #3e3e5e;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        #loadingBar div {
-            height: 10px;
-            width: 0;
-            background-color: #00d1b2;
-            transition: width 0.4s ease;
-        }
-
-        /* สไตล์สำหรับข้อความแจ้งซื้อสำเร็จ */
-        .success-message {
+            padding: 16px;
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(0, 209, 178, 0.9);
-            color: #ffffff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-            opacity: 0;
             z-index: 1001;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
         }
 
         @keyframes fadein {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
         }
 
         @keyframes fadeout {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-20px); }
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: 0; opacity: 0; }
         }
 
-        /* Media query สำหรับหน้าจอมือถือ */
+        /* Modal */
+        #passwordModal {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #2e2e3d;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-content p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .cancel-button {
+            background-color: #ff4f4f;
+        }
+
+        /* จำนวนผู้ใช้งาน */
+        .user-count {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #1e90ff;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .facebook-button {
                 padding: 8px;
@@ -267,21 +283,29 @@
                 margin-right: 5px;
             }
 
-            .title {
-                font-size: 1.5em;
+            .loader {
+                width: 40px;
+                height: 40px;
+                border-width: 6px;
             }
 
-            #userCount {
-                font-size: 1em;
+            .toast {
+                min-width: 200px;
+                font-size: 15px;
             }
         }
     </style>
 </head>
 <body>
 
+<div class="loader" id="loader"></div>
+
+<div class="toast" id="toast">ซื้อสำเร็จ!</div>
+
 <div class="container">
     <div class="title">แหล่งร่วมโค้ดเน็ตฟรี</div>
-    <div id="userCount">จำนวนผู้เข้าใช้งาน: 0</div>
+    <div class="user-count">ผู้ใช้งานปัจจุบัน: <span id="userCount">0</span></div>
+
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
     </div>
@@ -300,14 +324,10 @@
         </div>
         <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
-        
-        <!-- Loading Bar -->
-        <div id="loadingBar"><div></div></div>
-        
         <button id="sendButton">ส่งโค้ด</button>
     </div>
 
-    <button id="backButton">ย้อนกลับ</button>
+    <button id="backButton" style="display: none;">ย้อนกลับ</button>
 </div>
 
 <!-- Modal แจ้งเตือนรหัสผ่าน -->
@@ -324,14 +344,13 @@
 </div>
 
 <!-- แจ้งเตือนรหัสผ่านผิด -->
-<div id="passwordError">รหัสผ่านไม่ถูกต้อง!</div>
-
-<!-- ข้อความแจ้งซื้อสำเร็จ -->
-<div class="success-message" id="successMessage">ซื้อสำเร็จ!</div>
+<div id="passwordError" style="position: fixed; top: 20px; right: 20px; background-color: #ff4757; color: white; padding: 10px 20px; border-radius: 5px; display: none; z-index: 1003;">
+    รหัสผ่านไม่ถูกต้อง!
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDA6_ws3dpUfH6s6SEWqKEBMSZERl5xslk",
@@ -365,10 +384,9 @@
   const passwordCancel = document.getElementById('passwordCancel');
   const passwordErrorDiv = document.getElementById('passwordError');
   const backButton = document.getElementById('backButton');
-  const userCountDisplay = document.getElementById('userCount');
-  const loadingBar = document.getElementById('loadingBar');
-  const loadingBarInner = loadingBar.querySelector('div');
-  const successMessage = document.getElementById('successMessage');
+  const loader = document.getElementById('loader');
+  const toast = document.getElementById('toast');
+  const userCountSpan = document.getElementById('userCount');
 
   let currentServerId = null;
   let currentButton = null;
@@ -406,6 +424,27 @@
   showFormButton.addEventListener('click', () => {
       codeForm.style.display = 'block';
       showFormButton.style.display = 'none';
+      backButton.style.display = 'block';
+  });
+
+  // ปุ่มย้อนกลับ
+  backButton.addEventListener('click', () => {
+      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
+      const allCodeElements = document.querySelectorAll('.code-content');
+      const allCopyButtons = document.querySelectorAll('.copy-button');
+      allCodeElements.forEach(el => el.remove());
+      allCopyButtons.forEach(btn => btn.remove());
+
+      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
+      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
+      allViewButtons.forEach(button => {
+          button.textContent = "ดูโค้ด";
+          button.onclick = function () {
+              requestPasswordAndShowCode(button.getAttribute('data-serverid'), button);
+          };
+      });
+
+      backButton.style.display = 'none';
   });
 
   // ตรวจสอบราคาว่าไม่เกิน 200 บาท
@@ -425,7 +464,7 @@
       return `เวลา: ${date}`;
   }
 
-  // ฟังก์ชันการส่งข้อมูลโค้ด พร้อมแสดง loading bar
+  // ฟังก์ชันการส่งข้อมูลโค้ด
   sendButton.addEventListener('click', () => {
       const serverName = serverNameInput.value.trim();
       const code = codeInput.value.trim();
@@ -435,24 +474,15 @@
       const price = parseFloat(priceInput.value.trim());
 
       if (serverName && code && passwordForm && facebookLink && expiryTime && price <= 200) {
-          // แสดง loading bar
-          loadingBar.style.display = 'block';
-          loadingBarInner.style.width = '0%';
-          let progress = 0;
-          const interval = setInterval(() => {
-              progress += Math.random() * 20; // เพิ่มความก้าวหน้าแบบสุ่ม
-              if (progress >= 100) {
-                  progress = 100;
-                  clearInterval(interval);
-                  loadingBar.style.display = 'none';
-              }
-              loadingBarInner.style.width = `${progress}%`;
-          }, 300); // ใช้เวลาใกล้เคียง 3 วินาที
+          // แสดง loader
+          loader.style.display = 'block';
 
-          // ส่งข้อมูลไปยัง Firebase หลังจาก loading
+          // จำลองเวลาอัพโหลด 3-8 วินาที
+          const uploadTime = Math.floor(Math.random() * 5000) + 3000; // 3000ms - 8000ms
+
           setTimeout(() => {
               const codeRef = ref(database, 'servers');
-              const timestamp = serverTimestamp();
+              const timestamp = new Date().toISOString();
               push(codeRef, {
                   serverName: serverName,
                   code: code,
@@ -465,13 +495,15 @@
               .then(() => {
                   console.log('ส่งข้อมูลสำเร็จ');
                   resetForm();
+                  loader.style.display = 'none';
               })
               .catch((error) => {
                   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
+                  loader.style.display = 'none';
               });
 
               errorMessage.style.display = 'none';
-          }, 3000); // เวลาในการจำลองการอัพโหลด 3 วินาที
+          }, uploadTime);
       } else {
           errorMessage.style.display = 'block';
       }
@@ -486,6 +518,7 @@
       priceInput.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
+      backButton.style.display = 'none';
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
@@ -520,7 +553,7 @@
           <span class="countdown"></span>
           <div class="wow-banner">ว้าว คนนี้เน็ตแรงมากเลย!</div>
           <div>
-              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
+              <button data-serverid="${serverId}" onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>`;
 
@@ -614,10 +647,10 @@
   function showCode(serverId, button) {
       const codeRefSingle = ref(database, `servers/${serverId}`);
       const codeElement = document.createElement('p');
-      codeElement.classList.add('code-content');
       const copyButton = document.createElement('button');
       copyButton.textContent = "คัดลอกโค้ด";
       copyButton.classList.add('copy-button');
+      codeElement.classList.add('code-content');
 
       button.textContent = "ซ่อนโค้ด";
       onValue(codeRefSingle, (snapshot) => {
@@ -628,14 +661,11 @@
 
           // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
-              navigator.clipboard.writeText(serverData.code).then(() => {
-                  showSuccessMessage();
-                  hideCode(button);
-                  // ลบโค้ดออกจากฐานข้อมูลหลังจากคัดลอก
-                  deleteCode(serverId, button);
-              }).catch(err => {
-                  console.error('Failed to copy: ', err);
-              });
+              navigator.clipboard.writeText(serverData.code);
+              showToast("ซื้อสำเร็จ!");
+              hideCode(button);
+              // ลบโค้ดจากฐานข้อมูลหลังการคัดลอก
+              deleteCode(serverId, button);
           });
       });
 
@@ -678,55 +708,40 @@
       }, 3000);
   }
 
-  // ฟังก์ชันสำหรับปุ่มย้อนกลับ
-  backButton.addEventListener('click', () => {
-      // ซ่อนโค้ดทั้งหมดและปุ่มคัดลอกที่อาจจะถูกแสดง
-      const allCodeElements = document.querySelectorAll('.code-content');
-      const allCopyButtons = document.querySelectorAll('.copy-button');
-      allCodeElements.forEach(el => el.remove());
-      allCopyButtons.forEach(btn => btn.remove());
-
-      // เปลี่ยนปุ่มดูโค้ดกลับเป็นปกติ
-      const allViewButtons = document.querySelectorAll('.server-item button:first-of-type');
-      allViewButtons.forEach(button => {
-          button.textContent = "ดูโค้ด";
-          button.onclick = function () {
-              requestPasswordAndShowCode(button.getAttribute('onclick').match(/'(.+?)'/)[1], button);
-          };
-      });
-
-      backButton.style.display = 'none';
-  });
-
-  // ฟังก์ชันแสดงจำนวนผู้เข้าใช้งาน
-  function updateUserCount() {
-      const usersRef = ref(database, 'activeUsers');
-      onValue(usersRef, (snapshot) => {
-          const count = snapshot.val() || 0;
-          userCountDisplay.textContent = `จำนวนผู้เข้าใช้งาน: ${count}`;
-      });
-  }
-
-  // เพิ่มการนับจำนวนผู้เข้าใช้งานโดยใช้ presence
-  const userStatusDatabaseRef = ref(database, 'activeUsers');
-
-  // เพิ่มผู้ใช้เมื่อโหลดหน้า
-  const userRef = ref(database, 'activeUsers/currentUser');
-  const userPresenceRef = ref(database, `activeUsers/user_${Date.now()}`);
-
-  onDisconnect(userPresenceRef).remove();
-  push(userStatusDatabaseRef, true);
-
-  // อัพเดทจำนวนผู้ใช้
-  updateUserCount();
-
-  // ฟังก์ชันแสดงข้อความซื้อสำเร็จ
-  function showSuccessMessage() {
-      successMessage.style.opacity = '1';
+  // ฟังก์ชันแสดง toast
+  function showToast(message) {
+      toast.textContent = message;
+      toast.className = "toast show";
       setTimeout(() => {
-          successMessage.style.opacity = '0';
+          toast.className = toast.className.replace("show", "");
       }, 3000);
   }
+
+  // แสดงจำนวนผู้ใช้งาน
+  const userCountRef = ref(database, 'userCount');
+  onValue(userCountRef, (snapshot) => {
+      const count = snapshot.val() || 0;
+      userCountSpan.textContent = count;
+  });
+
+  // เพิ่มและลบจำนวนผู้ใช้งานเมื่อมีการเชื่อมต่อและตัดการเชื่อมต่อ
+  const connectionsRef = ref(database, 'connections');
+  const connectedRef = ref(database, '.info/connected');
+
+  onValue(connectedRef, (snapshot) => {
+      if (snapshot.val() === true) {
+          const con = push(connectionsRef);
+          onDisconnect(con).remove();
+          // เพิ่มจำนวนผู้ใช้งาน
+          push(ref(database, 'userCount'), 1).then(() => {
+              // นับจำนวนการเชื่อมต่อปัจจุบัน
+              onValue(connectionsRef, (snap) => {
+                  const count = snap.numChildren();
+                  set(ref(database, 'userCount'), count);
+              });
+          });
+      }
+  });
 </script>
 
 </body>
