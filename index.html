@@ -10,7 +10,7 @@
     <style>
         /* สไตล์พื้นหลังและตัวอักษร */
         body {
-            background-color: #0e0e0e;
+            background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
             color: #fff;
             font-family: 'Kanit', sans-serif;
             overflow-x: hidden;
@@ -21,9 +21,9 @@
         .container {
             max-width: 600px;
             width: 90%;
-            margin: 50px auto;
+            margin: 20px auto;
             padding: 20px;
-            background: linear-gradient(135deg, #1f1f1f, #3d3d3d);
+            background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
             box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
         }
@@ -31,7 +31,7 @@
         .title {
             text-align: center;
             font-size: 2em;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-shadow: 0 0 20px #00ffff;
             position: relative;
         }
@@ -96,7 +96,7 @@
         }
 
         .server-item {
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
             padding: 20px;
             margin-bottom: 15px;
             border-radius: 10px;
@@ -137,35 +137,34 @@
             color: #fff;
         }
 
-        .server-item .wow-banner {
-            background-color: rgba(255, 215, 0, 0.1);
-            color: #ffd700;
+        .server-item .extra-tag {
+            background-color: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
             padding: 8px 12px;
             border-radius: 8px;
-            margin-top: 15px;
+            margin-top: 10px;
             text-align: center;
-            display: none; /* จะถูกแสดงแบบสุ่ม */
-            animation: glow 2s infinite;
-            font-size: 1em;
+            font-size: 0.9em;
             font-weight: bold;
+            animation: pulse 2s infinite;
         }
 
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px #ffd700; }
-            50% { text-shadow: 0 0 20px #ffd700; }
-            100% { text-shadow: 0 0 5px #ffd700; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px #00ffff; }
+            50% { box-shadow: 0 0 15px #00ffff; }
+            100% { box-shadow: 0 0 5px #00ffff; }
         }
 
         .price-tag {
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #00ffff;
-            color: #000;
+            background-color: #ff9800;
+            color: #fff;
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
         }
 
         .copy-button {
@@ -239,16 +238,17 @@
         #backButton {
             background-color: #555;
             color: #fff;
+            margin-top: 15px;
         }
 
         /* สไตล์สำหรับปุ่ม Facebook */
         .facebook-button {
             margin-top: 15px;
             width: 100%;
-            background-color: #4267B2; /* สีน้ำเงินของ Facebook */
+            background-color: #4267B2;
             color: white;
-            padding: 12px;
-            font-size: 1em;
+            padding: 10px;
+            font-size: 0.9em;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -257,6 +257,7 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
+            box-sizing: border-box;
         }
 
         .facebook-button:hover {
@@ -270,7 +271,7 @@
         /* สไตล์สำหรับข้อความ "ซื้อสำเร็จ" */
         .purchase-successful {
             font-size: 1.5em;
-            color: #00FF00; /* สีเขียวนีออน */
+            color: #00FF00;
             text-align: center;
             margin-top: 20px;
             animation: glow 1s infinite;
@@ -311,8 +312,9 @@
                 font-size: 0.9em;
             }
 
-            .wow-banner {
-                font-size: 0.9em;
+            .facebook-button {
+                padding: 8px;
+                font-size: 0.8em;
             }
         }
     </style>
@@ -328,8 +330,6 @@
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
     </div>
 
-    <button id="showFormButton">ปล่อยโค้ด</button>
-
     <div id="codeForm" style="display: none;">
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
@@ -344,6 +344,9 @@
         <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
         <button id="sendButton">ส่งโค้ด</button>
     </div>
+
+    <!-- ปุ่มปล่อยโค้ดย้ายมาด้านล่าง -->
+    <button id="showFormButton">ปล่อยโค้ด</button>
 
     <button id="backButton" style="display: none;">ย้อนกลับ</button>
 </div>
@@ -567,15 +570,20 @@
 
       const serverName = serverData.serverName || randomServerName;
 
-      // สร้างป้าย "ว้าว! เน็ตคุณแรงมาก"
-      const wowBanner = document.createElement('div');
-      wowBanner.classList.add('wow-banner');
-      wowBanner.textContent = 'ว้าว! เน็ตคุณแรงมากเลย';
+      // สร้างป้ายเพิ่มเติมแบบสุ่มใต้ป้ายราคา
+      const extraTags = [
+          "คนนี้เน็ตแรงมากเลย",
+          "ความเร็วระดับเทพ",
+          "สปีดเน็ตเหนือชั้น",
+          "อินเทอร์เน็ตเร็วปรี๊ด",
+          "ความเร็วไม่ตก",
+          "เน็ตแรงทะลุพิกัด"
+      ];
 
-      // สุ่มแสดงป้าย "ว้าว! เน็ตคุณแรงมาก"
-      if (Math.random() < 0.3) { // โอกาส 30%
-          wowBanner.style.display = 'block';
-      }
+      const randomTagIndex = Math.floor(Math.random() * extraTags.length);
+      const extraTag = document.createElement('div');
+      extraTag.classList.add('extra-tag');
+      extraTag.textContent = extraTags[randomTagIndex];
 
       // สร้างป้ายราคา
       const priceTag = document.createElement('div');
@@ -602,13 +610,13 @@
       // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
 
-      // เพิ่มปุ่ม Facebookหลังป้ายราคา
+      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
+      serverElement.appendChild(extraTag);
+
+      // เพิ่มปุ่ม Facebook
       if (serverData.facebookLink) {
           serverElement.appendChild(facebookButton);
       }
-
-      // เพิ่มป้าย "ว้าว! เน็ตคุณแรงมาก" ไปที่ serverElement
-      serverElement.appendChild(wowBanner);
 
       const countdownElement = serverElement.querySelector('.countdown');
       codeDisplay.appendChild(serverElement);
