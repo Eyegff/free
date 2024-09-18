@@ -3,37 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <title>แหล่งโค้ดฟรีและปล่อยเช่า</title>
-    <!-- Font Awesome สำหรับไอคอน -->
+    <title>แหล่งโค้ดฟรีและปล่อยเช่า - สุดไฮเทค</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- ใส่ฟอนต์ Kanit -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --background-color: #0e0e0e;
+            --text-color: #ffffff;
+            --accent-color: #FFD700;
+        }
+
         body {
-            background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
-            color: #fff;
+            background: linear-gradient(135deg, var(--background-color), #1a1a1a);
+            color: var(--text-color);
             font-family: 'Kanit', sans-serif;
             overflow-x: hidden;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             width: 90%;
             margin: 20px auto;
             padding: 20px;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 80%);
+            transform: rotate(45deg);
+            animation: shine 15s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .title {
             text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px #FFD700;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px var(--accent-color);
             position: relative;
+            color: var(--primary-color);
         }
 
         .title::after {
@@ -42,9 +71,9 @@
             left: 50%;
             bottom: -15px;
             transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background-color: #FFD700;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 5px;
         }
 
@@ -55,24 +84,47 @@
             border: none;
             border-radius: 8px;
             font-size: 0.95em;
+            transition: all 0.3s ease;
         }
 
         input {
-            background-color: #2b2b2b;
-            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--primary-color);
         }
 
         button {
-            background-color: #00ffff;
-            color: #000;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-color);
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
 
-        button:hover {
-            background-color: #00bfbf;
-            transform: scale(1.03);
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 80%);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        button:hover::after {
+            opacity: 1;
+            transform: rotate(45deg) scale(1.5);
         }
 
         .error {
@@ -99,11 +151,17 @@
         .server-item {
             background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
             padding: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .server-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
         }
 
         .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
@@ -117,30 +175,31 @@
             width: 48%;
             margin-right: 2%;
             margin-top: 15px;
-            background-color: #00ffff;
-            color: #000;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-color);
             border: none;
             padding: 10px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
+            transition: all 0.3s ease;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .server-item button:hover {
-            background-color: #00bfbf;
-            transform: scale(1.03);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .server-item button:last-child {
             margin-right: 0;
-            background-color: #ff4f4f;
-            color: #fff;
+            background: linear-gradient(45deg, #ff4f4f, #ff00ff);
         }
 
         .server-item .extra-tag {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #fff;
+            background: linear-gradient(135deg, var(--accent-color), #FFA500);
+            color: var(--background-color);
             padding: 10px 15px;
             border-radius: 10px;
             margin-top: 10px;
@@ -159,22 +218,17 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
             transform: rotate(45deg);
             animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: rotate(45deg) translate(-100%, -100%); }
-            100% { transform: rotate(45deg) translate(100%, 100%); }
         }
 
         .price-tag {
             position: absolute;
             top: 20px;
             right: 20px;
-            background-color: #FFD700;
-            color: #fff;
+            background: linear-gradient(45deg, var(--accent-color), #FFA500);
+            color: var(--background-color);
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: bold;
@@ -183,15 +237,15 @@
 
         .copy-button {
             margin-top: 15px;
-            background-color: #00ff00;
-            color: #000;
-            transition: background-color 0.3s ease, transform 0.2s;
+            background: linear-gradient(45deg, #00ff00, #00ffff);
+            color: var(--background-color);
+            transition: all 0.3s ease;
             font-weight: bold;
         }
 
         .copy-button:hover {
-            background-color: #00cc00;
-            transform: scale(1.03);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .password-container {
@@ -203,7 +257,7 @@
             right: 10px;
             top: 16px;
             cursor: pointer;
-            color: #00ffff;
+            color: var(--primary-color);
             font-weight: bold;
         }
 
@@ -221,25 +275,25 @@
         }
 
         #passwordModal .modal-content {
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
             text-align: center;
-            color: #fff;
-            width: 80%;
-            max-width: 350px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            color: var(--text-color);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
         }
 
         .cancel-button {
-            background-color: #ff4f4f;
-            color: #fff;
+            background: linear-gradient(45deg, #ff4f4f, #ff00ff);
+            color: var(--text-color);
             margin-top: 15px;
         }
 
         #backButton {
-            background-color: #555;
-            color: #fff;
+            background: linear-gradient(45deg, #555, #777);
+            color: var(--text-color);
             margin-top: 15px;
         }
 
@@ -252,7 +306,7 @@
             font-size: 0.85em;
             border: none;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -263,6 +317,7 @@
 
         .facebook-button:hover {
             background-color: #365899;
+            transform: scale(1.05);
         }
 
         .facebook-button i {
@@ -273,11 +328,11 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-radius: 8px;
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-weight: 500;
-            color: #fff;
+            color: var(--text-color);
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity 0.3s, transform 0.3s;
@@ -294,15 +349,15 @@
         }
 
         .notification.success {
-            background-color: #4CAF50;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
         }
 
         .notification.error {
-            background-color: #F44336;
+            background: linear-gradient(45deg, #F44336, #d32f2f);
         }
 
         .notification.info {
-            background-color: #2196F3;
+            background: linear-gradient(45deg, #2196F3, #1976d2);
         }
 
         .notification-icon {
@@ -310,25 +365,51 @@
             font-size: 1.2em;
         }
 
+        #visitorCounter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-color);
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            animation: pulse 2s infinite;
+        }
+
+        #visitorCounter i {
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         @media (max-width: 600px) {
             .container {
-                margin: 20px auto;
-                padding: 10px;
+                margin: 10px auto;
+                padding: 15px;
             }
 
             .title {
-                font-size: 1.3em;
+                font-size: 1.5em;
                 margin-bottom: 20px;
             }
 
             input, button {
-                padding: 10px;
-                font-size: 0.85em;
+                padding: 12px;
+                font-size: 0.9em;
             }
 
             .server-item {
                 padding: 15px;
-                margin-bottom: 10px;
+                margin-bottom: 15px;
             }
 
             .price-tag {
@@ -342,13 +423,20 @@
                 padding: 8px;
                 font-size: 0.8em;
             }
+
+            #visitorCounter {
+                bottom: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
         }
     </style>
-</head>
+    </head>
 <body>
 
 <div class="container">
-    <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
+    <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า - สุดไฮเทค</div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -362,7 +450,6 @@
         <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
 
-        <!-- ฟิลด์อัปโหลดรูปภาพ -->
         <input type="file" id="profilePictureInput" accept="image/*">
 
         <div class="password-container">
@@ -382,7 +469,6 @@
     <button id="showFormButton">ปล่อยโค้ด</button>
 </div>
 
-<!-- Modal แจ้งเตือนรหัสผ่าน -->
 <div id="passwordModal">
     <div class="modal-content">
         <p id="passwordPrompt">กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
@@ -395,12 +481,16 @@
     </div>
 </div>
 
-<!-- แจ้งเตือนใหม่ -->
 <div id="notification" class="notification"></div>
+
+<div id="visitorCounter">
+    <i class="fas fa-eye"></i>
+    <span id="visitorCount">0</span> คนกำลังออนไลน์
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -415,6 +505,28 @@
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
+
+  // ฟังก์ชันสำหรับการนับจำนวนผู้เข้าชม
+  function initVisitorCounter() {
+    const visitorCountRef = ref(database, 'visitorCount');
+    
+    // เพิ่มจำนวนผู้เข้าชมเมื่อโหลดหน้าเว็บ
+    update(visitorCountRef, { count: increment(1) });
+
+    // อัปเดตจำนวนผู้เข้าชมแบบเรียลไทม์
+    onValue(visitorCountRef, (snapshot) => {
+      const count = snapshot.val()?.count || 0;
+      document.getElementById('visitorCount').textContent = count;
+    });
+
+    // ลดจำนวนผู้เข้าชมเมื่อปิดหน้าเว็บ
+    window.addEventListener('beforeunload', () => {
+      update(visitorCountRef, { count: increment(-1) });
+    });
+  }
+
+  // เรียกใช้ฟังก์ชันนับจำนวนผู้เข้าชม
+  initVisitorCounter();
 
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
@@ -487,7 +599,11 @@
 
             // แสดงรูปภาพข้างเซิร์ฟเวอร์เนม
             const serverNameDiv = document.getElementById('serverNameDisplay');
-            serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
+            if (serverNameDiv) {
+                serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
+            } else {
+                console.warn('serverNameDisplay element not found');
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -499,14 +615,14 @@
   showFormButton.addEventListener('click', () => {
       codeForm.style.display = 'block';
       showFormButton.style.display = 'none';
-      backButton.style.display = 'block'; // แสดงปุ่มย้อนกลับ
+      backButton.style.display = 'block';
   });
 
   // ปุ่มย้อนกลับ
   backButton.addEventListener('click', () => {
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
-      backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับ
+      backButton.style.display = 'none';
   });
 
   // ตรวจสอบราคาว่าไม่เกิน 200 บาท
@@ -539,11 +655,9 @@
       const copyLimit = parseInt(copyLimitInput.value.trim());
 
       if (serverName && code && passwordForm && deletePasswordForm && facebookLink && expiryTime && price <= 200 && copyLimit > 0) {
-          // แสดงข้อความกำลังอัพโค้ด...
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
 
-          // ปิดการใช้งานอินพุตอื่น ๆ
           serverNameInput.disabled = true;
           codeInput.disabled = true;
           passwordInputForm.disabled = true;
@@ -555,7 +669,6 @@
 
           const reader = new FileReader();
           reader.onloadend = function() {
-              // สุ่มเวลาระหว่าง 3-8 วินาที
               const uploadDelay = Math.floor(Math.random() * 6) + 3;
 
               setTimeout(() => {
@@ -572,13 +685,12 @@
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
-                      profileImage: reader.result // รูปภาพที่แปลงเป็น base64
+                      profileImage: reader.result
                   })
                   .then(() => {
                       console.log('ส่งข้อมูลสำเร็จ');
                       showNotification('ส่งโค้ดสำเร็จ', 'success');
                       resetForm();
-                      // รีเซ็ตปุ่มและอินพุต
                       sendButton.disabled = false;
                       sendButton.textContent = 'ส่งโค้ด';
                       serverNameInput.disabled = false;
@@ -593,7 +705,6 @@
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
                       showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-                      // รีเซ็ตปุ่มและอินพุต
                       sendButton.disabled = false;
                       sendButton.textContent = 'ส่งโค้ด';
                       serverNameInput.disabled = false;
@@ -610,7 +721,12 @@
               errorMessage.style.display = 'none';
           };
 
-          reader.readAsDataURL(profileImage);
+          if (profileImage) {
+         reader.readAsDataURL(profileImage);
+          } else {
+              reader.result = null;
+              reader.onloadend();
+          }
       } else {
           errorMessage.style.display = 'block';
       }
@@ -625,10 +741,10 @@
       expiryInput.value = '';
       priceInput.value = '';
       copyLimitInput.value = '';
-      profilePictureInput.value = ''; // ล้างรูปภาพหลังส่ง
+      profilePictureInput.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
-      backButton.style.display = 'none'; // ซ่อนปุ่มย้อนกลับเมื่อส่งโค้ดเสร็จ
+      backButton.style.display = 'none';
   }
 
   // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
@@ -640,15 +756,12 @@
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
-      // แสดงรูปโปรไฟล์ถ้ามี
       const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
-      // สร้างป้ายราคา
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
       priceTag.textContent = `${serverData.price} บาท`;
 
-      // สร้างป้ายเพิ่มเติม
       const extraTags = [
           "คนนี้เน็ตแรงมากเลย",
           "ความเร็วระดับเทพ",
@@ -674,16 +787,12 @@
           </div>
       `;
 
-      // เพิ่มป้ายราคาไปที่ serverElement
       serverElement.appendChild(priceTag);
-
-      // เพิ่มป้ายเพิ่มเติมใต้ป้ายราคา
       serverElement.appendChild(extraTag);
 
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
-      // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
       updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
   });
 
@@ -788,7 +897,6 @@
                       const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
                       copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
                   }
-                  // ซ่อนโค้ดทันทีหลังคัดลอก
                   hideCode(button);
               });
           });
@@ -801,13 +909,11 @@
   function showPurchaseSuccessful(button, serverId) {
       showNotification('ซื้อสำเร็จ', 'success');
 
-      // ลบโค้ดออกจากฐานข้อมูล
       const codeToRemoveRef = ref(database, `servers/${serverId}`);
       remove(codeToRemoveRef).then(() => {
           console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
       });
 
-      // ลบองค์ประกอบออกจาก UI หลังจาก 3 วินาที
       setTimeout(() => {
           button.parentNode.parentNode.remove();
       }, 3000);
