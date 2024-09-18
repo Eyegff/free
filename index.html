@@ -28,8 +28,8 @@
         }
 
         .container {
-            max-width: 800px;
-            width: 90%;
+            max-width: 750px;
+            width: 85%;
             margin: 20px auto;
             padding: 20px;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
@@ -58,7 +58,7 @@
 
         .title {
             text-align: center;
-            font-size: 2.2em;
+            font-size: 2em;
             margin-bottom: 30px;
             text-shadow: 0 0 20px var(--accent-color);
             position: relative;
@@ -79,7 +79,7 @@
 
         input, button {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             margin-bottom: 15px;
             border: none;
             border-radius: 8px;
@@ -150,13 +150,14 @@
 
         .server-item {
             background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             transition: all 0.3s ease;
+            font-size: 0.95em;
         }
 
         .server-item:hover {
@@ -391,6 +392,42 @@
             100% { transform: scale(1); }
         }
 
+        #adminLoginButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #adminLoginButton:hover {
+            transform: scale(1.1);
+        }
+
+        #adminPanel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+          height: 100%;
+            background: rgba(14, 14, 14, 0.95);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #adminPanel h2 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         @media (max-width: 600px) {
             .container {
                 margin: 10px auto;
@@ -403,20 +440,20 @@
             }
 
             input, button {
-                padding: 12px;
+                padding: 10px;
                 font-size: 0.9em;
             }
 
             .server-item {
-                padding: 15px;
-                margin-bottom: 15px;
+                padding: 12px;
+                margin-bottom: 12px;
             }
 
             .price-tag {
-                top: 15px;
-                right: 15px;
-                padding: 6px 10px;
-                font-size: 0.85em;
+                top: 12px;
+                right: 12px;
+                padding: 5px 8px;
+                font-size: 0.8em;
             }
 
             .facebook-button {
@@ -429,6 +466,12 @@
                 right: 10px;
                 padding: 8px 12px;
                 font-size: 0.85em;
+            }
+
+            #adminLoginButton {
+                top: 10px;
+                right: 10px;
+                font-size: 20px;
             }
         }
     </style>
@@ -486,6 +529,15 @@
 <div id="visitorCounter">
     <i class="fas fa-eye"></i>
     <span id="visitorCount">0</span> คนกำลังออนไลน์
+</div>
+
+<button id="adminLoginButton" onclick="showAdminLogin()">
+    <i class="fas fa-key"></i>
+</button>
+
+<div id="adminPanel">
+    <h2>Admin Panel</h2>
+    <!-- เพิ่มฟอร์มและปุ่มสำหรับการจัดการโค้ดที่นี่ -->
 </div>
 
 <script type="module">
@@ -681,7 +733,7 @@
                       deletePassword: deletePasswordForm,
                       facebookLink: facebookLink,
                       expiryTime: expiryTime,
-                      timestamp: timestamp,
+                    timestamp: timestamp,
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
@@ -722,7 +774,7 @@
           };
 
           if (profileImage) {
-         reader.readAsDataURL(profileImage);
+              reader.readAsDataURL(profileImage);
           } else {
               reader.result = null;
               reader.onloadend();
@@ -970,6 +1022,121 @@
           notification.className = 'notification';
       }, 3000);
   }
+
+  // ฟังก์ชันแสดงหน้า Admin Login
+  window.showAdminLogin = function() {
+      const adminPassword = prompt("กรุณาใส่รหัสผ่านแอดมิน:");
+      if (adminPassword === "9756998256565") {
+          document.getElementById('adminPanel').style.display = 'block';
+          loadAdminPanel();
+      } else {
+          showNotification('รหัสผ่านไม่ถูกต้อง', 'error');
+      }
+  }
+
+  // ฟังก์ชันโหลดหน้า Admin Panel
+  function loadAdminPanel() {
+      const adminPanel = document.getElementById('adminPanel');
+      adminPanel.innerHTML = `
+          <h2>Admin Panel</h2>
+          <button onclick="closeAdminPanel()">ปิด Admin Panel</button>
+          <div id="adminCodeList"></div>
+      `;
+
+      const codesRef = ref(database, 'servers');
+      onValue(codesRef, (snapshot) => {
+          const adminCodeList = document.getElementById('adminCodeList');
+          adminCodeList.innerHTML = '';
+          snapshot.forEach((childSnapshot) => {
+              const codeData = childSnapshot.val();
+              const codeItem = document.createElement('div');
+            codeItem.innerHTML = `
+                  <strong>${codeData.serverName}</strong><br>
+                  ราคา: ${codeData.price} บาท<br>
+                  จำกัดการคัดลอก: ${codeData.copyLimit}<br>
+                  รหัสผ่านดูโค้ด: ${codeData.password}<br>
+                  รหัสผ่านลบโค้ด: ${codeData.deletePassword}<br>
+                  <button onclick="editCode('${childSnapshot.key}')">แก้ไข</button>
+                  <button onclick="adminDeleteCode('${childSnapshot.key}')">ลบ</button>
+              `;
+              adminCodeList.appendChild(codeItem);
+          });
+      });
+  }
+
+  // ฟังก์ชันปิดหน้า Admin Panel
+  window.closeAdminPanel = function() {
+      document.getElementById('adminPanel').style.display = 'none';
+  }
+
+  // ฟังก์ชันแก้ไขโค้ดสำหรับแอดมิน
+  window.editCode = function(serverId) {
+      const codeRef = ref(database, `servers/${serverId}`);
+      onValue(codeRef, (snapshot) => {
+          const codeData = snapshot.val();
+          const editForm = `
+              <h3>แก้ไขโค้ด</h3>
+              <input type="text" id="editServerName" value="${codeData.serverName}" placeholder="ชื่อเซิร์ฟเวอร์">
+              <input type="text" id="editCode" value="${codeData.code}" placeholder="โค้ด">
+              <input type="number" id="editPrice" value="${codeData.price}" placeholder="ราคา">
+              <input type="number" id="editCopyLimit" value="${codeData.copyLimit}" placeholder="จำกัดการคัดลอก">
+              <input type="password" id="editPassword" value="${codeData.password}" placeholder="รหัสผ่านดูโค้ด">
+              <input type="password" id="editDeletePassword" value="${codeData.deletePassword}" placeholder="รหัสผ่านลบโค้ด">
+              <input type="text" id="editFacebookLink" value="${codeData.facebookLink}" placeholder="ลิงก์ Facebook">
+              <input type="datetime-local" id="editExpiryTime" value="${codeData.expiryTime}">
+              <button onclick="updateCode('${serverId}')">อัปเดต</button>
+              <button onclick="cancelEdit()">ยกเลิก</button>
+          `;
+          document.getElementById('adminPanel').innerHTML = editForm;
+      }, { onlyOnce: true });
+  }
+
+  // ฟังก์ชันอัปเดตโค้ด
+  window.updateCode = function(serverId) {
+      const updatedData = {
+          serverName: document.getElementById('editServerName').value,
+          code: document.getElementById('editCode').value,
+          price: parseFloat(document.getElementById('editPrice').value),
+          copyLimit: parseInt(document.getElementById('editCopyLimit').value),
+          password: document.getElementById('editPassword').value,
+          deletePassword: document.getElementById('editDeletePassword').value,
+          facebookLink: document.getElementById('editFacebookLink').value,
+          expiryTime: document.getElementById('editExpiryTime').value
+      };
+
+      const codeRef = ref(database, `servers/${serverId}`);
+      update(codeRef, updatedData)
+          .then(() => {
+              showNotification('อัปเดตโค้ดสำเร็จ', 'success');
+              loadAdminPanel();
+          })
+          .catch((error) => {
+              showNotification('เกิดข้อผิดพลาดในการอัปเดตโค้ด', 'error');
+              console.error('เกิดข้อผิดพลาดในการอัปเดตโค้ด:', error);
+          });
+  }
+
+  // ฟังก์ชันยกเลิกการแก้ไข
+  window.cancelEdit = function() {
+      loadAdminPanel();
+  }
+
+  // ฟังก์ชันลบโค้ดสำหรับแอดมิน
+  window.adminDeleteCode = function(serverId) {
+      if (confirm('คุณแน่ใจหรือไม่ที่จะลบโค้ดนี้?')) {
+          const codeRef = ref(database, `servers/${serverId}`);
+          remove(codeRef)
+              .then(() => {
+                  showNotification('ลบโค้ดสำเร็จ', 'success');
+                  loadAdminPanel();
+              })
+              .catch((error) => {
+                  showNotification('เกิดข้อผิดพลาดในการลบโค้ด', 'error');
+                  console.error('เกิดข้อผิดพลาดในการลบโค้ด:', error);
+              });
+      }
+  }
+
 </script>
 
 </body>
