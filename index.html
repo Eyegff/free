@@ -175,10 +175,14 @@
             transform: scale(1.03);
         }
 
-        .server-item button:last-child {
-            margin-right: 0;
+        .server-item button.delete-button {
             background-color: #ff4f4f;
             color: #fff;
+        }
+
+        .server-item button.delete-button:hover {
+            background-color: #e04343;
+            transform: scale(1.03);
         }
 
         .server-item .extra-tag {
@@ -414,6 +418,18 @@
             .user-count {
                 font-size: 1.1em;
             }
+        }
+
+        /* ป้ายบอกรหัสด้านล่างป้ายเน็ต */
+        .code-notification {
+            background-color: #FFD700; /* สีทอง */
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
     </style>
 </head>
@@ -764,6 +780,15 @@
       extraTag.classList.add('extra-tag');
       extraTag.textContent = extraTags[randomTagIndex];
 
+      // ป้ายบอกรหัสด้านล่างป้ายเน็ต
+      const codeNotification = document.createElement('div');
+      codeNotification.classList.add('code-notification');
+      if (serverData.price === 0) {
+          codeNotification.textContent = "โค้ดฟรี! สามารถดูได้ทันที";
+      } else {
+          codeNotification.textContent = "โค้ดมีค่าใช้จ่าย กรุณาชำระเงินหรือกรอกรหัสผ่านเพื่อดูโค้ด";
+      }
+
       serverElement.innerHTML = `
           <div style="display: flex; align-items: center;">
               ${profileImage}
@@ -772,9 +797,10 @@
           <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
           <span class="countdown"></span>
           <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
+          <div class="code-notification">${serverData.price === 0 ? "โค้ดฟรี! สามารถดูได้ทันที" : "โค้ดมีค่าใช้จ่าย กรุณาชำระเงินหรือกรอกรหัสผ่านเพื่อดูโค้ด"}</div>
           <div class="facebook-button-container">
-              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
-              <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
+              ${serverData.price === 0 ? `<button onclick="showCode('${serverId}', this)">ดูโค้ด</button>` : `<button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>`}
+              <button class="delete-button" onclick="requestPasswordToDelete('${serverId}', this)">ลบ</button>
           </div>
       `;
 
@@ -793,6 +819,11 @@
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
       updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
+
+      // ถ้าราคาเป็น 0 บาท ให้แสดงโค้ดทันที
+      if (serverData.price === 0) {
+          showCode(serverId, serverElement.querySelector('.facebook-button-container').querySelector('button'));
+      }
   });
 
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
@@ -841,18 +872,26 @@
 
       onValue(codeRefSingle, (snapshot) => {
           const serverData = snapshot.val();
-          if (currentAction === 'show' && inputPassword === serverData.password) {
-              showCode(currentServerId, currentButton);
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
-          } else if (currentAction === 'delete' && inputPassword === serverData.deletePassword) {
-              deleteCode(currentServerId, currentButton);
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
-          } else {
-              showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
+          if (currentAction === 'show') {
+              if (inputPassword === serverData.password) {
+                  showCode(currentServerId, currentButton);
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              } else {
+                  showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              }
+          } else if (currentAction === 'delete') {
+              if (inputPassword === serverData.deletePassword) {
+                  deleteCode(currentServerId, currentButton);
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              } else {
+                  showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
+                  passwordModal.style.display = 'none';
+                  passwordInput.value = '';
+              }
           }
       }, { onlyOnce: true });
   });
@@ -890,6 +929,9 @@
                       copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
                   }
                   hideCode(button);
+              }).catch((err) => {
+                  console.error('การคัดลอกล้มเหลว:', err);
+                  showNotification('การคัดลอกล้มเหลว', 'error');
               });
           });
       });
@@ -921,7 +963,18 @@
           copyButton.remove();
       }
 
-      button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
+      button.onclick = () => {
+          const serverId = currentServerId;
+          const serverDataRef = ref(database, `servers/${serverId}`);
+          onValue(serverDataRef, (snapshot) => {
+              const serverData = snapshot.val();
+              if (serverData.price === 0) {
+                  showCode(serverId, button);
+              } else {
+                  requestPasswordAndShowCode(serverId, button);
+              }
+          }, { onlyOnce: true });
+      };
   }
 
   function deleteCode(serverId, button) {
