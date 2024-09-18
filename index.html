@@ -3,66 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <title>แหล่งโค้ดฟรีและปล่อยเช่า - สุดไฮเทค</title>
+    <title>แหล่งโค้ดฟรีและปล่อยเช่า</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #00ffff;
-            --secondary-color: #ff00ff;
-            --background-color: #0e0e0e;
-            --text-color: #ffffff;
-            --accent-color: #FFD700;
-        }
-
         body {
-            background: linear-gradient(135deg, var(--background-color), #1a1a1a);
-            color: var(--text-color);
+            background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
+            color: #fff;
             font-family: 'Kanit', sans-serif;
             overflow-x: hidden;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         .container {
-            max-width: 750px;
-            width: 85%;
+            max-width: 600px;
+            width: 90%;
             margin: 20px auto;
             padding: 20px;
             background: linear-gradient(135deg, #2b2b2b, #3d3d3d);
             border-radius: 15px;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 80%);
-            transform: rotate(45deg);
-            animation: shine 15s infinite linear;
-        }
-
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .title {
             text-align: center;
-            font-size: 2em;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px var(--accent-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #FFD700;
             position: relative;
-            color: var(--primary-color);
         }
 
         .title::after {
@@ -71,60 +40,49 @@
             left: 50%;
             bottom: -15px;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 80px;
+            height: 3px;
+            background-color: #FFD700;
             border-radius: 5px;
+        }
+
+        /* New User Count Section */
+        .user-count {
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         input, button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin-bottom: 15px;
             border: none;
             border-radius: 8px;
             font-size: 0.95em;
-            transition: all 0.3s ease;
         }
 
         input {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 10px var(--primary-color);
+            background-color: #2b2b2b;
+            color: #fff;
         }
 
         button {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--background-color);
+            background-color: #00ffff;
+            color: #000;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
         }
 
-        button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 80%);
-            transform: rotate(45deg);
-            transition: all 0.3s ease;
-            opacity: 0;
-        }
-
-        button:hover::after {
-            opacity: 1;
-            transform: rotate(45deg) scale(1.5);
+        button:hover {
+            background-color: #00bfbf;
+            transform: scale(1.03);
         }
 
         .error {
@@ -149,31 +107,13 @@
         }
 
         .server-item {
-            display: flex;
-            flex-direction: column;
             background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .server-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .server-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .server-info {
-            flex-grow: 1;
         }
 
         .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
@@ -183,42 +123,34 @@
             font-size: 0.85em;
         }
 
-        .price-tag-container {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .price-tag {
-            background: linear-gradient(45deg, var(--accent-color), #FFA500);
-            color: var(--background-color);
-            padding: 8px 12px;
+        .server-item button {
+            width: 48%;
+            margin-right: 2%;
+            margin-top: 15px;
+            background-color: #00ffff;
+            color: #000;
+            border: none;
+            padding: 10px;
             border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            background-color: #00ff00;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 10px;
-            animation: blink 1s infinite;
+        .server-item button:hover {
+            background-color: #00bfbf;
+            transform: scale(1.03);
         }
 
-        @keyframes blink {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
+        .server-item button:last-child {
+            margin-right: 0;
+            background-color: #ff4f4f;
+            color: #fff;
         }
 
-        .extra-tag {
-            background: linear-gradient(135deg, var(--accent-color), #FFA500);
-            color: var(--background-color);
+        .server-item .extra-tag {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #fff;
             padding: 10px 15px;
             border-radius: 10px;
             margin-top: 10px;
@@ -230,66 +162,46 @@
             overflow: hidden;
         }
 
-        .extra-tag::after {
+        .server-item .extra-tag::after {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
             transform: rotate(45deg);
             animation: shine 3s infinite;
         }
 
-        .facebook-button {
-            display: inline-block;
-            background-color: #4267B2;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-100%, -100%); }
+            100% { transform: rotate(45deg) translate(100%, 100%); }
+        }
+
+        .price-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #FFD700;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-weight: bold;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            animation: blink 2s infinite;
-        }
-
-        @keyframes blink {
-            0% { background-color: #4267B2; }
-            50% { background-color: #2f477a; }
-            100% { background-color: #4267B2; }
-        }
-
-        .facebook-button:hover {
-            transform: scale(1.05);
-        }
-
-        .facebook-button i {
-            margin-right: 5px;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-
-        .action-buttons button {
-            flex-basis: 48%;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .copy-button {
             margin-top: 15px;
-            background: linear-gradient(45deg, #00ff00, #00ffff);
-            color: var(--background-color);
-            transition: all 0.3s ease;
+            background-color: #00ff00;
+            color: #000;
+            transition: background-color 0.3s ease, transform 0.2s;
             font-weight: bold;
         }
 
         .copy-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background-color: #00cc00;
+            transform: scale(1.03);
         }
 
         .password-container {
@@ -301,7 +213,7 @@
             right: 10px;
             top: 16px;
             cursor: pointer;
-            color: var(--primary-color);
+            color: #00ffff;
             font-weight: bold;
         }
 
@@ -319,37 +231,63 @@
         }
 
         #passwordModal .modal-content {
-            background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
+            background-color: #1a1a1a;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 10px;
             text-align: center;
-            color: var(--text-color);
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            color: #fff;
+            width: 80%;
+            max-width: 350px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
 
         .cancel-button {
-            background: linear-gradient(45deg, #ff4f4f, #ff00ff);
-            color: var(--text-color);
+            background-color: #ff4f4f;
+            color: #fff;
             margin-top: 15px;
         }
 
         #backButton {
-            background: linear-gradient(45deg, #555, #777);
-            color: var(--text-color);
+            background-color: #555;
+            color: #fff;
             margin-top: 15px;
+        }
+
+        .facebook-button {
+            margin-top: 15px;
+            width: 100%;
+            background-color: #4267B2;
+            color: white;
+            padding: 10px;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .facebook-button:hover {
+            background-color: #365899;
+        }
+
+        .facebook-button i {
+            margin-right: 10px;
         }
 
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-radius: 8px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 500;
-            color: var(--text-color);
+            color: #fff;
             opacity: 0;
             transform: translateY(-20px);
             transition: opacity 0.3s, transform 0.3s;
@@ -366,15 +304,15 @@
         }
 
         .notification.success {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
+            background-color: #4CAF50;
         }
 
         .notification.error {
-            background: linear-gradient(45deg, #F44336, #d32f2f);
+            background-color: #F44336;
         }
 
         .notification.info {
-            background: linear-gradient(45deg, #2196F3, #1976d2);
+            background-color: #2196F3;
         }
 
         .notification-icon {
@@ -382,111 +320,32 @@
             font-size: 1.2em;
         }
 
-        #visitorCounter {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--background-color);
-            padding: 10px 15px;
-            border-radius: 25px;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            animation: pulse 2s infinite;
-        }
-
-        #visitorCounter i {
-            margin-right: 10px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .bottom-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .bottom-buttons button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #showFormButton {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--background-color);
-        }
-
-        #adminLoginButton {
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            color: var(--background-color);
-        }
-
-       .bottom-buttons button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-        }
-
-        #adminPanel {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(14, 14, 14, 0.95);
-            z-index: 2000;
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        #adminPanel h2 {
-            color: var(--accent-color);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
         @media (max-width: 600px) {
             .container {
-                margin: 10px auto;
-                padding: 15px;
+                margin: 20px auto;
+                padding: 10px;
             }
 
             .title {
-                font-size: 1.5em;
+                font-size: 1.3em;
                 margin-bottom: 20px;
             }
 
             input, button {
                 padding: 10px;
-                font-size: 0.9em;
+                font-size: 0.85em;
             }
 
             .server-item {
-                padding: 12px;
-                margin-bottom: 12px;
+                padding: 15px;
+                margin-bottom: 10px;
             }
 
             .price-tag {
-                top: 12px;
-                right: 12px;
-                padding: 5px 8px;
-                font-size: 0.8em;
+                top: 15px;
+                right: 15px;
+                padding: 6px 10px;
+                font-size: 0.85em;
             }
 
             .facebook-button {
@@ -494,16 +353,8 @@
                 font-size: 0.8em;
             }
 
-            #visitorCounter {
-                bottom: 10px;
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 0.85em;
-            }
-
-            .bottom-buttons button {
-                font-size: 0.9em;
-                padding: 10px;
+            .user-count {
+                font-size: 1em; /* Adjust font size for smaller screens */
             }
         }
     </style>
@@ -511,7 +362,12 @@
 <body>
 
 <div class="container">
-    <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า - สุดไฮเทค</div>
+    <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
+
+    <!-- User Count Display -->
+    <div id="userCount" class="user-count">
+        จำนวนผู้เข้าชม: <span id="visitorCount">0</span> คน
+    </div>
 
     <div id="codeDisplay">
         <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
@@ -541,12 +397,7 @@
         <button id="backButton" style="display: none;">ย้อนกลับ</button>
     </div>
 
-    <div class="bottom-buttons">
-        <button id="showFormButton">ปล่อยโค้ด</button>
-        <button id="adminLoginButton" onclick="showAdminLogin()">
-            <i class="fas fa-key"></i> ระบบหลังบ้าน
-        </button>
-    </div>
+    <button id="showFormButton">ปล่อยโค้ด</button>
 </div>
 
 <div id="passwordModal">
@@ -563,19 +414,9 @@
 
 <div id="notification" class="notification"></div>
 
-<div id="visitorCounter">
-    <i class="fas fa-eye"></i>
-    <span id="visitorCount">0</span> คนกำลังออนไลน์
-</div>
-
-<div id="adminPanel">
-    <h2>Admin Panel</h2>
-    <!-- เพิ่มฟอร์มและปุ่มสำหรับการจัดการโค้ดที่นี่ -->
-</div>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -590,28 +431,6 @@
 
   const app = initializeApp(firebaseConfig);
   const database = getDatabase(app);
-
-  // ฟังก์ชันสำหรับการนับจำนวนผู้เข้าชม
-  function initVisitorCounter() {
-    const visitorCountRef = ref(database, 'visitorCount');
-    
-    // เพิ่มจำนวนผู้เข้าชมเมื่อโหลดหน้าเว็บ
-    update(visitorCountRef, { count: increment(1) });
-
-    // อัปเดตจำนวนผู้เข้าชมแบบเรียลไทม์
-    onValue(visitorCountRef, (snapshot) => {
-      const count = snapshot.val()?.count || 0;
-      document.getElementById('visitorCount').textContent = count;
-    });
-
-    // ลดจำนวนผู้เข้าชมเมื่อปิดหน้าเว็บ
-    window.addEventListener('beforeunload', () => {
-      update(visitorCountRef, { count: increment(-1) });
-    });
-  }
-
-  // เรียกใช้ฟังก์ชันนับจำนวนผู้เข้าชม
-  initVisitorCounter();
 
   const codeDisplay = document.getElementById('codeDisplay');
   const showFormButton = document.getElementById('showFormButton');
@@ -634,6 +453,7 @@
   const passwordPrompt = document.getElementById('passwordPrompt');
   const copyLimitInput = document.getElementById('copyLimitInput');
   const profilePictureInput = document.getElementById('profilePictureInput');
+  const visitorCountElement = document.getElementById('visitorCount');
 
   let currentServerId = null;
   let currentButton = null;
@@ -684,11 +504,7 @@
 
             // แสดงรูปภาพข้างเซิร์ฟเวอร์เนม
             const serverNameDiv = document.getElementById('serverNameDisplay');
-            if (serverNameDiv) {
-                serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
-            } else {
-                console.warn('serverNameDisplay element not found');
-            }
+            serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
         };
         reader.readAsDataURL(file);
     }
@@ -696,21 +512,29 @@
 
   profilePictureInput.addEventListener('change', handleImageUpload);
 
-  // แสดงฟอร์มส่งโค้ด
+  // Show user count (Dummy data, replace with actual logic)
+  function updateVisitorCount(count) {
+      visitorCountElement.textContent = count;
+  }
+
+  // Set initial visitor count (for demonstration purposes)
+  updateVisitorCount(0);
+
+  // Show form to send code
   showFormButton.addEventListener('click', () => {
       codeForm.style.display = 'block';
       showFormButton.style.display = 'none';
-      backButton.style.display = 'block';
+      backButton.style.display = 'block'; // Show back button
   });
 
-  // ปุ่มย้อนกลับ
+  // Back button functionality
   backButton.addEventListener('click', () => {
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
-      backButton.style.display = 'none';
+      backButton.style.display = 'none'; // Hide back button
   });
 
-  // ตรวจสอบราคาว่าไม่เกิน 200 บาท
+  // Check price limit
   priceInput.addEventListener('change', () => {
       const price = parseFloat(priceInput.value);
       if (price > 200) {
@@ -720,14 +544,14 @@
       }
   });
 
-  // ฟังก์ชันแปลงเวลาตามประเทศไทย
+  // Format Thai time
   function formatThaiTime(timestamp) {
       const options = { timeZone: 'Asia/Bangkok', hour12: false };
       const date = new Date(timestamp).toLocaleString('th-TH', options);
       return `เวลา: ${date}`;
   }
 
-  // ฟังก์ชันการส่งข้อมูลโค้ด
+  // Send code functionality
   sendButton.addEventListener('click', () => {
       const profileImage = profilePictureInput.files[0];
       const serverName = serverNameInput.value.trim();
@@ -743,6 +567,7 @@
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
 
+          // Disable other inputs
           serverNameInput.disabled = true;
           codeInput.disabled = true;
           passwordInputForm.disabled = true;
@@ -755,7 +580,8 @@
           const reader = new FileReader();
           reader.onloadend = function() {
               const uploadDelay = Math.floor(Math.random() * 6) + 3;
-            setTimeout(() => {
+
+              setTimeout(() => {
                   const codeRef = ref(database, 'servers');
                   const timestamp = new Date().toISOString();
                   push(codeRef, {
@@ -769,7 +595,7 @@
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
-                      profileImage: reader.result
+                      profileImage: reader.result // Convert image to base64
                   })
                   .then(() => {
                       console.log('ส่งข้อมูลสำเร็จ');
@@ -785,7 +611,7 @@
                       expiryInput.disabled = false;
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
-                      })
+                  })
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
                       showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
@@ -805,12 +631,7 @@
               errorMessage.style.display = 'none';
           };
 
-          if (profileImage) {
-              reader.readAsDataURL(profileImage);
-          } else {
-              reader.result = null;
-              reader.onloadend();
-          }
+          reader.readAsDataURL(profileImage);
       } else {
           errorMessage.style.display = 'block';
       }
@@ -825,13 +646,13 @@
       expiryInput.value = '';
       priceInput.value = '';
       copyLimitInput.value = '';
-      profilePictureInput.value = '';
+      profilePictureInput.value = ''; // Clear image after submission
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
-      backButton.style.display = 'none';
+      backButton.style.display = 'none'; // Hide back button after sending code
   }
 
-  // ฟังก์ชันเพิ่มโค้ดใน UI พร้อมแสดงเวลาและ countdown
+  // Add code to UI with time and countdown display
   const codeRefDB = ref(database, 'servers');
   onChildAdded(codeRefDB, (snapshot) => {
       const serverData = snapshot.val();
@@ -842,18 +663,9 @@
 
       const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
-      const priceTagContainer = document.createElement('div');
-      priceTagContainer.classList.add('price-tag-container');
-      
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
       priceTag.textContent = `${serverData.price} บาท`;
-
-      const statusIndicator = document.createElement('span');
-      statusIndicator.classList.add('status-indicator');
-
-      priceTagContainer.appendChild(priceTag);
-      priceTagContainer.appendChild(statusIndicator);
 
       const extraTags = [
           "คนนี้เน็ตแรงมากเลย",
@@ -869,25 +681,19 @@
       extraTag.textContent = extraTags[randomTagIndex];
 
       serverElement.innerHTML = `
-          <div class="server-header">
-              ${profileImage}
-              <div class="server-info">
-                  <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
-                  <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-                  <span class="countdown"></span>
-                  <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
-              </div>
-              ${priceTagContainer.outerHTML}
-          </div>
-          ${extraTag.outerHTML}
-          <a href="${serverData.facebookLink}" target="_blank" class="facebook-button">
-              <i class="fab fa-facebook-f"></i> ไปยังเฟสผู้ขาย
-          </a>
-          <div class="action-buttons">
+          ${profileImage}
+          <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
+          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+          <span class="countdown"></span>
+          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
+          <div>
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>
       `;
+
+      serverElement.appendChild(priceTag);
+      serverElement.appendChild(extraTag);
 
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
@@ -895,7 +701,6 @@
       updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
   });
 
-  // ฟังก์ชันนับถอยหลังแบบเรียลไทม์
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
       const interval = setInterval(() => {
           const now = new Date().getTime();
@@ -920,7 +725,6 @@
       }, 1000);
   }
 
-  // ฟังก์ชันขอรหัสผ่านแล้วแสดงโค้ด
   window.requestPasswordAndShowCode = function (serverId, button) {
       currentServerId = serverId;
       currentButton = button;
@@ -929,7 +733,6 @@
       passwordModal.style.display = 'flex';
   };
 
-  // ฟังก์ชันขอรหัสผ่านเพื่อลบ
   window.requestPasswordToDelete = function (serverId, button) {
       currentServerId = serverId;
       currentButton = button;
@@ -938,7 +741,6 @@
       passwordModal.style.display = 'flex';
   };
 
-  // การยืนยันรหัสผ่านเพื่อแสดงโค้ดหรือลบ
   passwordSubmit.addEventListener('click', () => {
       const inputPassword = passwordInput.value;
       const codeRefSingle = ref(database, `servers/${currentServerId}`);
@@ -961,13 +763,11 @@
       }, { onlyOnce: true });
   });
 
-  // การยกเลิกการยืนยันรหัสผ่าน
   passwordCancel.addEventListener('click', () => {
       passwordModal.style.display = 'none';
       passwordInput.value = '';
   });
 
-  // ฟังก์ชันแสดงโค้ด
   function showCode(serverId, button) {
       currentServerId = serverId;
       const codeRefSingle = ref(database, `servers/${serverId}`);
@@ -984,7 +784,6 @@
           button.parentNode.parentNode.appendChild(codeElement);
           button.parentNode.parentNode.appendChild(copyButton);
 
-          // ฟังก์ชันคัดลอกโค้ด
           copyButton.addEventListener('click', () => {
               navigator.clipboard.writeText(serverData.code).then(() => {
                   const newCopyCount = (serverData.copyCount || 0) + 1;
@@ -1004,7 +803,6 @@
       button.onclick = () => hideCode(button);
   }
 
-  // ฟังก์ชันแสดงข้อความ "ซื้อสำเร็จ"
   function showPurchaseSuccessful(button, serverId) {
       showNotification('ซื้อสำเร็จ', 'success');
 
@@ -1018,7 +816,6 @@
       }, 3000);
   }
 
-  // ฟังก์ชันซ่อนโค้ด
   function hideCode(button) {
       button.textContent = "ดูโค้ด";
       const codeToHide = button.parentNode.parentNode.querySelector('.code-content');
@@ -1033,7 +830,6 @@
       button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
   }
 
-  // ฟังก์ชันลบโค้ด
   function deleteCode(serverId, button) {
       const codeToRemoveRef = ref(database, `servers/${serverId}`);
       remove(codeToRemoveRef)
@@ -1048,7 +844,6 @@
           });
   }
 
-  // ฟังก์ชันแสดงการแจ้งเตือน
   function showNotification(message, type = 'info') {
       const notification = document.getElementById('notification');
       let icon = '';
@@ -1067,123 +862,15 @@
       
       setTimeout(() => {
           notification.className = 'notification';
-          }, 3000);
+      }, 3000);
   }
 
-  // ฟังก์ชันแสดงหน้า Admin Login
-  window.showAdminLogin = function() {
-      const adminPassword = prompt("กรุณาใส่รหัสผ่านแอดมิน:");
-      if (adminPassword === "9756998256565") {
-          document.getElementById('adminPanel').style.display = 'block';
-          loadAdminPanel();
-      } else {
-          showNotification('รหัสผ่านไม่ถูกต้อง', 'error');
-      }
-  }
-
-  // ฟังก์ชันโหลดหน้า Admin Panel
-  function loadAdminPanel() {
-      const adminPanel = document.getElementById('adminPanel');
-      adminPanel.innerHTML = `
-          <h2>Admin Panel</h2>
-          <button onclick="closeAdminPanel()">ปิด Admin Panel</button>
-          <div id="adminCodeList"></div>
-      `;
-
-      const codesRef = ref(database, 'servers');
-      onValue(codesRef, (snapshot) => {
-          const adminCodeList = document.getElementById('adminCodeList');
-          adminCodeList.innerHTML = '';
-          snapshot.forEach((childSnapshot) => {
-              const codeData = childSnapshot.val();
-              const codeItem = document.createElement('div');
-              codeItem.innerHTML = `
-                  <strong>${codeData.serverName}</strong><br>
-                  ราคา: ${codeData.price} บาท<br>
-                  จำกัดการคัดลอก: ${codeData.copyLimit}<br>
-                  รหัสผ่านดูโค้ด: ${codeData.password}<br>
-                  รหัสผ่านลบโค้ด: ${codeData.deletePassword}<br>
-                  <button onclick="editCode('${childSnapshot.key}')">แก้ไข</button>
-                  <button onclick="adminDeleteCode('${childSnapshot.key}')">ลบ</button>
-              `;
-              adminCodeList.appendChild(codeItem);
-          });
-      });
-  }
-
-  // ฟังก์ชันปิดหน้า Admin Panel
-  window.closeAdminPanel = function() {
-      document.getElementById('adminPanel').style.display = 'none';
-  }
-
-  // ฟังก์ชันแก้ไขโค้ดสำหรับแอดมิน
-  window.editCode = function(serverId) {
-      const codeRef = ref(database, `servers/${serverId}`);
-      onValue(codeRef, (snapshot) => {
-          const codeData = snapshot.val();
-          const editForm = `
-              <h3>แก้ไขโค้ด</h3>
-              <input type="text" id="editServerName" value="${codeData.serverName}" placeholder="ชื่อเซิร์ฟเวอร์">
-              <input type="text" id="editCode" value="${codeData.code}" placeholder="โค้ด">
-              <input type="number" id="editPrice" value="${codeData.price}" placeholder="ราคา">
-              <input type="number" id="editCopyLimit" value="${codeData.copyLimit}" placeholder="จำกัดการคัดลอก">
-              <input type="password" id="editPassword" value="${codeData.password}" placeholder="รหัสผ่านดูโค้ด">
-              <input type="password" id="editDeletePassword" value="${codeData.deletePassword}" placeholder="รหัสผ่านลบโค้ด">
-              <input type="text" id="editFacebookLink" value="${codeData.facebookLink}" placeholder="ลิงก์ Facebook">
-              <input type="datetime-local" id="editExpiryTime" value="${codeData.expiryTime}">
-              <button onclick="updateCode('${serverId}')">อัปเดต</button>
-              <button onclick="cancelEdit()">ยกเลิก</button>
-          `;
-          document.getElementById('adminPanel').innerHTML = editForm;
-      }, { onlyOnce: true });
-  }
-
-  // ฟังก์ชันอัปเดตโค้ด
-  window.updateCode = function(serverId) {
-      const updatedData = {
-          serverName: document.getElementById('editServerName').value,
-          code: document.getElementById('editCode').value,
-          price: parseFloat(document.getElementById('editPrice').value),
-          copyLimit: parseInt(document.getElementById('editCopyLimit').value),
-          password: document.getElementById('editPassword').value,
-          deletePassword: document.getElementById('editDeletePassword').value,
-          facebookLink: document.getElementById('editFacebookLink').value,
-          expiryTime: document.getElementById('editExpiryTime').value
-      };
-
-      const codeRef = ref(database, `servers/${serverId}`);
-      update(codeRef, updatedData)
-          .then(() => {
-              showNotification('อัปเดตโค้ดสำเร็จ', 'success');
-              loadAdminPanel();
-          })
-          .catch((error) => {
-              showNotification('เกิดข้อผิดพลาดในการอัปเดตโค้ด', 'error');
-              console.error('เกิดข้อผิดพลาดในการอัปเดตโค้ด:', error);
-          });
-  }
-
-  // ฟังก์ชันยกเลิกการแก้ไข
-  window.cancelEdit = function() {
-      loadAdminPanel();
-  }
-
-  // ฟังก์ชันลบโค้ดสำหรับแอดมิน
-  window.adminDeleteCode = function(serverId) {
-      if (confirm('คุณแน่ใจหรือไม่ที่จะลบโค้ดนี้?')) {
-          const codeRef = ref(database, `servers/${serverId}`);
-          remove(codeRef)
-              .then(() => {
-                  showNotification('ลบโค้ดสำเร็จ', 'success');
-                  loadAdminPanel();
-              })
-              .catch((error) => {
-                  showNotification('เกิดข้อผิดพลาดในการลบโค้ด', 'error');
-                  console.error('เกิดข้อผิดพลาดในการลบโค้ด:', error);
-              });
-      }
-  }
-
+  // Increase visitor count (for demonstration, replace with actual logic)
+  let visitorCount = 0;
+  setInterval(() => {
+      visitorCount++;
+      updateVisitorCount(visitorCount);
+  }, 5000); // Simulate a new visitor every 5 seconds
 </script>
 
 </body>
