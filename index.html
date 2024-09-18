@@ -149,20 +149,31 @@
         }
 
         .server-item {
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(135deg, #1a1a1a, #2b2b2b);
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             transition: all 0.3s ease;
-            font-size: 0.95em;
         }
 
         .server-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .server-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .server-info {
+            flex-grow: 1;
         }
 
         .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
@@ -172,33 +183,40 @@
             font-size: 0.85em;
         }
 
-        .server-item button {
-            width: 48%;
-            margin-right: 2%;
-            margin-top: 15px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        .price-tag-container {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .price-tag {
+            background: linear-gradient(45deg, var(--accent-color), #FFA500);
             color: var(--background-color);
-            border: none;
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
-        .server-item button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            animation: blink 1s infinite;
         }
 
-        .server-item button:last-child {
-            margin-right: 0;
-            background: linear-gradient(45deg, #ff4f4f, #ff00ff);
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
         }
 
-        .server-item .extra-tag {
+        .extra-tag {
             background: linear-gradient(135deg, var(--accent-color), #FFA500);
             color: var(--background-color);
             padding: 10px 15px;
@@ -212,7 +230,7 @@
             overflow: hidden;
         }
 
-        .server-item .extra-tag::after {
+        .extra-tag::after {
             content: '';
             position: absolute;
             top: -50%;
@@ -224,16 +242,41 @@
             animation: shine 3s infinite;
         }
 
-        .price-tag {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--accent-color), #FFA500);
-            color: var(--background-color);
-            padding: 8px 12px;
-            border-radius: 8px;
+        .facebook-button {
+            display: inline-block;
+            background-color: #4267B2;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% { background-color: #4267B2; }
+            50% { background-color: #2f477a; }
+            100% { background-color: #4267B2; }
+        }
+
+        .facebook-button:hover {
+            transform: scale(1.05);
+        }
+
+        .facebook-button i {
+            margin-right: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .action-buttons button {
+            flex-basis: 48%;
         }
 
         .copy-button {
@@ -296,33 +339,6 @@
             background: linear-gradient(45deg, #555, #777);
             color: var(--text-color);
             margin-top: 15px;
-        }
-
-        .facebook-button {
-            margin-top: 15px;
-            width: 100%;
-            background-color: #4267B2;
-            color: white;
-            padding: 10px;
-            font-size: 0.85em;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .facebook-button:hover {
-            background-color: #365899;
-            transform: scale(1.05);
-        }
-
-        .facebook-button i {
-            margin-right: 10px;
         }
 
         .notification {
@@ -392,20 +408,37 @@
             100% { transform: scale(1); }
         }
 
-        #adminLoginButton {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: none;
+        .bottom-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .bottom-buttons button {
+            width: 100%;
+            padding: 12px;
             border: none;
-            color: var(--accent-color);
-            font-size: 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        #adminLoginButton:hover {
-            transform: scale(1.1);
+        #showFormButton {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--background-color);
+        }
+
+        #adminLoginButton {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: var(--background-color);
+        }
+
+       .bottom-buttons button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
 
         #adminPanel {
@@ -414,7 +447,7 @@
             top: 0;
             left: 0;
             width: 100%;
-          height: 100%;
+            height: 100%;
             background: rgba(14, 14, 14, 0.95);
             z-index: 2000;
             overflow-y: auto;
@@ -468,14 +501,13 @@
                 font-size: 0.85em;
             }
 
-            #adminLoginButton {
-                top: 10px;
-                right: 10px;
-                font-size: 20px;
+            .bottom-buttons button {
+                font-size: 0.9em;
+                padding: 10px;
             }
         }
     </style>
-    </head>
+</head>
 <body>
 
 <div class="container">
@@ -509,7 +541,12 @@
         <button id="backButton" style="display: none;">ย้อนกลับ</button>
     </div>
 
-    <button id="showFormButton">ปล่อยโค้ด</button>
+    <div class="bottom-buttons">
+        <button id="showFormButton">ปล่อยโค้ด</button>
+        <button id="adminLoginButton" onclick="showAdminLogin()">
+            <i class="fas fa-key"></i> ระบบหลังบ้าน
+        </button>
+    </div>
 </div>
 
 <div id="passwordModal">
@@ -530,10 +567,6 @@
     <i class="fas fa-eye"></i>
     <span id="visitorCount">0</span> คนกำลังออนไลน์
 </div>
-
-<button id="adminLoginButton" onclick="showAdminLogin()">
-    <i class="fas fa-key"></i>
-</button>
 
 <div id="adminPanel">
     <h2>Admin Panel</h2>
@@ -722,8 +755,7 @@
           const reader = new FileReader();
           reader.onloadend = function() {
               const uploadDelay = Math.floor(Math.random() * 6) + 3;
-
-              setTimeout(() => {
+            setTimeout(() => {
                   const codeRef = ref(database, 'servers');
                   const timestamp = new Date().toISOString();
                   push(codeRef, {
@@ -733,7 +765,7 @@
                       deletePassword: deletePasswordForm,
                       facebookLink: facebookLink,
                       expiryTime: expiryTime,
-                    timestamp: timestamp,
+                      timestamp: timestamp,
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
@@ -753,7 +785,7 @@
                       expiryInput.disabled = false;
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
-                  })
+                      })
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
                       showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
@@ -810,9 +842,18 @@
 
       const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
+      const priceTagContainer = document.createElement('div');
+      priceTagContainer.classList.add('price-tag-container');
+      
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
       priceTag.textContent = `${serverData.price} บาท`;
+
+      const statusIndicator = document.createElement('span');
+      statusIndicator.classList.add('status-indicator');
+
+      priceTagContainer.appendChild(priceTag);
+      priceTagContainer.appendChild(statusIndicator);
 
       const extraTags = [
           "คนนี้เน็ตแรงมากเลย",
@@ -828,19 +869,25 @@
       extraTag.textContent = extraTags[randomTagIndex];
 
       serverElement.innerHTML = `
-          ${profileImage}
-          <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
-          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-          <span class="countdown"></span>
-          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
-          <div>
+          <div class="server-header">
+              ${profileImage}
+              <div class="server-info">
+                  <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
+                  <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
+                  <span class="countdown"></span>
+                  <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
+              </div>
+              ${priceTagContainer.outerHTML}
+          </div>
+          ${extraTag.outerHTML}
+          <a href="${serverData.facebookLink}" target="_blank" class="facebook-button">
+              <i class="fab fa-facebook-f"></i> ไปยังเฟสผู้ขาย
+          </a>
+          <div class="action-buttons">
               <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
               <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
           </div>
       `;
-
-      serverElement.appendChild(priceTag);
-      serverElement.appendChild(extraTag);
 
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
@@ -1020,7 +1067,7 @@
       
       setTimeout(() => {
           notification.className = 'notification';
-      }, 3000);
+          }, 3000);
   }
 
   // ฟังก์ชันแสดงหน้า Admin Login
@@ -1050,7 +1097,7 @@
           snapshot.forEach((childSnapshot) => {
               const codeData = childSnapshot.val();
               const codeItem = document.createElement('div');
-            codeItem.innerHTML = `
+              codeItem.innerHTML = `
                   <strong>${codeData.serverName}</strong><br>
                   ราคา: ${codeData.price} บาท<br>
                   จำกัดการคัดลอก: ${codeData.copyLimit}<br>
