@@ -424,8 +424,8 @@
 
             .stat-item {
                 margin-bottom: 10px;
-                width: 100%;
-            }
+                width: 100
+}
         }
     </style>
 </head>
@@ -491,7 +491,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, onDisconnect, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -536,8 +536,6 @@
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
-  let onlineUsers = 0;
-  let totalVisitors = 0;
 
   window.togglePasswordVisibility = function(inputId) {
       const input = document.getElementById(inputId);
@@ -738,7 +736,7 @@
 
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
-    priceTag.innerHTML = `${serverData.price} บาท <span class="fire-animation"></span>`;
+      priceTag.innerHTML = `${serverData.price} บาท <span class="fire-animation"></span>`;
 
       const carrierTag = document.createElement('div');
       carrierTag.classList.add('carrier-tag');
@@ -970,47 +968,53 @@
       });
   }
 
-  onlineUsers++;
-  updateOnlineUsers();
+  // แก้ไขส่วนการนับผู้ใช้ออนไลน์
+  function handleOnlineUsers() {
+    const userId = Date.now().toString();
+    const userStatusRef = ref(database, 'status/' + userId);
+    const connectedRef = ref(database, '.info/connected');
 
-  const visitorRef = ref(database, 'visitors');
-  onValue(visitorRef, (snapshot) => {
-      if (snapshot.exists()) {
-          totalVisitors = snapshot.val().count;
-      } else {
-          totalVisitors = 0;
+    onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        // เมื่อผู้ใช้เชื่อมต่อ, เพิ่มสถานะ
+        set(userStatusRef, true);
+
+        // เมื่อผู้ใช้ตัดการเชื่อมต่อ, ลบสถานะ
+        onDisconnect(userStatusRef).remove();
       }
-      totalVisitors++;
-      update(visitorRef, { count: totalVisitors });
-      updateTotalVisitors();
-  });
+    });
 
-  function updateOnlineUsers() {
+    const onlineUsersRef = ref(database, 'status');
+    onValue(onlineUsersRef, (snapshot) => {
+      const onlineUsers = snapshot.size;
       onlineUsersElement.textContent = `ผู้ใช้ออนไลน์: ${onlineUsers}`;
+    });
   }
 
-  function updateTotalVisitors() {
+  // แก้ไขส่วนการนับผู้เข้าชมทั้งหมด
+  function handleTotalVisitors() {
+    const visitorsRef = ref(database, 'visitors');
+    
+    // เพิ่มจำนวนผู้เข้าชมเมื่อโหลดหน้า
+    get(visitorsRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        set(visitorsRef, increment(1));
+      } else {
+        set(visitorsRef, 1);
+      }
+    });
+
+    // อัปเดตจำนวนผู้เข้าชมทั้งหมด
+    onValue(visitorsRef, (snapshot) => {
+      const totalVisitors = snapshot.val() || 0;
       totalVisitorsElement.textContent = `ผู้เข้าชมทั้งหมด: ${totalVisitors}`;
+    });
   }
 
-  setInterval(() => {
-      const visitorRef = ref(database, 'visitors');
-      onValue(visitorRef, (snapshot) => {
-          if (snapshot.exists()) {
-              totalVisitors = snapshot.val().count;
-          } else {
-              totalVisitors = 0;
-          }
-          updateTotalVisitors();
-      });
-  }, 5000);
-
-  window.addEventListener('beforeunload', () => {
-      onlineUsers--;
-      updateOnlineUsers();
-  });
-
+  // เรียกใช้ฟังก์ชันที่แก้ไขใหม่
   updateTotalCodes();
+  handleOnlineUsers();
+  handleTotalVisitors();
 </script>
 
 </body>
