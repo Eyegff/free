@@ -61,7 +61,7 @@
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
-        input, button {
+        input, button, select {
             width: 100%;
             padding: 14px;
             margin-bottom: 15px;
@@ -71,13 +71,13 @@
             transition: all 0.3s ease;
         }
 
-        input {
+        input, select {
             background-color: rgba(255, 255, 255, 0.1);
             color: #fff;
             border: 1px solid rgba(0, 255, 255, 0.3);
         }
 
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
         }
@@ -197,7 +197,7 @@
             100% { transform: rotate(45deg) translate(100%, 100%); }
         }
 
-        .price-tag {
+        .price-tag, .provider-tag {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -207,6 +207,10 @@
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .provider-tag {
+            top: 60px;
         }
 
         .fire-animation {
@@ -252,7 +256,7 @@
             font-weight: bold;
         }
 
-        #passwordModal {
+        #passwordModal, #loginModal {
             position: fixed;
             top: 0;
             left: 0;
@@ -265,7 +269,7 @@
             z-index: 1000;
         }
 
-        #passwordModal .modal-content {
+        #passwordModal .modal-content, #loginModal .modal-content {
             background: linear-gradient(135deg, #0f3460, #162447);
             padding: 30px;
             border-radius: 15px;
@@ -365,6 +369,33 @@
             font-size: 0.9em;
         }
 
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-profile .user-info {
+            text-align: right;
+        }
+
+        .user-profile .user-name {
+            font-weight: bold;
+        }
+
+        .user-profile .user-credits {
+            font-size: 0.8em;
+            color: #ccc;
+        }
+
         @media (max-width: 600px) {
             .container {
                 margin: 10px auto;
@@ -376,7 +407,7 @@
                 margin-bottom: 20px;
             }
 
-            input, button {
+            input, button, select {
                 padding: 12px;
                 font-size: 0.9em;
             }
@@ -386,11 +417,15 @@
                 margin-bottom: 15px;
             }
 
-            .price-tag {
+            .price-tag, .provider-tag {
                 top: 15px;
                 right: 15px;
                 padding: 6px 10px;
                 font-size: 0.85em;
+            }
+
+            .provider-tag {
+                top: 50px;
             }
 
             .facebook-button {
@@ -412,7 +447,28 @@
 </head>
 <body>
 
+<div id="loginModal">
+    <div class="modal-content">
+        <h2>เข้าสู่ระบบ</h2>
+        <input type="text" id="usernameInput" placeholder="ชื่อผู้ใช้">
+        <div class="password-container">
+            <input type="password" id="loginPasswordInput" placeholder="รหัสผ่าน">
+            <span class="password-toggle" onclick="togglePasswordVisibility('loginPasswordInput')">แสดง</span>
+            </div>
+        <input type="file" id="loginProfilePictureInput" accept="image/*">
+        <button id="loginButton">เข้าสู่ระบบ</button>
+    </div>
+</div>
+
 <div class="container">
+    <div class="user-profile">
+        <img id="userProfilePicture" src="/api/placeholder/40/40" alt="User Profile">
+        <div class="user-info">
+            <div id="userName" class="user-name"></div>
+            <div id="userCredits" class="user-credits"></div>
+        </div>
+    </div>
+
     <div class="title">แหล่งโค้ดฟรีและปล่อยเช่า</div>
 
     <div class="stats">
@@ -428,10 +484,17 @@
     <div id="codeForm" style="display: none;">
         <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
-       <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
+        <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
         <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
         <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
+
+        <select id="providerSelect">
+            <option value="">เลือกค่ายมือถือ</option>
+            <option value="True">ทรู</option>
+            <option value="AIS">เอไอเอส</option>
+            <option value="DTAC">ดีแทค</option>
+        </select>
 
         <input type="file" id="profilePictureInput" accept="image/*">
 
@@ -468,7 +531,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -508,21 +571,80 @@
   const totalCodesElement = document.getElementById('totalCodes');
   const onlineUsersElement = document.getElementById('onlineUsers');
   const totalVisitorsElement = document.getElementById('totalVisitors');
+  const providerSelect = document.getElementById('providerSelect');
+  const loginModal = document.getElementById('loginModal');
+  const usernameInput = document.getElementById('usernameInput');
+  const loginPasswordInput = document.getElementById('loginPasswordInput');
+  const loginProfilePictureInput = document.getElementById('loginProfilePictureInput');
+  const loginButton = document.getElementById('loginButton');
+  const userProfilePicture = document.getElementById('userProfilePicture');
+  const userName = document.getElementById('userName');
+  const userCredits = document.getElementById('userCredits');
 
   let currentServerId = null;
   let currentButton = null;
   let currentAction = null;
   let onlineUsers = 0;
   let totalVisitors = 0;
+  let currentUser = null;
+
+  // Show login modal on page load
+  loginModal.style.display = 'flex';
+
+  loginButton.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const password = loginPasswordInput.value.trim();
+    const profilePicture = loginProfilePictureInput.files[0];
+
+    if (username && password) {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const userRef = ref(database, `users/${username}`);
+        set(userRef, {
+          username: username,
+          password: password,
+          profilePicture: reader.result,
+          credits: 1
+        }).then(() => {
+          currentUser = {
+            username: username,
+            profilePicture: reader.result,
+            credits: 1
+          };
+          updateUserProfile();
+          loginModal.style.display = 'none';
+          showNotification('เข้าสู่ระบบสำเร็จ', 'success');
+        }).catch((error) => {
+          console.error('เกิดข้อผิดพลาดในการลงทะเบียน:', error);
+          showNotification('เกิดข้อผิดพลาดในการลงทะเบียน', 'error');
+        });
+      };
+      if (profilePicture) {
+        reader.readAsDataURL(profilePicture);
+      } else {
+        reader.onloadend();
+      }
+    } else {
+      showNotification('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+    }
+  });
+
+  function updateUserProfile() {
+    if (currentUser) {
+      userProfilePicture.src = currentUser.profilePicture || '/api/placeholder/40/40';
+      userName.textContent = currentUser.username;
+      userCredits.textContent = `เครดิต: ${currentUser.credits}`;
+    }
+  }
 
   window.togglePasswordVisibility = function(inputId) {
       const input = document.getElementById(inputId);
       const toggle = input.parentElement.querySelector('.password-toggle');
-      if (input.type === 'tel') {
+      if (input.type === 'password' || input.type === 'tel') {
           input.type = 'text';
           toggle.textContent = 'ซ่อน';
       } else {
-          input.type = 'tel';
+          input.type = 'password';
           toggle.textContent = 'แสดง';
       }
   }
@@ -603,8 +725,9 @@
       const expiryTime = expiryInput.value.trim();
       const price = parseFloat(priceInput.value.trim());
       const copyLimit = parseInt(copyLimitInput.value.trim());
+      const provider = providerSelect.value;
 
-      if (serverName && code && passwordForm && deletePasswordForm && facebookLinkValue && expiryTime && price <= 200 && copyLimit > 0) {
+      if (serverName && code && passwordForm && deletePasswordForm && facebookLinkValue && expiryTime && price <= 200 && copyLimit > 0 && provider) {
           sendButton.disabled = true;
           sendButton.textContent = 'กำลังอัพโค้ด...';
 
@@ -616,6 +739,7 @@
           expiryInput.disabled = true;
           priceInput.disabled = true;
           copyLimitInput.disabled = true;
+          providerSelect.disabled = true;
 
           const reader = new FileReader();
           reader.onloadend = function() {
@@ -635,7 +759,8 @@
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
-                      profileImage: reader.result
+                      profileImage: reader.result,
+                      provider: provider
                   })
                   .then(() => {
                       console.log('ส่งข้อมูลสำเร็จ');
@@ -651,6 +776,7 @@
                       expiryInput.disabled = false;
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
+                      providerSelect.disabled = false;
                   })
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
@@ -665,6 +791,7 @@
                       expiryInput.disabled = false;
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
+                      providerSelect.disabled = false;
                   });
               }, uploadDelay * 1000);
 
@@ -691,6 +818,7 @@
       priceInput.value = '';
       copyLimitInput.value = '';
       profilePictureInput.value = '';
+      providerSelect.value = '';
       codeForm.style.display = 'none';
       showFormButton.style.display = 'block';
       backButton.style.display = 'none';
@@ -709,6 +837,10 @@
       const priceTag = document.createElement('div');
       priceTag.classList.add('price-tag');
       priceTag.innerHTML = `${serverData.price} บาท <span class="fire-animation"></span>`;
+
+      const providerTag = document.createElement('div');
+      providerTag.classList.add('provider-tag');
+      providerTag.textContent = serverData.provider;
 
       const extraTags = [
           "คนนี้เน็ตแรงมากเลย",
@@ -736,9 +868,10 @@
       `;
 
       serverElement.appendChild(priceTag);
+      serverElement.appendChild(providerTag);
       serverElement.appendChild(extraTag);
 
-     // ปุ่มไปยังเฟสบุ๊ค
+      // ปุ่มไปยังเฟสบุ๊ค
       const facebookButton = document.createElement('a');
       facebookButton.href = serverData.facebookLink;
       facebookButton.classList.add('facebook-button');
@@ -962,13 +1095,16 @@
       totalVisitorsElement.textContent = `ผู้เข้าชมทั้งหมด: ${totalVisitors}`;
   }
 
-  // รีเซ็ตจำนวนผู้เข้าชมทุก 2 นาที
+ // อัพเดทจำนวนผู้เข้าชมทุก 1 วินาที
   setInterval(() => {
       const visitorRef = ref(database, 'visitors');
-      update(visitorRef, { count: 0 });
-      totalVisitors = 0;
-      updateTotalVisitors();
-  }, 120000);
+      get(visitorRef).then((snapshot) => {
+          if (snapshot.exists()) {
+              totalVisitors = snapshot.val().count;
+              updateTotalVisitors();
+          }
+      });
+  }, 1000);
 
   // ลดจำนวนผู้ใช้ออนไลน์เมื่อปิดหน้า
   window.addEventListener('beforeunload', () => {
