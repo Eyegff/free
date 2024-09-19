@@ -97,16 +97,24 @@
         }
 
         .error {
-            background-color: rgba(255, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.2));
             color: #ff4f4f;
             border: 1px solid #ff4f4f;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
             text-align: center;
             display: none;
-            margin-bottom: 15px;
-            animation: shake 0.3s;
-            font-size: 0.85em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(255, 79, 79, 0.3);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 79, 79, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 79, 79, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(255, 79, 79, 0.3); }
         }
 
         @keyframes shake {
@@ -377,6 +385,51 @@
             font-size: 0.9em;
         }
 
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 100px;
+           height: 100px;
+            border: 5px solid transparent;
+            border-top: 5px solid #00ffff;
+            border-right: 5px solid #ff00ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            position: absolute;
+            color: #fff;
+            font-size: 1.2em;
+            margin-top: 120px;
+            text-align: center;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
             .container {
                 margin: 10px auto;
@@ -424,8 +477,8 @@
 
             .stat-item {
                 margin-bottom: 10px;
-                width: 100
-}
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -443,7 +496,9 @@
     </div>
 
     <div id="codeForm" style="display: none;">
-        <div class="error" id="errorMessage">กรุณาใส่ข้อมูลในรูปแบบที่ถูกต้อง</div>
+        <div class="error" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i> กรุณากรอกข้อมูลให้ครบทุกช่องเพื่อส่งโค้ด
+        </div>
         <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
         <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
         <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
@@ -488,6 +543,11 @@
 </div>
 
 <div id="notification" class="notification"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">กำลังส่งโค้ด...</div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -629,7 +689,7 @@
 
       if (serverName && code && passwordForm && deletePasswordForm && facebookLinkValue && expiryTime && price <= 200 && copyLimit > 0 && carrier) {
           sendButton.disabled = true;
-          sendButton.textContent = 'กำลังอัพโค้ด...';
+          document.getElementById('loadingOverlay').classList.add('show');
 
           serverNameInput.disabled = true;
           codeInput.disabled = true;
@@ -666,8 +726,8 @@
                       console.log('ส่งข้อมูลสำเร็จ');
                       showNotification('ส่งโค้ดสำเร็จ', 'success');
                       resetForm();
+                      document.getElementById('loadingOverlay').classList.remove('show');
                       sendButton.disabled = false;
-                      sendButton.textContent = 'ส่งโค้ด';
                       serverNameInput.disabled = false;
                       codeInput.disabled = false;
                       passwordInputForm.disabled = false;
@@ -677,12 +737,12 @@
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
                       carrierInput.disabled = false;
-                  })
+                      })
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
                       showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
+                      document.getElementById('loadingOverlay').classList.remove('show');
                       sendButton.disabled = false;
-                      sendButton.textContent = 'ส่งโค้ด';
                       serverNameInput.disabled = false;
                       codeInput.disabled = false;
                       passwordInputForm.disabled = false;
@@ -968,7 +1028,6 @@
       });
   }
 
-  // แก้ไขส่วนการนับผู้ใช้ออนไลน์
   function handleOnlineUsers() {
     const userId = Date.now().toString();
     const userStatusRef = ref(database, 'status/' + userId);
@@ -976,10 +1035,7 @@
 
     onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
-        // เมื่อผู้ใช้เชื่อมต่อ, เพิ่มสถานะ
         set(userStatusRef, true);
-
-        // เมื่อผู้ใช้ตัดการเชื่อมต่อ, ลบสถานะ
         onDisconnect(userStatusRef).remove();
       }
     });
@@ -991,11 +1047,9 @@
     });
   }
 
-  // แก้ไขส่วนการนับผู้เข้าชมทั้งหมด
   function handleTotalVisitors() {
     const visitorsRef = ref(database, 'visitors');
     
-    // เพิ่มจำนวนผู้เข้าชมเมื่อโหลดหน้า
     get(visitorsRef).then((snapshot) => {
       if (snapshot.exists()) {
         set(visitorsRef, increment(1));
@@ -1004,14 +1058,12 @@
       }
     });
 
-    // อัปเดตจำนวนผู้เข้าชมทั้งหมด
     onValue(visitorsRef, (snapshot) => {
       const totalVisitors = snapshot.val() || 0;
       totalVisitorsElement.textContent = `ผู้เข้าชมทั้งหมด: ${totalVisitors}`;
     });
   }
 
-  // เรียกใช้ฟังก์ชันที่แก้ไขใหม่
   updateTotalCodes();
   handleOnlineUsers();
   handleTotalVisitors();
