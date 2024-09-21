@@ -408,7 +408,7 @@
             visibility: visible;
         }
 
-        .loading-spinner {
+    .loading-spinner {
             width: 100px;
             height: 100px;
             border: 5px solid transparent;
@@ -821,7 +821,6 @@
   function createServerElement(serverData, serverId) {
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
-      serverElement.setAttribute('data-server-id', serverId);
 
       const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
 
@@ -848,8 +847,9 @@
 
       const starRating = document.createElement('div');
       starRating.classList.add('star-rating');
-      starRating.innerHTML = '☆☆☆☆☆';
-      
+      starRating.innerHTML = '★★★★★';
+      starRating.dataset.rating = 0;
+
       const likesCount = document.createElement('span');
       likesCount.classList.add('likes-count');
       likesCount.textContent = `${serverData.likes || 0} likes`;
@@ -900,51 +900,36 @@
       }
 
       starRating.addEventListener('click', () => {
-          updateLikesAndCredit(serverId);
+          const currentRating = parseInt(starRating.dataset.rating);
+          const newRating = currentRating < 5 ? currentRating + 1 : 0;
+          starRating.dataset.rating = newRating;
+          updateStarRating(starRating, newRating);
+          updateLikes(serverId, newRating > 0);
       });
 
       return serverElement;
   }
 
-  function updateLikesAndCredit(serverId) {
+  function updateStarRating(starElement, rating) {
+      starElement.innerHTML = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  }
+
+  function updateLikes(serverId, isLike) {
       const serverRef = ref(database, `servers/${serverId}`);
       get(serverRef).then((snapshot) => {
           if (snapshot.exists()) {
               const currentLikes = snapshot.val().likes || 0;
               const currentSellerCredit = snapshot.val().sellerCredit || 0;
-              const updates = {
-                  likes: currentLikes + 1,
-                  sellerCredit: currentSellerCredit + 1
-              };
-              update(serverRef, updates).then(() => {
-                  updateServerElementDisplay(serverId, updates.likes, updates.sellerCredit);
-              });
+              const updates = {};
+              if (isLike) {
+                  updates.likes = currentLikes + 1;
+                  updates.sellerCredit = currentSellerCredit + 1;
+              } else {
+                  updates.likes = Math.max(0, currentLikes - 1);
+              }
+              update(serverRef, updates);
           }
       });
-  }
-
-  function updateServerElementDisplay(serverId, likes, sellerCredit) {
-      const serverElement = document.querySelector(`[data-server-id="${serverId}"]`);
-      if (serverElement) {
-          const likesElement = serverElement.querySelector('.likes-count');
-          const sellerCreditElement = serverElement.querySelector('.seller-credit');
-          const starRatingElement = serverElement.querySelector('.star-rating');
-
-          if (likesElement) likesElement.textContent = `${likes} likes`;
-          if (sellerCreditElement) sellerCreditElement.textContent = `Seller Credit: ${sellerCredit}`;
-          
-          // Update star rating display
-          const fullStars = Math.min(5, Math.floor(likes / 10));
-          starRatingElement.innerHTML = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
-
-          // Add Premium Seller badge if sellerCredit reaches 100
-          if (sellerCredit >= 100 && !serverElement.querySelector('.premium-seller')) {
-              const premiumBadge = document.createElement('div');
-              premiumBadge.classList.add('premium-seller');
-              premiumBadge.textContent = '🌟 Premium Seller';
-              serverElement.appendChild(premiumBadge);
-          }
-      }
   }
 
   const codeRefDB = ref(database, 'servers');
@@ -1059,7 +1044,7 @@
           });
       });
 
-     button.onclick = () => hideCode(button);
+      button.onclick = () => hideCode(button);
   }
 
   function showPurchaseSuccessful(button, serverId) {
