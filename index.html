@@ -134,11 +134,13 @@
             overflow: hidden;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
             transition: all 0.3s ease;
+            border: 2px solid rgba(0, 255, 255, 0.3);
         }
 
         .server-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+            border-color: rgba(0, 255, 255, 0.8);
         }
 
         .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
@@ -430,6 +432,36 @@
             100% { transform: rotate(360deg); }
         }
 
+        .star-rating {
+            font-size: 1.5em;
+            color: #FFD700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .seller-credit {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .likes-count {
+            margin-left: 10px;
+            font-size: 0.9em;
+            color: #fff;
+        }
+
+        .premium-seller {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
         @media (max-width: 600px) {
             .container {
                 margin: 10px auto;
@@ -479,83 +511,6 @@
                 margin-bottom: 10px;
                 width: 100%;
             }
-
-            .like-container {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        /* Styles for Like Button and Like Count */
-        .like-button {
-            background: linear-gradient(90deg, #ffdd57, #ffab00);
-            color: #000;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            margin-right: 10px;
-        }
-
-        .like-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 171, 0, 0.4);
-        }
-
-        .like-button i {
-            margin-right: 5px;
-        }
-
-        .like-count {
-            font-size: 0.95em;
-            color: #fff;
-            text-shadow: 0 0 5px #000;
-        }
-
-        /* Additional styles for enhanced server item based on likes */
-        .server-item.popular {
-            border: 2px solid #FFD700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-        }
-
-        .server-item.popular .extra-tag {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-        }
-
-        .server-item.popular::before {
-            content: '🔥';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 1.5em;
-            animation: flame 1s infinite;
-        }
-
-        @keyframes flame {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(20deg); }
-        }
-
-        /* Cool names based on likes */
-        .server-item.popular .cool-name {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.85em;
-            color: #FFD700;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
     </style>
 </head>
@@ -628,7 +583,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, onDisconnect, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, onDisconnect, increment, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "API_KEY",
@@ -793,12 +748,21 @@
                       facebookLink: facebookLinkValue,
                       expiryTime: expiryTime,
                       timestamp: timestamp,
+                  push(codeRef, {
+                      serverName: serverName,
+                      code: code,
+                      password: passwordForm,
+                      deletePassword: deletePasswordForm,
+                      facebookLink: facebookLinkValue,
+                      expiryTime: expiryTime,
+                      timestamp: timestamp,
                       price: price,
                       copyLimit: copyLimit,
                       copyCount: 0,
                       profileImage: reader.result,
                       carrier: carrier,
-                      likes: 0 // เพิ่มฟิลด์ likes
+                      likes: 0,
+                      sellerCredit: 0
                   })
                   .then(() => {
                       console.log('ส่งข้อมูลสำเร็จ');
@@ -815,7 +779,7 @@
                       priceInput.disabled = false;
                       copyLimitInput.disabled = false;
                       carrierInput.disabled = false;
-                      })
+                  })
                   .catch((error) => {
                       console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
                       showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
@@ -862,11 +826,7 @@
       backButton.style.display = 'none';
   }
 
-  const codeRefDB = ref(database, 'servers');
-  onChildAdded(codeRefDB, (snapshot) => {
-      const serverData = snapshot.val();
-      const serverId = snapshot.key;
-
+  function createServerElement(serverData, serverId) {
       const serverElement = document.createElement('div');
       serverElement.classList.add('server-item');
 
@@ -893,7 +853,19 @@
       extraTag.classList.add('extra-tag');
       extraTag.textContent = extraTags[randomTagIndex];
 
-      // ปรับปรุง HTML ของ serverElement
+      const starRating = document.createElement('div');
+      starRating.classList.add('star-rating');
+      starRating.innerHTML = '★★★★★';
+      starRating.dataset.rating = 0;
+
+      const likesCount = document.createElement('span');
+      likesCount.classList.add('likes-count');
+      likesCount.textContent = `${serverData.likes || 0} likes`;
+
+      const sellerCredit = document.createElement('div');
+      sellerCredit.classList.add('seller-credit');
+      sellerCredit.textContent = `Seller Credit: ${serverData.sellerCredit || 0}`;
+
       serverElement.innerHTML = `
           ${profileImage}
           <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
@@ -909,27 +881,17 @@
       serverElement.appendChild(priceTag);
       serverElement.appendChild(carrierTag);
       serverElement.appendChild(extraTag);
+      serverElement.appendChild(starRating);
+      serverElement.appendChild(likesCount);
+      serverElement.appendChild(sellerCredit);
 
-      // สร้างปุ่มไลค์และจำนวนไลค์
-      const likeContainer = document.createElement('div');
-      likeContainer.style.marginTop = '10px';
-      likeContainer.style.display = 'flex';
-      likeContainer.style.alignItems = 'center';
+      if (serverData.sellerCredit >= 100) {
+          const premiumBadge = document.createElement('div');
+          premiumBadge.classList.add('premium-seller');
+          premiumBadge.textContent = '🌟 Premium Seller';
+          serverElement.appendChild(premiumBadge);
+      }
 
-      const likeButton = document.createElement('button');
-      likeButton.innerHTML = `<i class="fas fa-thumbs-up"></i> ไลค์`;
-      likeButton.classList.add('like-button');
-
-      // สร้างองค์ประกอบแสดงจำนวนไลค์
-      const likeCount = document.createElement('span');
-      likeCount.textContent = `ไลค์: ${serverData.likes || 0}`;
-      likeCount.classList.add('like-count');
-
-      likeContainer.appendChild(likeButton);
-      likeContainer.appendChild(likeCount);
-      serverElement.appendChild(likeContainer);
-
-      // ปุ่ม Facebook
       const facebookButton = document.createElement('a');
       facebookButton.href = serverData.facebookLink;
       facebookButton.classList.add('facebook-button');
@@ -945,23 +907,49 @@
           serverElement.appendChild(passwordDisplay);
       }
 
+      starRating.addEventListener('click', () => {
+          const currentRating = parseInt(starRating.dataset.rating);
+          const newRating = currentRating < 5 ? currentRating + 1 : 0;
+          starRating.dataset.rating = newRating;
+          updateStarRating(starRating, newRating);
+          updateLikes(serverId, newRating > 0);
+      });
+
+      return serverElement;
+  }
+
+  function updateStarRating(starElement, rating) {
+      starElement.innerHTML = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  }
+
+  function updateLikes(serverId, isLike) {
+      const serverRef = ref(database, `servers/${serverId}`);
+      get(serverRef).then((snapshot) => {
+          if (snapshot.exists()) {
+              const currentLikes = snapshot.val().likes || 0;
+              const currentSellerCredit = snapshot.val().sellerCredit || 0;
+              const updates = {};
+              if (isLike) {
+                  updates.likes = currentLikes + 1;
+                  updates.sellerCredit = currentSellerCredit + 1;
+              } else {
+                  updates.likes = Math.max(0, currentLikes - 1);
+              }
+              update(serverRef, updates);
+          }
+      });
+  }
+
+  const codeRefDB = ref(database, 'servers');
+  onChildAdded(codeRefDB, (snapshot) => {
+      const serverData = snapshot.val();
+      const serverId = snapshot.key;
+      const serverElement = createServerElement(serverData, serverId);
       codeDisplay.appendChild(serverElement);
       codeDisplay.scrollTop = codeDisplay.scrollHeight;
 
       updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
       updateTotalCodes();
-
-      // เพิ่ม event listener สำหรับปุ่มไลค์
-      likeButton.addEventListener('click', () => {
-          incrementLike(serverId, likeCount, serverElement);
-      });
-
-      // อัปเดตจำนวนไลค์แบบ real-time
-      const likesRef = ref(database, `servers/${serverId}/likes`);
-      onValue(likesRef, (snapshot) => {
-          likeCount.textContent = `ไลค์: ${snapshot.val() || 0}`;
-          updateServerAppearance(serverElement, snapshot.val());
-      });
   });
 
   function updateCountdown(serverId, expiryTimeElement, expiryTime) {
@@ -1081,7 +1069,7 @@
       }, 3000);
   }
 
-  function hideCode(button) {
+ function hideCode(button) {
       button.textContent = "ดูโค้ด";
       const codeToHide = button.parentNode.parentNode.querySelector('.code-content');
       const copyButton = button.parentNode.parentNode.querySelector('.copy-button');
@@ -1178,53 +1166,6 @@
   updateTotalCodes();
   handleOnlineUsers();
   handleTotalVisitors();
-
-  // ฟังก์ชันเพิ่มไลค์
-  function incrementLike(serverId, likeCountElement, serverElement) {
-      const likesRef = ref(database, `servers/${serverId}/likes`);
-      // ใช้ transaction เพื่อเพิ่มจำนวนไลค์อย่างปลอดภัย
-      onValue(likesRef, (snapshot) => {
-          let currentLikes = snapshot.val() || 0;
-          update(likesRef, currentLikes + 1)
-              .then(() => {
-                  showNotification('คุณได้ไลค์แล้ว!', 'success');
-              })
-              .catch((error) => {
-                  console.error('เกิดข้อผิดพลาดในการเพิ่มไลค์:', error);
-                  showNotification('ไม่สามารถเพิ่มไลค์ได้', 'error');
-              });
-      }, { onlyOnce: true });
-  }
-
-  // ฟังก์ชันอัปเดตลักษณะเซิร์ฟเวอร์ตามจำนวนไลค์
-  function updateServerAppearance(serverElement, likes) {
-      // ลบคลาส popular ก่อนเพื่อหลีกเลี่ยงการเพิ่มซ้ำ
-      serverElement.classList.remove('popular');
-      const existingCoolName = serverElement.querySelector('.cool-name');
-      if (existingCoolName) {
-          existingCoolName.remove();
-      }
-
-      if (likes >= 10 && likes < 20) {
-          serverElement.classList.add('popular');
-          const coolName = document.createElement('div');
-          coolName.classList.add('cool-name');
-          coolName.textContent = '🔥 ร้อนแรง';
-          serverElement.appendChild(coolName);
-      } else if (likes >= 20 && likes < 50) {
-          serverElement.classList.add('popular');
-          const coolName = document.createElement('div');
-          coolName.classList.add('cool-name');
-          coolName.textContent = '🚀 ระดับเทพ';
-          serverElement.appendChild(coolName);
-      } else if (likes >= 50) {
-          serverElement.classList.add('popular');
-          const coolName = document.createElement('div');
-          coolName.classList.add('cool-name');
-          coolName.textContent = '🌟 ตำนาน';
-          serverElement.appendChild(coolName);
-      }
-  }
 </script>
 
 </body>
