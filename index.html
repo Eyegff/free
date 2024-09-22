@@ -109,6 +109,10 @@
         .copy-btn:hover::before {
             left: 100%;
         }
+        .copy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .copy-alert {
             position: fixed;
             bottom: 20px;
@@ -214,6 +218,7 @@
                         validCodes.forEach(([key, vpn]) => {
                             const codeContainer = document.createElement('div');
                             codeContainer.className = 'code-container';
+                            codeContainer.setAttribute('data-key', key);
                             const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
                             codeContainer.innerHTML = `
                                 <p class="vpn-code">${vpn.code}</p>
@@ -271,30 +276,38 @@
         }
 
         function updateCopyLimit(key) {
-            database.ref(`vpnCodes/${key}/copyCount`).transaction((currentCount) => {
-                return (currentCount || 0) + 1;
+            database.ref(`vpnCodes/${key}`).transaction((vpn) => {
+                if (vpn) {
+                    vpn.copyCount = (vpn.copyCount || 0) + 1;
+                }
+                return vpn;
             }, (error, committed, snapshot) => {
                 if (error) {
                     console.error('Transaction failed abnormally!', error);
                 } else if (!committed) {
                     console.log('Transaction aborted.');
                 } else {
-                    const copyLimitElement = document.getElementById(`copy-limit-${key}`);
-                    const copyBtn = copyLimitElement.previousElementSibling;
                     const vpn = snapshot.val();
                     const remainingCopies = vpn.copyLimit - vpn.copyCount;
                     
-                    if (remainingCopies > 0) {
-                        copyLimitElement.textContent = `เหลือ ${remainingCopies} ครั้ง`;
+                    if (remainingCopies <= 0) {
+                        // ลบโค้ดออกจาก Firebase
+                        database.ref(`vpnCodes/${key}`).remove();
+                        
+                        // ลบโค้ดออกจากหน้าเว็บ
+                        const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
+                        if (codeContainer) {
+                            codeContainer.style.animation = 'fadeOut 0.5s';
+                            setTimeout(() => {
+                                codeContainer.remove();
+                            }, 500);
+                        }
                     } else {
-                        copyLimitElement.textContent = 'หมดโควต้าคัดลอก';
-                        copyBtn.disabled = true;
-                        // ลบโค้ดออกเมื่อคัดลอกครบจำนวนที่กำหนด
-                        const codeContainer = copyLimitElement.closest('.code-container');
-                        codeContainer.style.animation = 'fadeOut 0.5s';
-                        setTimeout(() => {
-                            codeContainer.remove();
-                        }, 500);
+                        // อัปเดตจำนวนการคัดลอกที่เหลือ
+                        const copyLimitElement = document.getElementById(`copy-limit-${key}`);
+                        if (copyLimitElement) {
+                            copyLimitElement.textContent = `เหลือ ${remainingCopies} ครั้ง`;
+                        }
                     }
                 }
             });
