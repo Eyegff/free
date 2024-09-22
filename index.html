@@ -73,7 +73,7 @@
             margin-top: 10px;
             flex-wrap: wrap;
         }
-        .expiry-date, .network, .countdown {
+        .expiry-date, .network, .countdown, .copy-limit {
             font-size: 12px;
             color: #888;
             margin-right: 10px;
@@ -159,6 +159,10 @@
             0%, 100% { opacity: 0; }
             10%, 90% { opacity: 1; }
         }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -210,13 +214,15 @@
                         validCodes.forEach(([key, vpn]) => {
                             const codeContainer = document.createElement('div');
                             codeContainer.className = 'code-container';
+                            const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
                             codeContainer.innerHTML = `
                                 <p class="vpn-code">${vpn.code}</p>
                                 <div class="code-info">
                                     <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
                                     <span class="network">เครือข่าย: ${vpn.network}</span>
                                     <span class="countdown" id="countdown-${key}"></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
+                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
+                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
                                 </div>
                             `;
                             vpnList.appendChild(codeContainer);
@@ -252,7 +258,7 @@
             update();
         }
 
-        function copyToClipboard(text) {
+        function copyToClipboard(text, key) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
             document.body.appendChild(textArea);
@@ -261,6 +267,37 @@
             document.body.removeChild(textArea);
             
             showCopyAlert();
+            updateCopyLimit(key);
+        }
+
+        function updateCopyLimit(key) {
+            database.ref(`vpnCodes/${key}/copyCount`).transaction((currentCount) => {
+                return (currentCount || 0) + 1;
+            }, (error, committed, snapshot) => {
+                if (error) {
+                    console.error('Transaction failed abnormally!', error);
+                } else if (!committed) {
+                    console.log('Transaction aborted.');
+                } else {
+                    const copyLimitElement = document.getElementById(`copy-limit-${key}`);
+                    const copyBtn = copyLimitElement.previousElementSibling;
+                    const vpn = snapshot.val();
+                    const remainingCopies = vpn.copyLimit - vpn.copyCount;
+                    
+                    if (remainingCopies > 0) {
+                        copyLimitElement.textContent = `เหลือ ${remainingCopies} ครั้ง`;
+                    } else {
+                        copyLimitElement.textContent = 'หมดโควต้าคัดลอก';
+                        copyBtn.disabled = true;
+                        // ลบโค้ดออกเมื่อคัดลอกครบจำนวนที่กำหนด
+                        const codeContainer = copyLimitElement.closest('.code-container');
+                        codeContainer.style.animation = 'fadeOut 0.5s';
+                        setTimeout(() => {
+                            codeContainer.remove();
+                        }, 500);
+                    }
+                }
+            });
         }
 
         function showCopyAlert() {
