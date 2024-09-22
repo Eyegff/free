@@ -135,13 +135,29 @@
             70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
         }
+        .loading, .no-data {
+            text-align: center;
+            font-size: 18px;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
-            <!-- VPN codes will be inserted here -->
+            <div class="loading">กำลังค้นหาโค้ด</div>
         </div>
         <div class="instructions">
             <p><strong>วิธีใช้งาน:</strong></p>
@@ -173,25 +189,33 @@
         function updateVPNList(vpnCodes) {
             vpnList.innerHTML = '';
             const now = new Date();
+            let hasValidCodes = false;
 
-            Object.entries(vpnCodes).forEach(([key, vpn]) => {
-                const expiryDate = new Date(vpn.expiry);
-                if (expiryDate > now) {
-                    const codeContainer = document.createElement('div');
-                    codeContainer.className = 'code-container';
-                    codeContainer.innerHTML = `
-                        <p class="vpn-code">${vpn.code}</p>
-                        <div class="code-info">
-                            <span class="expiry-date">หมดอายุ: ${expiryDate.toLocaleString('th-TH')}</span>
-                            <span class="network">เครือข่าย: ${vpn.network}</span>
-                            <span class="countdown" id="countdown-${key}"></span>
-                            <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
-                        </div>
-                    `;
-                    vpnList.appendChild(codeContainer);
-                    updateCountdown(key, expiryDate);
-                }
-            });
+            if (vpnCodes) {
+                Object.entries(vpnCodes).forEach(([key, vpn]) => {
+                    const expiryDate = new Date(vpn.expiry);
+                    if (expiryDate > now) {
+                        hasValidCodes = true;
+                        const codeContainer = document.createElement('div');
+                        codeContainer.className = 'code-container';
+                        codeContainer.innerHTML = `
+                            <p class="vpn-code">${vpn.code}</p>
+                            <div class="code-info">
+                                <span class="expiry-date">หมดอายุ: ${expiryDate.toLocaleString('th-TH')}</span>
+                                <span class="network">เครือข่าย: ${vpn.network}</span>
+                                <span class="countdown" id="countdown-${key}"></span>
+                                <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
+                            </div>
+                        `;
+                        vpnList.appendChild(codeContainer);
+                        updateCountdown(key, expiryDate);
+                    }
+                });
+            }
+
+            if (!hasValidCodes) {
+                vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
+            }
         }
 
         function updateCountdown(key, expiryDate) {
