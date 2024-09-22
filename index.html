@@ -12,6 +12,8 @@
             --secondary-color: #4facfe;
             --bg-color: #0c0c1e;
             --text-color: #ffffff;
+            --accent-color: #ff6b6b;
+            --neon-glow: 0 0 7px var(--primary-color), 0 0 10px var(--primary-color), 0 0 21px var(--primary-color);
         }
         
         body {
@@ -44,7 +46,7 @@
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+            text-shadow: var(--neon-glow);
         }
         .code-container {
             background: rgba(255, 255, 255, 0.05);
@@ -54,6 +56,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            border: 1px solid rgba(0, 242, 254, 0.3);
         }
         .code-container:hover {
             transform: translateY(-5px);
@@ -130,34 +133,99 @@
         .instructions ol {
             padding-left: 20px;
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
         }
-        .loading, .no-data, .found-codes {
-            text-align: center;
-            font-size: 18px;
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 20px;
             color: var(--primary-color);
-            margin: 20px 0;
+            text-shadow: var(--neon-glow);
         }
-        .loading::after {
-            content: '';
-            animation: loading-dots 2s infinite;
+        .loading-animation {
+            width: 100px;
+            height: 100px;
+            border: 3px solid transparent;
+            border-top: 3px solid var(--primary-color);
+            border-right: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite, glow 1.5s ease-in-out infinite alternate;
         }
-        @keyframes loading-dots {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-            100% { content: ''; }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .found-codes {
-            animation: fadeInOut 3s forwards;
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px var(--primary-color);
+            }
+            to {
+                box-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--secondary-color);
+            }
         }
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.5s ease;
+        }
+        .code-count-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .code-count-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.1));
+            filter: blur(10px);
+            z-index: 1;
+        }
+        .code-count-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        .code-count-title {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-shadow: var(--neon-glow);
+        }
+        .code-count-number {
+            font-size: 72px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-shadow: var(--neon-glow);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s ease;
+        }
+        .code-count-number.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -165,7 +233,13 @@
     <div class="container">
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
-            <div class="loading">กำลังค้นหาโค้ด</div>
+            <div class="loading-container">
+                <div class="loading-text">กำลังค้นหาโค้ด</div>
+                <div class="loading-animation"></div>
+                <div class="loading-progress">
+                    <div class="loading-bar" id="loading-bar"></div>
+                </div>
+            </div>
         </div>
         <div class="instructions">
             <p><strong>วิธีใช้งาน:</strong></p>
@@ -193,40 +267,78 @@
         const database = firebase.database();
 
         const vpnList = document.getElementById('vpn-list');
+        const loadingBar = document.getElementById('loading-bar');
+
+        function updateLoadingProgress(progress) {
+            loadingBar.style.width = `${progress}%`;
+        }
+
+        function showCodeCount(count) {
+            vpnList.innerHTML = `
+                <div class="code-count-container">
+                    <div class="code-count-bg"></div>
+                    <div class="code-count-content">
+                        <div class="code-count-title">พบโค้ดทั้งหมด</div>
+                        <div class="code-count-number" id="code-count-number">0</div>
+                    </div>
+                </div>
+            `;
+
+            const countElement = document.getElementById('code-count-number');
+            setTimeout(() => {
+                countElement.classList.add('show');
+                countElement.style.animation = 'pulse 0.5s ease-in-out';
+                let currentCount = 0;
+                const interval = setInterval(() => {
+                    currentCount++;
+                    countElement.textContent = currentCount;
+                    if (currentCount === count) {
+                        clearInterval(interval);
+                    }
+                }, 50);
+            }, 100);
+        }
 
         function updateVPNList(vpnCodes) {
             const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
             const codeCount = validCodes.length;
 
-            // Show loading message for 4 seconds
-            vpnList.innerHTML = '<div class="loading">กำลังค้นหาโค้ด</div>';
-            setTimeout(() => {
-                // Show found codes message for 3 seconds
-                vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
-                setTimeout(() => {
-                    // Display the actual VPN codes
-                    vpnList.innerHTML = '';
-                    if (codeCount > 0) {
-                        validCodes.forEach(([key, vpn]) => {
-                            const codeContainer = document.createElement('div');
-                            codeContainer.className = 'code-container';
-                            codeContainer.innerHTML = `
-                                <p class="vpn-code">${vpn.code}</p>
-                                <div class="code-info">
-                                    <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
-                                    <span class="network">เครือข่าย: ${vpn.network}</span>
-                                    <span class="countdown" id="countdown-${key}"></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
-                                </div>
-                            `;
-                            vpnList.appendChild(codeContainer);
-                            updateCountdown(key, new Date(vpn.expiry));
-                        });
-                    } else {
-                        vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
-                    }
-                }, 3000);
-            }, 4000);
+            // Simulate loading progress for 4 seconds
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 2.5;
+                updateLoadingProgress(progress);
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    
+                    // Show code count for 3 seconds
+                    showCodeCount(codeCount);
+                    
+                    setTimeout(() => {
+                        // Display the actual VPN codes
+                        vpnList.innerHTML = '';
+                        if (codeCount > 0) {
+                            validCodes.forEach(([key, vpn]) => {
+                                const codeContainer = document.createElement('div');
+                                codeContainer.className = 'code-container';
+                                codeContainer.innerHTML = `
+                                    <p class="vpn-code">${vpn.code}</p>
+                                    <div class="code-info">
+                                        <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
+                                        <span class="network">เครือข่าย: ${vpn.network}</span>
+                                        <span class="countdown" id="countdown-${key}"></span>
+                                        <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
+                                    </div>
+                                `;
+                                vpnList.appendChild(codeContainer);
+                                updateCountdown(key, new Date(vpn.expiry));
+                            });
+                        } else {
+                            vpnList.innerHTML = '<div class="loading-text">ไม่พบข้อมูล</div>';
+                        }
+                    }, 3000);
+                }
+            }, 100);
         }
 
         function updateCountdown(key, expiryDate) {
@@ -244,7 +356,7 @@
                     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                    countdownElement.textContent = `เหลือเวลา: ${days}วัน ${hours}ชั่วโมง ${minutes}นาที ${seconds}วินาที`;
+                   countdownElement.textContent = `เหลือเวลา: ${days}วัน ${hours}ชั่วโมง ${minutes}นาที ${seconds}วินาที`;
                     setTimeout(update, 1000);
                 }
             }
