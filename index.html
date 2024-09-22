@@ -2,1163 +2,245 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimal-ui">
-    <title>แหล่งโค้ดฟรีและปล่อยเช่า</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN CHN2 ฟรีโค้ด</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary-color: #00f2fe;
+            --secondary-color: #4facfe;
+            --bg-color: #0c0c1e;
+            --text-color: #ffffff;
+        }
+        
         body {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: #fff;
             font-family: 'Kanit', sans-serif;
-            overflow-x: hidden;
             margin: 0;
             padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            margin: 20px auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #0f3460, #162447);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-
-        .title {
-            text-align: center;
-            font-size: 2.2em;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px #00ffff;
-            position: relative;
-        }
-
-        .title::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: -15px;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            border-radius: 5px;
-        }
-
-        .stats {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            font-size: 1.1em;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(91, 37, 216, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
         }
-
-        .stat-item {
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
+            font-size: 28px;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+        .code-container {
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-        input, button, select {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
-        }
-
-        input, select {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-        }
-
-        button {
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            color: #000;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
-        }
-
-        .error {
-            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(255, 0, 0, 0.2));
-            color: #ff4f4f;
-            border: 1px solid #ff4f4f;
             padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            display: none;
             margin-bottom: 20px;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 15px rgba(255, 79, 79, 0.3);
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 15px rgba(255, 79, 79, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(255, 79, 79, 0.5); }
-            100% { box-shadow: 0 0 15px rgba(255, 79, 79, 0.3); }
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-
-        .server-item {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 15px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
             transition: all 0.3s ease;
-            border: 2px solid rgba(0, 255, 255, 0.3);
         }
-
-        .server-item:hover {
+        .code-container:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
-            border-color: rgba(0, 255, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
         }
-
-        .server-item .timestamp, .server-item .countdown, .server-item .copy-count {
-            display: block;
-            margin-top: 8px;
-            color: #ccc;
-            font-size: 0.85em;
+        .vpn-code {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-bottom: 10px;
+            color: #a0a0a0;
         }
-
-        .server-item button {
-            width: 48%;
-            margin-right: 2%;
-            margin-top: 15px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            color: #000;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .server-item button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
-        }
-
-        .server-item button:last-child {
-            margin-right: 0;
-            background: linear-gradient(90deg, #ff4f4f, #ff00ff);
-        }
-
-        .server-item .extra-tag {
-            background: linear-gradient(135deg, #00ffff, #ff00ff);
-            color: #000;
-            padding: 10px 15px;
-            border-radius: 10px;
+        .code-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 10px;
-            text-align: center;
-            font-size: 1em;
+            flex-wrap: wrap;
+        }
+        .expiry-date, .network, .countdown {
+            font-size: 12px;
+            color: #888;
+            margin-right: 10px;
+        }
+        .countdown {
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            color: var(--primary-color);
+        }
+        .copy-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-
-        .server-item .extra-tag::after {
+        .copy-btn::before {
             content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: rotate(45deg) translate(-100%, -100%); }
-            100% { transform: rotate(45deg) translate(100%, 100%); }
-        }
-
-        .price-tag {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, #ff00ff, #00ffff);
-            color: #000;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .carrier-tag {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            background: linear-gradient(90deg, #ff00ff, #00ffff);
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .fire-animation {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #ff4f4f;
-            animation: blink 1s infinite;
-            margin-left: 5px;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .copy-button {
-            margin-top: 15px;
-            background: linear-gradient(90deg, #00ff00, #00ffff);
-            color: #000;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .copy-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
-        }
-
-        .password-container {
-            position: relative;
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 16px;
-            cursor: pointer;
-            color: #00ffff;
-            font-weight: bold;
-        }
-
-        #passwordModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(26, 26, 46, 0.95);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        #passwordModal .modal-content {
-            background: linear-gradient(135deg, #0f3460, #162447);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            color: #fff;
-            width: 80%;
-            max-width: 350px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-
-        .cancel-button {
-            background: linear-gradient(90deg, #ff4f4f, #ff00ff);
-            color: #fff;
-            margin-top: 15px;
-        }
-
-        #backButton {
-            background: linear-gradient(90deg, #555, #777);
-            color: #fff;
-            margin-top: 15px;
-        }
-
-        .facebook-button {
-            margin-top: 15px;
-            width: 100%;
-            background-color: #4267B2;
-            color: white;
-            padding: 10px;
-            font-size: 0.85em;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .facebook-button:hover {
-            background-color: #365899;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(66, 103, 178, 0.4);
-        }
-
-        .facebook-button i {
-            margin-right: 10px;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            font-weight: 500;
-            color: #fff;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            max-width: 300px;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .notification.success {
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-        }
-
-        .notification.error {
-            background: linear-gradient(90deg, #F44336, #d32f2f);
-        }
-
-        .notification.info {
-            background: linear-gradient(90deg, #2196F3, #1976d2);
-        }
-
-        .notification-icon {
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-
-        .password-display {
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.9em;
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
         }
-
-        .loading-overlay {
+        .copy-btn:hover::before {
+            left: 100%;
+        }
+        .copy-alert {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            transition: opacity 0.3s ease;
         }
-
-        .loading-overlay.show {
-            opacity: 1;
-            visibility: visible;
+        .instructions {
+            margin-top: 30px;
+            font-size: 14px;
+            line-height: 1.6;
         }
-
-    .loading-spinner {
-            width: 100px;
-            height: 100px;
-            border: 5px solid transparent;
-            border-top: 5px solid #00ffff;
-            border-right: 5px solid #ff00ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .instructions ol {
+            padding-left: 20px;
         }
-
-        .loading-text {
-            position: absolute;
-            color: #fff;
-            font-size: 1.2em;
-            margin-top: 120px;
-            text-align: center;
-            text-shadow: 0 0 10px #00ffff;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .star-rating {
-            font-size: 1.5em;
-            color: #FFD700;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .seller-credit {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .likes-count {
-            margin-left: 10px;
-            font-size: 0.9em;
-            color: #fff;
-        }
-
-        .premium-seller {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                margin: 10px auto;
-                padding: 15px;
-            }
-
-            .title {
-                font-size: 1.8em;
-                margin-bottom: 20px;
-            }
-
-            input, button, select {
-                padding: 12px;
-                font-size: 0.9em;
-            }
-
-            .server-item {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-
-            .price-tag {
-                top: 15px;
-                right: 15px;
-                padding: 6px 10px;
-                font-size: 0.85em;
-            }
-
-            .carrier-tag {
-                top: 50px;
-                right: 15px;
-                padding: 4px 8px;
-                font-size: 0.8em;
-            }
-
-            .facebook-button {
-                padding: 8px;
-                font-size: 0.8em;
-            }
-
-            .stats {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .stat-item {
-                margin-bottom: 10px;
-                width: 100%;
-            }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="stats">
-        <div class="stat-item" id="totalCodes">โค้ดทั้งหมด: 0</div>
-        <div class="stat-item" id="onlineUsers">ผู้ใช้ออนไลน์: 0</div>
-        <div class="stat-item" id="totalVisitors">ผู้เข้าชมทั้งหมด: 0</div>
-    </div>
-
-    <div id="codeDisplay">
-        <!-- โค้ดที่ส่งมาจะมาแสดงตรงนี้ -->
-    </div>
-
-    <div id="codeForm" style="display: none;">
-        <div class="error" id="errorMessage">
-            <i class="fas fa-exclamation-triangle"></i> กรุณากรอกข้อมูลให้ครบทุกช่องเพื่อส่งโค้ด
+    <div class="container">
+        <h1>VPN CHN2 ฟรีโค้ด</h1>
+        <div id="vpn-list">
+            <!-- VPN codes will be inserted here -->
         </div>
-        <input type="text" id="serverNameInput" placeholder="ตั้งชื่อเซิร์ฟเวอร์">
-        <input type="text" id="codeInput" placeholder="ใส่โค้ดที่นี่ (vless://...)">
-        <input type="number" id="priceInput" placeholder="ตั้งราคาโค้ด">
-        <input type="number" id="copyLimitInput" placeholder="กำหนดจำนวนครั้งที่สามารถคัดลอกได้">
-        <select id="carrierInput">
-            <option value="">กรุณาเลือกเครือค่าย</option>
-            <option value="TRUE">TRUE</option>
-            <option value="AIS">AIS</option>
-            <option value="DTAC">DTAC</option>
-        </select>
-        <div id="priceError" class="error" style="display: none;">ห้ามตั้งราคาเกิน 200 บาท!</div>
-
-        <input type="file" id="profilePictureInput" accept="image/*">
-
-        <div class="password-container">
-            <input type="tel" id="passwordInputForm" placeholder="ตั้งรหัสผ่านดูโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInputForm')">แสดง</span>
+        <div class="instructions">
+            <p><strong>วิธีใช้งาน:</strong></p>
+            <ol>
+                <li>เลือกและคัดลอก URL ที่ต้องการใช้</li>
+                <li>นำไปวางในแอพ VPN ที่รองรับ vless</li>
+                <li>กดเชื่อมต่อเพื่อใช้งาน VPN</li>
+            </ol>
         </div>
-        <div class="password-container">
-            <input type="tel" id="deletePasswordInputForm" placeholder="ตั้งรหัสผ่านลบโค้ด 6 หลัก" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('deletePasswordInputForm')">แสดง</span>
-        </div>
-        <input type="text" id="facebookInput" placeholder="กรุณาใส่ลิงก์ Facebook">
-        <input type="datetime-local" id="expiryInput" placeholder="กรุณาใส่วันหมดอายุ">
-        <button id="sendButton">ส่งโค้ด</button>
-        <button id="backButton" style="display: none;">ย้อนกลับ</button>
     </div>
+    <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
 
-    <button id="showFormButton">ปล่อยโค้ด</button>
-</div>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-<div id="passwordModal">
-    <div class="modal-content">
-        <p id="passwordPrompt">กรุณาใส่รหัสผ่านเพื่อดูโค้ดหรือลบ</p>
-        <div class="password-container">
-            <input type="tel" id="passwordInput" placeholder="รหัสผ่าน" inputmode="numeric" pattern="[0-9]*">
-            <span class="password-toggle" onclick="togglePasswordVisibility('passwordInput')">แสดง</span>
-        </div>
-        <button id="passwordSubmit">ยืนยัน</button>
-        <button class="cancel-button" id="passwordCancel">ยกเลิก</button>
-    </div>
-</div>
-
-<div id="notification" class="notification"></div>
-
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">กำลังส่งโค้ด...</div>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded, onValue, remove, update, set, onDisconnect, increment, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "API_KEY",
-    authDomain: "ukgyry.firebaseapp.com",
-    databaseURL: "https://ukgyry-default-rtdb.firebaseio.com",
-    projectId: "ukgyry",
-    storageBucket: "ukgyry.appspot.com",
-    messagingSenderId: "782837816686",
-    appId: "1:782837816686:web:230328cfddb9d70ca8357f",
-    measurementId: "G-RP7VJEN1BP"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-
-  const codeDisplay = document.getElementById('codeDisplay');
-  const showFormButton = document.getElementById('showFormButton');
-  const codeForm = document.getElementById('codeForm');
-  const serverNameInput = document.getElementById('serverNameInput');
-  const codeInput = document.getElementById('codeInput');
-  const passwordInputForm = document.getElementById('passwordInputForm');
-  const deletePasswordInputForm = document.getElementById('deletePasswordInputForm');
-  const facebookInput = document.getElementById('facebookInput');
-  const expiryInput = document.getElementById('expiryInput');
-  const sendButton = document.getElementById('sendButton');
-  const errorMessage = document.getElementById('errorMessage');
-  const priceInput = document.getElementById('priceInput');
-  const priceError = document.getElementById('priceError');
-  const passwordModal = document.getElementById('passwordModal');
-  const passwordInput = document.getElementById('passwordInput');
-  const passwordSubmit = document.getElementById('passwordSubmit');
-  const passwordCancel = document.getElementById('passwordCancel');
-  const backButton = document.getElementById('backButton');
-  const passwordPrompt = document.getElementById('passwordPrompt');
-  const copyLimitInput = document.getElementById('copyLimitInput');
-  const profilePictureInput = document.getElementById('profilePictureInput');
-  const totalCodesElement = document.getElementById('totalCodes');
-  const onlineUsersElement = document.getElementById('onlineUsers');
-  const totalVisitorsElement = document.getElementById('totalVisitors');
-  const carrierInput = document.getElementById('carrierInput');
-
-  let currentServerId = null;
-  let currentButton = null;
-  let currentAction = null;
-
-  window.togglePasswordVisibility = function(inputId) {
-      const input = document.getElementById(inputId);
-      const toggle = input.parentElement.querySelector('.password-toggle');
-      if (input.type === 'tel') {
-          input.type = 'text';
-          toggle.textContent = 'ซ่อน';
-      } else {
-          input.type = 'tel';
-          toggle.textContent = 'แสดง';
-      }
-  }
-
-  function setExpiryDateLimits() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      const minDate = `${year}-${month}-${day}T00:00`;
-      const maxDate = `${year}-12-31T23:59`;
-      expiryInput.setAttribute('min', minDate);
-      expiryInput.setAttribute('max', maxDate);
-      expiryInput.value = minDate;
-  }
-
-  setExpiryDateLimits();
-
-  function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imgPreview = document.createElement('img');
-            imgPreview.src = e.target.result;
-            imgPreview.style.width = '50px';
-            imgPreview.style.height = '50px';
-            imgPreview.style.borderRadius = '50%';
-            imgPreview.style.objectFit = 'cover';
-            imgPreview.style.marginRight = '10px';
-            imgPreview.alt = 'Profile Image';
-
-            const serverNameDiv = document.getElementById('serverNameDisplay');
-            if (serverNameDiv) {
-                serverNameDiv.insertBefore(imgPreview, serverNameDiv.firstChild);
-            }
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
         };
-        reader.readAsDataURL(file);
-    }
-  }
 
-  profilePictureInput.addEventListener('change', handleImageUpload);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-  showFormButton.addEventListener('click', () => {
-      codeForm.style.display = 'block';
-      showFormButton.style.display = 'none';
-      backButton.style.display = 'block';
-  });
+        const vpnList = document.getElementById('vpn-list');
 
-  backButton.addEventListener('click', () => {
-      codeForm.style.display = 'none';
-      showFormButton.style.display = 'block';
-      backButton.style.display = 'none';
-  });
+        function updateVPNList(vpnCodes) {
+            vpnList.innerHTML = '';
+            const now = new Date();
 
-  priceInput.addEventListener('change', () => {
-      const price = parseFloat(priceInput.value);
-      if (price > 200) {
-          priceError.style.display = 'block';
-      } else {
-          priceError.style.display = 'none';
-      }
-  });
+            Object.entries(vpnCodes).forEach(([key, vpn]) => {
+                const expiryDate = new Date(vpn.expiry);
+                if (expiryDate > now) {
+                    const codeContainer = document.createElement('div');
+                    codeContainer.className = 'code-container';
+                    codeContainer.innerHTML = `
+                        <p class="vpn-code">${vpn.code}</p>
+                        <div class="code-info">
+                            <span class="expiry-date">หมดอายุ: ${expiryDate.toLocaleString('th-TH')}</span>
+                            <span class="network">เครือข่าย: ${vpn.network}</span>
+                            <span class="countdown" id="countdown-${key}"></span>
+                            <button class="copy-btn" onclick="copyToClipboard('${vpn.code}')">คัดลอก</button>
+                        </div>
+                    `;
+                    vpnList.appendChild(codeContainer);
+                    updateCountdown(key, expiryDate);
+                }
+            });
+        }
 
-  function formatThaiTime(timestamp) {
-      const options = { timeZone: 'Asia/Bangkok', hour12: false };
-      const date = new Date(timestamp).toLocaleString('th-TH', options);
-      return `เวลา: ${date}`;
-  }
+        function updateCountdown(key, expiryDate) {
+            const countdownElement = document.getElementById(`countdown-${key}`);
+            
+            function update() {
+                const now = new Date();
+                const timeLeft = expiryDate - now;
 
-  sendButton.addEventListener('click', () => {
-      const profileImage = profilePictureInput.files[0];
-      const serverName = serverNameInput.value.trim();
-      const code = codeInput.value.trim();
-      const passwordForm = passwordInputForm.value.trim();
-      const deletePasswordForm = deletePasswordInputForm.value.trim();
-      const facebookLinkValue = facebookInput.value.trim();
-      const expiryTime = expiryInput.value.trim();
-      const price = parseFloat(priceInput.value.trim());
-      const copyLimit = parseInt(copyLimitInput.value.trim());
-      const carrier = carrierInput.value;
+                if (timeLeft <= 0) {
+                    countdownElement.textContent = "หมดอายุแล้ว";
+                } else {
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-      if (serverName && code && passwordForm && deletePasswordForm && facebookLinkValue && expiryTime && price <= 200 && copyLimit > 0 && carrier) {
-          sendButton.disabled = true;
-          document.getElementById('loadingOverlay').classList.add('show');
+                    countdownElement.textContent = `เหลือเวลา: ${days}วัน ${hours}ชั่วโมง ${minutes}นาที ${seconds}วินาที`;
+                    setTimeout(update, 1000);
+                }
+            }
 
-          serverNameInput.disabled = true;
-          codeInput.disabled = true;
-          passwordInputForm.disabled = true;
-          deletePasswordInputForm.disabled = true;
-          facebookInput.disabled = true;
-          expiryInput.disabled = true;
-          priceInput.disabled = true;
-          copyLimitInput.disabled = true;
-          carrierInput.disabled = true;
+            update();
+        }
 
-          const reader = new FileReader();
-          reader.onloadend = function() {
-              const uploadDelay = Math.floor(Math.random() * 6) + 3;
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            showCopyAlert();
+        }
 
-              setTimeout(() => {
-                  const codeRef = ref(database, 'servers');
-                  const timestamp = new Date().toISOString();
-                 push(codeRef, {
-                      serverName: serverName,
-                      code: code,
-                      password: passwordForm,
-                      deletePassword: deletePasswordForm,
-                      facebookLink: facebookLinkValue,
-                      expiryTime: expiryTime,
-                      timestamp: timestamp,
-                      price: price,
-                      copyLimit: copyLimit,
-                      copyCount: 0,
-                      profileImage: reader.result,
-                      carrier: carrier,
-                      likes: 0,
-                      sellerCredit: 0
-                  })
-                  .then(() => {
-                      console.log('ส่งข้อมูลสำเร็จ');
-                      showNotification('ส่งโค้ดสำเร็จ', 'success');
-                      resetForm();
-                      document.getElementById('loadingOverlay').classList.remove('show');
-                      sendButton.disabled = false;
-                      serverNameInput.disabled = false;
-                      codeInput.disabled = false;
-                      passwordInputForm.disabled = false;
-                      deletePasswordInputForm.disabled = false;
-                      facebookInput.disabled = false;
-                      expiryInput.disabled = false;
-                      priceInput.disabled = false;
-                      copyLimitInput.disabled = false;
-                      carrierInput.disabled = false;
-                  })
-                  .catch((error) => {
-                      console.error('เกิดข้อผิดพลาดในการส่งข้อมูล:', error);
-                      showNotification('เกิดข้อผิดพลาดในการส่งข้อมูล', 'error');
-                      document.getElementById('loadingOverlay').classList.remove('show');
-                      sendButton.disabled = false;
-                      serverNameInput.disabled = false;
-                      codeInput.disabled = false;
-                      passwordInputForm.disabled = false;
-                      deletePasswordInputForm.disabled = false;
-                      facebookInput.disabled = false;
-                      expiryInput.disabled = false;
-                      priceInput.disabled = false;
-                      copyLimitInput.disabled = false;
-                      carrierInput.disabled = false;
-                  });
-              }, uploadDelay * 1000);
+        function showCopyAlert() {
+            const alert = document.getElementById('copyAlert');
+            alert.style.opacity = '1';
+            setTimeout(() => {
+                alert.style.opacity = '0';
+            }, 2000);
+        }
 
-              errorMessage.style.display = 'none';
-          };
-
-          if (profileImage) {
-              reader.readAsDataURL(profileImage);
-          } else {
-              reader.onloadend();
-          }
-      } else {
-          errorMessage.style.display = 'block';
-      }
-  });
-
-  function resetForm() {
-      serverNameInput.value = '';
-      codeInput.value = '';
-      passwordInputForm.value = '';
-      deletePasswordInputForm.value = '';
-      facebookInput.value = '';
-      expiryInput.value = '';
-      priceInput.value = '';
-      copyLimitInput.value = '';
-      profilePictureInput.value = '';
-      carrierInput.value = '';
-      codeForm.style.display = 'none';
-      showFormButton.style.display = 'block';
-      backButton.style.display = 'none';
-  }
-
-  function createServerElement(serverData, serverId) {
-      const serverElement = document.createElement('div');
-      serverElement.classList.add('server-item');
-
-      const profileImage = serverData.profileImage ? `<img src="${serverData.profileImage}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` : '';
-
-      const priceTag = document.createElement('div');
-      priceTag.classList.add('price-tag');
-      priceTag.innerHTML = `${serverData.price} บาท <span class="fire-animation"></span>`;
-
-      const carrierTag = document.createElement('div');
-      carrierTag.classList.add('carrier-tag');
-      carrierTag.textContent = serverData.carrier;
-
-      const extraTags = [
-          "คนนี้เน็ตแรงมากเลย",
-          "ความเร็วระดับเทพ",
-          "สปีดเน็ตเหนือชั้น",
-          "อินเทอร์เน็ตเร็วปรี๊ด",
-          "ความเร็วไม่ตก",
-          "เน็ตแรงทะลุพิกัด"
-      ];
-      const randomTagIndex = Math.floor(Math.random() * extraTags.length);
-      const extraTag = document.createElement('div');
-      extraTag.classList.add('extra-tag');
-      extraTag.textContent = extraTags[randomTagIndex];
-
-      const starRating = document.createElement('div');
-      starRating.classList.add('star-rating');
-      starRating.innerHTML = '★★★★★';
-      starRating.dataset.rating = 0;
-
-      const likesCount = document.createElement('span');
-      likesCount.classList.add('likes-count');
-      likesCount.textContent = `${serverData.likes || 0} likes`;
-
-      const sellerCredit = document.createElement('div');
-      sellerCredit.classList.add('seller-credit');
-      sellerCredit.textContent = `Seller Credit: ${serverData.sellerCredit || 0}`;
-
-      serverElement.innerHTML = `
-          ${profileImage}
-          <span style="font-size: 1.2em; font-weight: bold;">${serverData.serverName}</span>
-          <span class="timestamp">${formatThaiTime(serverData.timestamp)}</span>
-          <span class="countdown"></span>
-          <span class="copy-count">คัดลอกแล้ว: ${serverData.copyCount || 0}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - (serverData.copyCount || 0)} ครั้ง)</span>
-          <div>
-              <button onclick="requestPasswordAndShowCode('${serverId}', this)">ดูโค้ด</button>
-              <button onclick="requestPasswordToDelete('${serverId}', this)" style="background-color: #ff4f4f;">ลบ</button>
-          </div>
-      `;
-
-      serverElement.appendChild(priceTag);
-      serverElement.appendChild(carrierTag);
-      serverElement.appendChild(extraTag);
-      serverElement.appendChild(starRating);
-      serverElement.appendChild(likesCount);
-      serverElement.appendChild(sellerCredit);
-
-      if (serverData.sellerCredit >= 100) {
-          const premiumBadge = document.createElement('div');
-          premiumBadge.classList.add('premium-seller');
-          premiumBadge.textContent = '🌟 Premium Seller';
-          serverElement.appendChild(premiumBadge);
-      }
-
-      const facebookButton = document.createElement('a');
-      facebookButton.href = serverData.facebookLink;
-      facebookButton.classList.add('facebook-button');
-      facebookButton.target = '_blank';
-      facebookButton.innerHTML = `<i class="fab fa-facebook-f"></i> ไปยังเฟซบุ๊ก`;
-
-      serverElement.appendChild(facebookButton);
-
-      if (serverData.price === 0) {
-          const passwordDisplay = document.createElement('div');
-          passwordDisplay.classList.add('password-display');
-          passwordDisplay.textContent = `รหัสดูโค้ด: ${serverData.password}`;
-          serverElement.appendChild(passwordDisplay);
-      }
-
-      starRating.addEventListener('click', () => {
-          const currentRating = parseInt(starRating.dataset.rating);
-          const newRating = currentRating < 5 ? currentRating + 1 : 0;
-          starRating.dataset.rating = newRating;
-          updateStarRating(starRating, newRating);
-          updateLikes(serverId, newRating > 0);
-      });
-
-      return serverElement;
-  }
-
-  function updateStarRating(starElement, rating) {
-      starElement.innerHTML = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-  }
-
-  function updateLikes(serverId, isLike) {
-      const serverRef = ref(database, `servers/${serverId}`);
-      get(serverRef).then((snapshot) => {
-          if (snapshot.exists()) {
-              const currentLikes = snapshot.val().likes || 0;
-              const currentSellerCredit = snapshot.val().sellerCredit || 0;
-              const updates = {};
-              if (isLike) {
-                  updates.likes = currentLikes + 1;
-                  updates.sellerCredit = currentSellerCredit + 1;
-              } else {
-                  updates.likes = Math.max(0, currentLikes - 1);
-              }
-              update(serverRef, updates);
-          }
-      });
-  }
-
-  const codeRefDB = ref(database, 'servers');
-  onChildAdded(codeRefDB, (snapshot) => {
-      const serverData = snapshot.val();
-      const serverId = snapshot.key;
-      const serverElement = createServerElement(serverData, serverId);
-      codeDisplay.appendChild(serverElement);
-      codeDisplay.scrollTop = codeDisplay.scrollHeight;
-
-      updateCountdown(serverId, serverElement.querySelector('.countdown'), serverData.expiryTime);
-      updateTotalCodes();
-  });
-
-  function updateCountdown(serverId, expiryTimeElement, expiryTime) {
-      const interval = setInterval(() => {
-          const now = new Date().getTime();
-          const expiry = new Date(expiryTime).getTime();
-          const distance = expiry - now;
-
-          if (distance <= 0) {
-              expiryTimeElement.innerHTML = "หมดอายุ";
-              clearInterval(interval);
-              const codeToRemoveRef = ref(database, `servers/${serverId}`);
-              remove(codeToRemoveRef).then(() => {
-                  console.log("ลบโค้ดที่หมดอายุแล้ว");
-                  updateTotalCodes();
-              });
-          } else {
-              const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-              const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-              const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-              expiryTimeElement.innerHTML = `${days} วัน ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-          }
-      }, 1000);
-  }
-
-  window.requestPasswordAndShowCode = function (serverId, button) {
-      currentServerId = serverId;
-      currentButton = button;
-      currentAction = 'show';
-      passwordPrompt.textContent = 'กรุณาใส่รหัสผ่านเพื่อดูโค้ด';
-      passwordModal.style.display = 'flex';
-  };
-
-  window.requestPasswordToDelete = function (serverId, button) {
-      currentServerId = serverId;
-      currentButton = button;
-      currentAction = 'delete';
-      passwordPrompt.textContent = 'กรุณาใส่รหัสผ่านเพื่อลบโค้ด';
-      passwordModal.style.display = 'flex';
-  };
-
-  passwordSubmit.addEventListener('click', () => {
-      const inputPassword = passwordInput.value;
-      const codeRefSingle = ref(database, `servers/${currentServerId}`);
-
-      onValue(codeRefSingle, (snapshot) => {
-          const serverData = snapshot.val();
-          if (currentAction === 'show' && inputPassword === serverData.password) {
-              showCode(currentServerId, currentButton);
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
-          } else if (currentAction === 'delete' && inputPassword === serverData.deletePassword) {
-              deleteCode(currentServerId, currentButton);
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
-          } else {
-              showNotification('รหัสผ่านไม่ถูกต้อง!', 'error');
-              passwordModal.style.display = 'none';
-              passwordInput.value = '';
-          }
-      }, { onlyOnce: true });
-  });
-
-  passwordCancel.addEventListener('click', () => {
-      passwordModal.style.display = 'none';
-      passwordInput.value = '';
-  });
-
-  function showCode(serverId, button) {
-      currentServerId = serverId;
-      const codeRefSingle = ref(database, `servers/${serverId}`);
-      const codeElement = document.createElement('p');
-      const copyButton = document.createElement('button');
-      copyButton.textContent = "คัดลอกโค้ด";
-      copyButton.classList.add('copy-button');
-      codeElement.classList.add('code-content');
-
-      button.textContent = "ซ่อนโค้ด";
-      onValue(codeRefSingle, (snapshot) => {
-          const serverData = snapshot.val();
-          codeElement.textContent = serverData.code;
-          button.parentNode.parentNode.appendChild(codeElement);
-          button.parentNode.parentNode.appendChild(copyButton);
-
-          copyButton.addEventListener('click', () => {
-              navigator.clipboard.writeText(serverData.code).then(() => {
-                  const newCopyCount = (serverData.copyCount || 0) + 1;
-                  if (newCopyCount >= serverData.copyLimit) {
-                      showPurchaseSuccessful(button, serverId);
-                  } else {
-                      update(codeRefSingle, { copyCount: newCopyCount });
-                      showNotification('คัดลอกโค้ดสำเร็จ', 'success');
-                      const copyCountElement = button.parentNode.parentNode.querySelector('.copy-count');
-                      copyCountElement.textContent = `คัดลอกแล้ว: ${newCopyCount}/${serverData.copyLimit} (เหลือ ${serverData.copyLimit - newCopyCount} ครั้ง)`;
-                  }
-                  hideCode(button);
-              });
-          });
-      });
-
-      button.onclick = () => hideCode(button);
-  }
-
-  function showPurchaseSuccessful(button, serverId) {
-      showNotification('ซื้อสำเร็จ', 'success');
-
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
-      remove(codeToRemoveRef).then(() => {
-          console.log("ลบโค้ดหลังจากซื้อสำเร็จ");
-          updateTotalCodes();
-      });
-
-      setTimeout(() => {
-          button.parentNode.parentNode.remove();
-      }, 3000);
-  }
-
-  function hideCode(button) {
-      button.textContent = "ดูโค้ด";
-      const codeToHide = button.parentNode.parentNode.querySelector('.code-content');
-      const copyButton = button.parentNode.parentNode.querySelector('.copy-button');
-      if (codeToHide) {
-          codeToHide.remove();
-      }
-      if (copyButton) {
-          copyButton.remove();
-      }
-
-      button.onclick = () => requestPasswordAndShowCode(currentServerId, button);
-  }
-
-  function deleteCode(serverId, button) {
-      const codeToRemoveRef = ref(database, `servers/${serverId}`);
-      remove(codeToRemoveRef)
-          .then(() => {
-              console.log('ลบข้อมูลสำเร็จ');
-              showNotification('ลบโค้ดสำเร็จ', 'success');
-              button.parentNode.parentNode.remove();
-              updateTotalCodes();
-          })
-          .catch((error) => {
-              console.error('เกิดข้อผิดพลาดในการลบข้อมูล:', error);
-              showNotification('เกิดข้อผิดพลาดในการลบข้อมูล', 'error');
-          });
-  }
-
-  function showNotification(message, type = 'info') {
-      const notification = document.getElementById('notification');
-      let icon = '';
-      switch (type) {
-          case 'success':
-              icon = '<i class="fas fa-check-circle notification-icon"></i>';
-              break;
-          case 'error':
-              icon = '<i class="fas fa-exclamation-circle notification-icon"></i>';
-              break;
-          default:
-              icon = '<i class="fas fa-info-circle notification-icon"></i>';
-      }
-      notification.innerHTML = `${icon}<span>${message}</span>`;
-      notification.className = `notification ${type} show`;
-      
-      setTimeout(() => {
-          notification.className = 'notification';
-      }, 3000);
-  }
-
-  function updateTotalCodes() {
-      const codeRef = ref(database, 'servers');
-      onValue(codeRef, (snapshot) => {
-          const totalCodes = snapshot.size;
-          totalCodesElement.textContent = `โค้ดทั้งหมด: ${totalCodes}`;
-      });
-  }
-
-  function handleOnlineUsers() {
-    const userId = Date.now().toString();
-    const userStatusRef = ref(database, 'status/' + userId);
-    const connectedRef = ref(database, '.info/connected');
-
-    onValue(connectedRef, (snap) => {
-      if (snap.val() === true) {
-        set(userStatusRef, true);
-        onDisconnect(userStatusRef).remove();
-      }
-    });
-
-    const onlineUsersRef = ref(database, 'status');
-    onValue(onlineUsersRef, (snapshot) => {
-      const onlineUsers = snapshot.size;
-      onlineUsersElement.textContent = `ผู้ใช้ออนไลน์: ${onlineUsers}`;
-    });
-  }
-
-  function handleTotalVisitors() {
-    const visitorsRef = ref(database, 'visitors');
-    
-    get(visitorsRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        set(visitorsRef, increment(1));
-      } else {
-        set(visitorsRef, 1);
-      }
-    });
-
-    onValue(visitorsRef, (snapshot) => {
-      const totalVisitors = snapshot.val() || 0;
-      totalVisitorsElement.textContent = `ผู้เข้าชมทั้งหมด: ${totalVisitors}`;
-    });
-  }
-
-  updateTotalCodes();
-  handleOnlineUsers();
-  handleTotalVisitors();
-</script>
-
+        // Listen for changes in the database
+        database.ref('vpnCodes').on('value', (snapshot) => {
+            const vpnCodes = snapshot.val();
+            updateVPNList(vpnCodes);
+        });
+    </script>
 </body>
 </html>
