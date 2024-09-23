@@ -50,37 +50,6 @@
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
         }
-        .app-selection {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .app-btn, .back-btn {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
-            border: none;
-            padding: 15px 30px;
-            margin: 10px 0;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 80%;
-            text-align: center;
-        }
-        .app-btn:hover, .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
-        }
-        .back-btn {
-            background: var(--bg-color);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            width: auto;
-            margin-top: 20px;
-        }
         .code-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
@@ -103,13 +72,15 @@
         }
         .code-info {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
         .expiry-date, .network, .countdown, .copy-limit {
             font-size: 12px;
             color: #888;
-            margin-bottom: 5px;
+            margin-right: 10px;
         }
         .countdown {
             font-weight: bold;
@@ -127,8 +98,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            align-self: flex-start;
-            margin-top: 10px;
         }
         .copy-btn::before {
             content: '';
@@ -168,6 +137,11 @@
         }
         .instructions ol {
             padding-left: 20px;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
         }
         .loading, .no-data, .found-codes {
             text-align: center;
@@ -211,43 +185,32 @@
             font-size: 24px;
             z-index: 9999;
         }
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="app-selection-page">
-            <h1>เลือกแอพ VPN</h1>
-            <div class="app-selection">
-                <button class="app-btn" onclick="selectApp('v2ray')">V2RAY V2BOX</button>
-                <button class="app-btn" onclick="selectApp('netmod')">NetMod</button>
-            </div>
+        <h1>VPN CHN2 ฟรีโค้ด</h1>
+        <div id="vpn-list">
+            <div class="loading">กำลังค้นหาโค้ด</div>
         </div>
-        <div id="vpn-codes-page" class="hidden">
-            <h1>VPN CHN2 ฟรีโค้ด</h1>
-            <div id="vpn-list"></div>
-            <div class="instructions">
-                <p><strong>วิธีใช้งาน:</strong></p>
-                <ol>
-                    <li>เลือกและคัดลอก URL ที่ต้องการใช้</li>
-                    <li>นำไปวางในแอพ VPN ที่รองรับ vless</li>
-                    <li>กดเชื่อมต่อเพื่อใช้งาน VPN</li>
-                </ol>
-            </div>
-            <button class="back-btn" onclick="goBack()">กลับไปเลือกแอพ</button>
+        <div class="instructions">
+            <p><strong>วิธีใช้งาน:</strong></p>
+            <ol>
+                <li>เลือกและคัดลอก URL ที่ต้องการใช้</li>
+                <li>นำไปวางในแอพ VPN ที่รองรับ vless</li>
+                <li>กดเชื่อมต่อเพื่อใช้งาน VPN</li>
+            </ol>
         </div>
     </div>
     <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
     <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
 
-    <!-- Firebase scripts -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // Firebase configuration
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
         };
@@ -257,41 +220,18 @@
         const database = firebase.database();
 
         const vpnList = document.getElementById('vpn-list');
-        const appSelectionPage = document.getElementById('app-selection-page');
-        const vpnCodesPage = document.getElementById('vpn-codes-page');
-        let selectedApp = '';
 
-        function selectApp(app) {
-            selectedApp = app;
-            appSelectionPage.classList.add('hidden');
-            vpnCodesPage.classList.remove('hidden');
-            updateVPNList();
-        }
-
-        function goBack() {
-            appSelectionPage.classList.remove('hidden');
-            vpnCodesPage.classList.add('hidden');
-            selectedApp = '';
-            vpnList.innerHTML = '';
-        }
-
-        function updateVPNList() {
-            database.ref('vpnCodes').once('value', (snapshot) => {
-                const vpnCodes = snapshot.val();
-                displayVPNCodes(vpnCodes);
-            });
-        }
-
-        function displayVPNCodes(vpnCodes) {
-            const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => {
-                return new Date(vpn.expiry) > new Date() && vpn.app === selectedApp;
-            });
+        function updateVPNList(vpnCodes) {
+            const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
             const codeCount = validCodes.length;
 
+            // Show loading message for 4 seconds
             vpnList.innerHTML = '<div class="loading">กำลังค้นหาโค้ด</div>';
             setTimeout(() => {
+                // Show found codes message for 3 seconds
                 vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
                 setTimeout(() => {
+                    // Display the actual VPN codes
                     vpnList.innerHTML = '';
                     if (codeCount > 0) {
                         validCodes.forEach(([key, vpn]) => {
@@ -305,8 +245,8 @@
                                     <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
                                     <span class="network">เครือข่าย: ${vpn.network}</span>
                                     <span class="countdown" id="countdown-${key}"></span>
-                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
                                     <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
+                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
                                 </div>
                             `;
                             vpnList.appendChild(codeContainer);
@@ -342,7 +282,7 @@
             update();
         }
 
-      function copyToClipboard(text, key) {
+        function copyToClipboard(text, key) {
             const textArea = document.createElement('textarea');
             textArea.value = text;
             document.body.appendChild(textArea);
@@ -375,7 +315,7 @@
                         
                         // ลบโค้ดออกจากหน้าเว็บ
                         const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
-                        if (codeContainer) {
+                       if (codeContainer) {
                             codeContainer.style.animation = 'fadeOut 0.5s';
                             setTimeout(() => {
                                 codeContainer.remove();
@@ -403,9 +343,7 @@
         // Listen for changes in the database
         database.ref('vpnCodes').on('value', (snapshot) => {
             const vpnCodes = snapshot.val();
-            if (selectedApp) {
-                displayVPNCodes(vpnCodes);
-            }
+            updateVPNList(vpnCodes);
         });
 
         // ป้องกันการใช้คีย์ลัดคัดลอก
