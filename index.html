@@ -27,6 +27,10 @@
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(91, 37, 216, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
                 radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         .container {
             width: 90%;
@@ -167,6 +171,20 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +203,7 @@
         </div>
     </div>
     <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
+    <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
 
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -296,7 +315,7 @@
                         
                         // ลบโค้ดออกจากหน้าเว็บ
                         const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
-                        if (codeContainer) {
+                       if (codeContainer) {
                             codeContainer.style.animation = 'fadeOut 0.5s';
                             setTimeout(() => {
                                 codeContainer.remove();
@@ -325,6 +344,28 @@
         database.ref('vpnCodes').on('value', (snapshot) => {
             const vpnCodes = snapshot.val();
             updateVPNList(vpnCodes);
+        });
+
+        // ป้องกันการใช้คีย์ลัดคัดลอก
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+            }
+        });
+
+        // ปิดการใช้งานคลิกขวา
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // แสดง overlay เมื่อพยายามถ่ายภาพหน้าจอ (ใช้ได้เฉพาะบางเบราว์เซอร์)
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                document.getElementById('overlay').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('overlay').style.display = 'none';
+                }, 3000);
+            }
         });
     </script>
 </body>
