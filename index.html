@@ -333,8 +333,7 @@
                     console.log('Transaction aborted.');
                 } else {
                     const vpn = snapshot.val();
-                    const remainingCopies = vpn.copyLimit - vpn.copy
-                    Count;
+                    const remainingCopies = vpn.copyLimit - vpn.copyCount;
                     
                     if (remainingCopies <= 0) {
                         // ลบโค้ดออกจาก Firebase
@@ -377,22 +376,40 @@
         const userStatusRef = database.ref('userStatus');
         const userCountRef = database.ref('userCount');
 
-        // When the user connects, add them to the list of online users
-        userStatusRef.child(userId).set(true);
+        // เพิ่มฟังก์ชันเพื่อตรวจสอบและอัปเดตสถานะการออนไลน์
+        function updateOnlineStatus(online) {
+            if (online) {
+                userStatusRef.child(userId).set(true);
+            } else {
+                userStatusRef.child(userId).remove();
+            }
+        }
 
-        // Remove user from the list when they disconnect
-        userStatusRef.child(userId).onDisconnect().remove();
+        // เมื่อผู้ใช้เชื่อมต่อ
+        updateOnlineStatus(true);
 
-        // Listen for changes in the user count
-        userCountRef.on('value', (snapshot) => {
-            const count = snapshot.val() || 0;
-            userCountElement.textContent = count;
+        // ตรวจสอบการเชื่อมต่อกับ Firebase
+        const connectedRef = database.ref('.info/connected');
+        connectedRef.on('value', (snap) => {
+            if (snap.val() === true) {
+                // เมื่อเชื่อมต่อสำเร็จ, อัปเดตสถานะเป็นออนไลน์
+                updateOnlineStatus(true);
+
+                // ตั้งค่าให้ลบสถานะเมื่อตัดการเชื่อมต่อ
+                userStatusRef.child(userId).onDisconnect().remove();
+            }
         });
 
-        // Update user count when users connect or disconnect
+        // ฟังก์ชันนับจำนวนผู้ใช้ออนไลน์
+        function countOnlineUsers(users) {
+            return Object.keys(users || {}).length;
+        }
+
+        // ติดตามการเปลี่ยนแปลงของสถานะผู้ใช้
         userStatusRef.on('value', (snapshot) => {
-            const count = snapshot.numChildren();
-            userCountRef.set(count);
+            const onlineUsers = snapshot.val();
+            const count = countOnlineUsers(onlineUsers);
+            userCountElement.textContent = count;
         });
 
         // ป้องกันการใช้คีย์ลัดคัดลอก
@@ -415,6 +432,11 @@
                     document.getElementById('overlay').style.display = 'none';
                 }, 3000);
             }
+        });
+
+        // ตรวจสอบเมื่อผู้ใช้ปิดหน้าต่างหรือแท็บ
+        window.addEventListener('beforeunload', function() {
+            updateOnlineStatus(false);
         });
     </script>
 </body>
