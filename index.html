@@ -185,6 +185,24 @@
             font-size: 24px;
             z-index: 9999;
         }
+        #user-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--bg-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
+            display: flex;
+            align-items: center;
+            animation: pulse 2s infinite;
+        }
+        #user-counter-icon {
+            margin-right: 10px;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -204,6 +222,10 @@
     </div>
     <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
     <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
+    <div id="user-counter">
+        <span id="user-counter-icon">👥</span>
+        <span id="user-count">0</span> คนออนไลน์
+    </div>
 
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -220,6 +242,10 @@
         const database = firebase.database();
 
         const vpnList = document.getElementById('vpn-list');
+        const userCountElement = document.getElementById('user-count');
+
+        // Generate a unique ID for this user session
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
 
         function updateVPNList(vpnCodes) {
             const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
@@ -307,7 +333,8 @@
                     console.log('Transaction aborted.');
                 } else {
                     const vpn = snapshot.val();
-                    const remainingCopies = vpn.copyLimit - vpn.copyCount;
+                    const remainingCopies = vpn.copyLimit - vpn.copy
+                    Count;
                     
                     if (remainingCopies <= 0) {
                         // ลบโค้ดออกจาก Firebase
@@ -315,7 +342,7 @@
                         
                         // ลบโค้ดออกจากหน้าเว็บ
                         const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
-                       if (codeContainer) {
+                        if (codeContainer) {
                             codeContainer.style.animation = 'fadeOut 0.5s';
                             setTimeout(() => {
                                 codeContainer.remove();
@@ -344,6 +371,28 @@
         database.ref('vpnCodes').on('value', (snapshot) => {
             const vpnCodes = snapshot.val();
             updateVPNList(vpnCodes);
+        });
+
+        // User counter functionality
+        const userStatusRef = database.ref('userStatus');
+        const userCountRef = database.ref('userCount');
+
+        // When the user connects, add them to the list of online users
+        userStatusRef.child(userId).set(true);
+
+        // Remove user from the list when they disconnect
+        userStatusRef.child(userId).onDisconnect().remove();
+
+        // Listen for changes in the user count
+        userCountRef.on('value', (snapshot) => {
+            const count = snapshot.val() || 0;
+            userCountElement.textContent = count;
+        });
+
+        // Update user count when users connect or disconnect
+        userStatusRef.on('value', (snapshot) => {
+            const count = snapshot.numChildren();
+            userCountRef.set(count);
         });
 
         // ป้องกันการใช้คีย์ลัดคัดลอก
