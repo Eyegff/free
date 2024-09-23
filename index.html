@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบล็อกอินและโค้ด VPN</title>
+    <title>VPN CHN2 ฟรีโค้ด</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
         
@@ -49,49 +49,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-        }
-        button {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
-        }
-        .switch-form {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .switch-form a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        #user-info {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 5px;
         }
         .code-container {
             background: rgba(255, 255, 255, 0.05);
@@ -181,7 +138,12 @@
         .instructions ol {
             padding-left: 20px;
         }
-        .loading, .no-data {
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+        }
+        .loading, .no-data, .found-codes {
             text-align: center;
             font-size: 18px;
             color: var(--primary-color);
@@ -198,6 +160,17 @@
             75% { content: '...'; }
             100% { content: ''; }
         }
+        .found-codes {
+            animation: fadeInOut 3s forwards;
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
         #overlay {
             position: fixed;
             top: 0;
@@ -212,47 +185,10 @@
             font-size: 24px;
             z-index: 9999;
         }
-        #logout-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
-    <div class="container" id="login-container">
-        <h1>เข้าสู่ระบบ</h1>
-        <form id="login-form">
-            <input type="text" id="login-username" placeholder="ชื่อผู้ใช้" required>
-            <input type="password" id="login-password" placeholder="รหัสผ่าน" required>
-            <button type="submit">เข้าสู่ระบบ</button>
-        </form>
-        <div class="switch-form">
-            <a href="#" id="switch-to-register">สมัครสมาชิก</a>
-        </div>
-    </div>
-
-    <div class="container" id="register-container" style="display: none;">
-        <h1>สมัครสมาชิก</h1>
-        <form id="register-form">
-            <input type="text" id="register-username" placeholder="ชื่อผู้ใช้" required>
-            <input type="password" id="register-password" placeholder="รหัสผ่าน" required>
-            <button type="submit">สมัครสมาชิก</button>
-        </form>
-        <div class="switch-form">
-            <a href="#" id="switch-to-login">มีบัญชีแล้ว? เข้าสู่ระบบ</a>
-        </div>
-    </div>
-
-    <div class="container" id="vpn-container" style="display: none;">
-        <button id="logout-btn">ออกจากระบบ</button>
+    <div class="container">
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
             <div class="loading">กำลังค้นหาโค้ด</div>
@@ -266,156 +202,61 @@
             </ol>
         </div>
     </div>
-
-    <div id="user-info"></div>
     <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
     <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
 
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
-        // Firebase configuration
+        // Your web app's Firebase configuration
         const firebaseConfig = {
-            // Your Firebase config here
             databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const database = firebase.database();
 
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const switchToRegisterBtn = document.getElementById('switch-to-register');
-        const switchToLoginBtn = document.getElementById('switch-to-login');
-        const loginContainer = document.getElementById('login-container');
-        const registerContainer = document.getElementById('register-container');
-        const vpnContainer = document.getElementById('vpn-container');
-        const userInfo = document.getElementById('user-info');
-        const logoutBtn = document.getElementById('logout-btn');
         const vpnList = document.getElementById('vpn-list');
 
-        function showLoginForm() {
-            loginContainer.style.display = 'block';
-            registerContainer.style.display = 'none';
-        }
+        function updateVPNList(vpnCodes) {
+            const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
+            const codeCount = validCodes.length;
 
-        function showRegisterForm() {
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'block';
-        }
-
-        switchToRegisterBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showRegisterForm();
-        });
-
-        switchToLoginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showLoginForm();
-        });
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-            
-            auth.signInWithEmailAndPassword(username + '@example.com', password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    showUserInfo(username);
-                    showVpnCodes();
-                })
-                .catch((error) => {
-                    alert('เข้าสู่ระบบล้มเหลว: ' + error.message);
-                });
-        });
-
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('register-username').value;
-            const password = document.getElementById('register-password').value;
-            
-            auth.createUserWithEmailAndPassword(username + '@example.com', password)
-                .then((userCredential) => {
-                    // Signed up
-                    const user = userCredential.user;
-                    // Save additional user info to database
-                    return database.ref('users/' + user.uid).set({
-                        username: username
-                    });
-                })
-                .then(() => {
-                    alert('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ');
-                    showLoginForm();
-                })
-                .catch((error) => {
-                    alert('สมัครสมาชิกล้มเหลว: ' + error.message);
-                });
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut().then(() => {
-                vpnContainer.style.display = 'none';
-                showLoginForm();
-                userInfo.style.display = 'none';
-       }).catch((error) => {
-                console.error('Logout error:', error);
-            });
-        });
-
-        function showUserInfo(username) {
-            userInfo.textContent = 'สวัสดี, ' + username;
-            userInfo.style.display = 'block';
-        }
-
-        function showVpnCodes() {
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'none';
-            vpnContainer.style.display = 'block';
-            updateVPNList();
-        }
-
-        function updateVPNList() {
+            // Show loading message for 4 seconds
             vpnList.innerHTML = '<div class="loading">กำลังค้นหาโค้ด</div>';
-            database.ref('vpnCodes').once('value').then((snapshot) => {
-                const vpnCodes = snapshot.val();
-                const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
-                const codeCount = validCodes.length;
-
+            setTimeout(() => {
+                // Show found codes message for 3 seconds
+                vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
                 setTimeout(() => {
-                    vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
-                    setTimeout(() => {
-                        vpnList.innerHTML = '';
-                        if (codeCount > 0) {
-                            validCodes.forEach(([key, vpn]) => {
-                                const codeContainer = document.createElement('div');
-                                codeContainer.className = 'code-container';
-                                codeContainer.setAttribute('data-key', key);
-                                const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
-                                codeContainer.innerHTML = `
-                                    <p class="vpn-code">${vpn.code}</p>
-                                    <div class="code-info">
-                                        <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
-                                        <span class="network">เครือข่าย: ${vpn.network}</span>
-                                        <span class="countdown" id="countdown-${key}"></span>
-                                        <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
-                                        <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
-                                    </div>
-                                `;
-                                vpnList.appendChild(codeContainer);
-                                updateCountdown(key, new Date(vpn.expiry));
-                            });
-                        } else {
-                            vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
-                        }
-                    }, 3000);
-                }, 4000);
-            });
+                    // Display the actual VPN codes
+                    vpnList.innerHTML = '';
+                    if (codeCount > 0) {
+                        validCodes.forEach(([key, vpn]) => {
+                            const codeContainer = document.createElement('div');
+                            codeContainer.className = 'code-container';
+                            codeContainer.setAttribute('data-key', key);
+                            const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
+                            codeContainer.innerHTML = `
+                                <p class="vpn-code">${vpn.code}</p>
+                                <div class="code-info">
+                                    <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
+                                    <span class="network">เครือข่าย: ${vpn.network}</span>
+                                    <span class="countdown" id="countdown-${key}"></span>
+                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
+                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
+                                </div>
+                            `;
+                            vpnList.appendChild(codeContainer);
+                            updateCountdown(key, new Date(vpn.expiry));
+                        });
+                    } else {
+                        vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
+                    }
+                }, 3000);
+            }, 4000);
         }
 
         function updateCountdown(key, expiryDate) {
@@ -469,16 +310,19 @@
                     const remainingCopies = vpn.copyLimit - vpn.copyCount;
                     
                     if (remainingCopies <= 0) {
+                        // ลบโค้ดออกจาก Firebase
                         database.ref(`vpnCodes/${key}`).remove();
                         
+                        // ลบโค้ดออกจากหน้าเว็บ
                         const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
-                        if (codeContainer) {
+                       if (codeContainer) {
                             codeContainer.style.animation = 'fadeOut 0.5s';
                             setTimeout(() => {
                                 codeContainer.remove();
                             }, 500);
                         }
                     } else {
+                        // อัปเดตจำนวนการคัดลอกที่เหลือ
                         const copyLimitElement = document.getElementById(`copy-limit-${key}`);
                         if (copyLimitElement) {
                             copyLimitElement.textContent = `เหลือ ${remainingCopies} ครั้ง`;
@@ -496,15 +340,10 @@
             }, 2000);
         }
 
-        // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                database.ref('users/' + user.uid).once('value').then((snapshot) => {
-                    const username = snapshot.val().username;
-                    showUserInfo(username);
-                    showVpnCodes();
-                });
-            }
+        // Listen for changes in the database
+        database.ref('vpnCodes').on('value', (snapshot) => {
+            const vpnCodes = snapshot.val();
+            updateVPNList(vpnCodes);
         });
 
         // ป้องกันการใช้คีย์ลัดคัดลอก
