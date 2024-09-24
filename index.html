@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN CHN2 ระบบสมาชิกและรหัส</title>
+    <title>VPN CHN2 ฟรีโค้ด</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
         
@@ -49,41 +49,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color);
-        }
-        button {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
-        }
-        .switch-form {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .switch-form a {
-            color: var(--primary-color);
-            text-decoration: none;
         }
         .code-container {
             background: rgba(255, 255, 255, 0.05);
@@ -173,6 +138,11 @@
         .instructions ol {
             padding-left: 20px;
         }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+        }
         .loading, .no-data, .found-codes {
             text-align: center;
             font-size: 18px;
@@ -197,6 +167,24 @@
             0%, 100% { opacity: 0; }
             10%, 90% { opacity: 1; }
         }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            z-index: 9999;
+        }
         #user-counter {
             position: fixed;
             top: 20px;
@@ -215,43 +203,10 @@
             margin-right: 10px;
             font-size: 24px;
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
-        }
     </style>
 </head>
 <body>
-    <div class="container" id="auth-container">
-        <div id="login-form">
-            <h1>เข้าสู่ระบบ</h1>
-            <form onsubmit="return login(event)">
-                <input type="email" id="login-email" placeholder="อีเมล" required>
-                <input type="password" id="login-password" placeholder="รหัสผ่าน" required>
-                <button type="submit">เข้าสู่ระบบ</button>
-            </form>
-            <div class="switch-form">
-                <a href="#" onclick="showSignupForm()">ยังไม่มีบัญชี? สมัครสมาชิก</a>
-            </div>
-        </div>
-        
-        <div id="signup-form" style="display: none;">
-            <h1>สมัครสมาชิก</h1>
-            <form onsubmit="return signup(event)">
-                <input type="text" id="signup-username" placeholder="ชื่อผู้ใช้" required>
-                <input type="email" id="signup-email" placeholder="อีเมล" required>
-                <input type="password" id="signup-password" placeholder="รหัสผ่าน" required>
-                <input type="password" id="signup-confirm-password" placeholder="ยืนยันรหัสผ่าน" required>
-                <button type="submit">สมัครสมาชิก</button>
-            </form>
-            <div class="switch-form">
-                <a href="#" onclick="showLoginForm()">มีบัญชีแล้ว? เข้าสู่ระบบ</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" id="vpn-container" style="display: none;">
+    <div class="container">
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
             <div class="loading">กำลังค้นหาโค้ด</div>
@@ -264,10 +219,9 @@
                 <li>กดเชื่อมต่อเพื่อใช้งาน VPN</li>
             </ol>
         </div>
-        <button onclick="logout()">ออกจากระบบ</button>
     </div>
-
     <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
+    <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
     <div id="user-counter">
         <span id="user-counter-icon">👥</span>
         <span id="user-count">0</span> คนออนไลน์
@@ -275,117 +229,32 @@
 
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <script>
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDR04eOM0CPHHme7hX-pzr2aaqB_iZ6qkU",
-            authDomain: "goak-71ac8.firebaseapp.com",
-            databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com",
-            projectId: "goak-71ac8",
-            storageBucket: "goak-71ac8.appspot.com",
-            messagingSenderId: "827031045915",
-            appId: "1:827031045915:web:e96603afa82505f64d75be",
-            measurementId: "G-SE2X951P66"
+            databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-
-        const auth = firebase.auth();
         const database = firebase.database();
+
+        const vpnList = document.getElementById('vpn-list');
+        const userCountElement = document.getElementById('user-count');
 
         // Generate a unique ID for this user session
         const userId = 'user_' + Math.random().toString(36).substr(2, 9);
 
-        function showSignupForm() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('signup-form').style.display = 'block';
-        }
-
-        function showLoginForm() {
-            document.getElementById('signup-form').style.display = 'none';
-            document.getElementById('login-form').style.display = 'block';
-        }
-
-        function login(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // ล็อกอินสำเร็จ
-                    const user = userCredential.user;
-                    alert('เข้าสู่ระบบสำเร็จ');
-                    showVPNCodesPage();
-                })
-                .catch((error) => {
-                    // มีข้อผิดพลาดในการล็อกอิน
-                    const errorMessage = error.message;
-                    alert('เกิดข้อผิดพลาด: ' + errorMessage);
-                });
-        }
-
-        function signup(event) {
-            event.preventDefault();
-            const username = document.getElementById('signup-username').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm-password').value;
-
-            if (password !== confirmPassword) {
-                alert('รหัสผ่านไม่ตรงกัน');
-                return false;
-            }
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // สมัครสมาชิกสำเร็จ
-                    const user = userCredential.user;
-                    // บันทึกข้อมูลเพิ่มเติมของผู้ใช้
-                    return database.ref('users/' + user.uid).set({
-                        username: username,
-                        email: email
-                    });
-                })
-                .then(() => {
-                    alert('สมัครสมาชิกสำเร็จ');
-                    showVPNCodesPage();
-                })
-                .catch((error) => {
-                    // มีข้อผิดพลาดในการสมัครสมาชิก
-                    const errorMessage = error.message;
-                    alert('เกิดข้อผิดพลาด: ' + errorMessage);
-                });
-            return false;
-        }
-
-        function showVPNCodesPage() {
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('vpn-container').style.display = 'block';
-            loadVPNCodes();
-        }
-
-        function loadVPNCodes() {
-            const vpnList = document.getElementById('vpn-list');
-            database.ref('vpnCodes').on('value', (snapshot) => {
-                const vpnCodes = snapshot.val();
-                updateVPNList(vpnCodes);
-            });
-        }
-
         function updateVPNList(vpnCodes) {
-            const vpnList = document.getElementById('vpn-list');
             const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
             const codeCount = validCodes.length;
 
-            // Show loading message for 2 seconds
+            // Show loading message for 4 seconds
             vpnList.innerHTML = '<div class="loading">กำลังค้นหาโค้ด</div>';
             setTimeout(() => {
-                // Show found codes message for 2 seconds
+                // Show found codes message for 3 seconds
                 vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
                 setTimeout(() => {
                     // Display the actual VPN codes
@@ -412,8 +281,8 @@
                     } else {
                         vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
                     }
-                }, 2000);
-            }, 2000);
+                }, 3000);
+            }, 4000);
         }
 
         function updateCountdown(key, expiryDate) {
@@ -497,20 +366,17 @@
             }, 2000);
         }
 
-        function logout() {
-            auth.signOut().then(() => {
-                document.getElementById('vpn-container').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'block';
-                showLoginForm();
-            }).catch((error) => {
-                console.error('Logout Error:', error);
-            });
-        }
+        // Listen for changes in the database
+        database.ref('vpnCodes').on('value', (snapshot) => {
+            const vpnCodes = snapshot.val();
+            updateVPNList(vpnCodes);
+        });
 
         // User counter functionality
         const userStatusRef = database.ref('userStatus');
         const userCountRef = database.ref('userCount');
 
+        // เพิ่มฟังก์ชันเพื่อตรวจสอบและอัปเดตสถานะการออนไลน์
         function updateOnlineStatus(online) {
             if (online) {
                 userStatusRef.child(userId).set(true);
@@ -543,7 +409,7 @@
         userStatusRef.on('value', (snapshot) => {
             const onlineUsers = snapshot.val();
             const count = countOnlineUsers(onlineUsers);
-            document.getElementById('user-count').textContent = count;
+            userCountElement.textContent = count;
         });
 
         // ป้องกันการใช้คีย์ลัดคัดลอก
@@ -558,20 +424,19 @@
             e.preventDefault();
         });
 
+        // แสดง overlay เมื่อพยายามถ่ายภาพหน้าจอ (ใช้ได้เฉพาะบางเบราว์เซอร์)
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'PrintScreen') {
+                document.getElementById('overlay').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('overlay').style.display = 'none';
+                }, 3000);
+            }
+        });
+
         // ตรวจสอบเมื่อผู้ใช้ปิดหน้าต่างหรือแท็บ
         window.addEventListener('beforeunload', function() {
             updateOnlineStatus(false);
-        });
-
-        // ตรวจสอบสถานะการล็อกอินเมื่อโหลดหน้า
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                showVPNCodesPage();
-            } else {
-                document.getElementById('vpn-container').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'block';
-                showLoginForm();
-            }
         });
     </script>
 </body>
