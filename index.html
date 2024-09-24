@@ -281,13 +281,14 @@
     <script>
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDR04eOM0CPHHme7hX-pzr2aaqB_iZ6qkU",
+            authDomain: "goak-71ac8.firebaseapp.com",
+            databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com",
+            projectId: "goak-71ac8",
+            storageBucket: "goak-71ac8.appspot.com",
+            messagingSenderId: "827031045915",
+            appId: "1:827031045915:web:e96603afa82505f64d75be",
+            measurementId: "G-SE2X951P66"
         };
 
         // Initialize Firebase
@@ -333,12 +334,11 @@
             const username = document.getElementById('signup-username').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementByI
-            d('signup-confirm-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
 
             if (password !== confirmPassword) {
                 alert('รหัสผ่านไม่ตรงกัน');
-                return;
+                return false;
             }
 
             auth.createUserWithEmailAndPassword(email, password)
@@ -360,6 +360,7 @@
                     const errorMessage = error.message;
                     alert('เกิดข้อผิดพลาด: ' + errorMessage);
                 });
+            return false;
         }
 
         function showVPNCodesPage() {
