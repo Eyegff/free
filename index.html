@@ -12,6 +12,8 @@
             --secondary-color: #4facfe;
             --bg-color: #0c0c1e;
             --text-color: #ffffff;
+            --alert-color: #28a745;
+            --error-color: #dc3545;
         }
         
         body {
@@ -40,6 +42,7 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            position: relative;
         }
         h1 {
             text-align: center;
@@ -129,6 +132,7 @@
             font-weight: bold;
             opacity: 0;
             transition: opacity 0.3s ease;
+            z-index: 10000;
         }
         .instructions {
             margin-top: 30px;
@@ -203,10 +207,34 @@
             margin-right: 10px;
             font-size: 24px;
         }
+        /* New Styles for IP Display */
+        #ip-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 242, 254, 0.2);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
+            display: flex;
+            align-items: center;
+        }
+        #ip-display-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- IP Display -->
+        <div id="ip-display">
+            <span id="ip-display-icon">🌐</span>
+            <span id="visitor-ip">กำลังโหลด IP...</span>
+        </div>
+        
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
             <div class="loading">กำลังค้นหาโค้ด</div>
@@ -243,9 +271,63 @@
 
         const vpnList = document.getElementById('vpn-list');
         const userCountElement = document.getElementById('user-count');
+        const visitorIpElement = document.getElementById('visitor-ip');
 
         // Generate a unique ID for this user session
         const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+
+        // Function to fetch visitor's IP using ipify API
+        async function fetchVisitorIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const ip = data.ip;
+                visitorIpElement.textContent = ip;
+
+                // Send IP to another backend (web1)
+                sendIPToBackend(ip);
+
+                // Optionally, store IP in Firebase
+                storeIPInFirebase(ip);
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+                visitorIpElement.textContent = 'ไม่สามารถโหลด IP ได้';
+            }
+        }
+
+        // Function to send IP to another backend (web1)
+        function sendIPToBackend(ip) {
+            // Replace 'https://your-backend-web1.com/api/ip' with your actual backend URL
+            fetch('https://your-backend-web1.com/api/ip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ip: ip, timestamp: new Date().toISOString() }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('IP ส่งไปยังเว็บ1 สำเร็จ');
+                } else {
+                    console.error('การส่ง IP ไปยังเว็บ1 ล้มเหลว');
+                }
+            })
+            .catch(error => {
+                console.error('ข้อผิดพลาดในการส่ง IP ไปยังเว็บ1:', error);
+            });
+        }
+
+        // Function to store IP in Firebase (ถ้าต้องการ)
+        function storeIPInFirebase(ip) {
+            const ipLogRef = database.ref('ipLogs');
+            ipLogRef.push({
+                ip: ip,
+                timestamp: new Date().toISOString(),
+            });
+        }
+
+        // Call the fetchVisitorIP function on page load
+        fetchVisitorIP();
 
         function updateVPNList(vpnCodes) {
             const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
