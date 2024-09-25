@@ -14,6 +14,14 @@
             --text-color: #ffffff;
             --alert-color: #28a745;
             --error-color: #dc3545;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-hover-bg: rgba(255, 255, 255, 0.1);
+            --button-bg: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --button-hover-bg: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         body {
@@ -33,21 +41,26 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            position: relative; /* เพิ่มเพื่อให้ตำแหน่งของ #ip-display ถูกต้อง */
+            position: relative;
         }
         .container {
             width: 90%;
-            max-width: 600px;
+            max-width: 800px;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             position: relative;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .container:hover {
+            background: var(--card-hover-bg);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
         }
         h1 {
             text-align: center;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 30px;
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
@@ -55,53 +68,74 @@
             text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
         }
         .code-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.1);
         }
         .code-container:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.3);
         }
-        .vpn-code {
+        .vpn-code, .vpn-image {
             font-family: 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 16px;
             word-break: break-all;
             margin-bottom: 10px;
             color: #a0a0a0;
+            text-align: center;
+        }
+        .vpn-image img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            transition: transform 0.3s;
+        }
+        .vpn-image img:hover {
+            transform: scale(1.05);
         }
         .code-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
             flex-wrap: wrap;
+            width: 100%;
         }
         .expiry-date, .network, .countdown, .copy-limit {
-            font-size: 12px;
+            font-size: 14px;
             color: #888;
-            margin-right: 10px;
+            margin: 5px 0;
         }
         .countdown {
             font-weight: bold;
             color: var(--primary-color);
         }
         .copy-btn {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
+            background: var(--button-bg);
+            color: var(--text-color);
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
             position: relative;
             overflow: hidden;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: var(--button-hover-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
         }
         .copy-btn::before {
             content: '';
@@ -137,8 +171,9 @@
         }
         .instructions {
             margin-top: 30px;
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.6;
+            color: #ccc;
         }
         .instructions ol {
             padding-left: 20px;
@@ -150,7 +185,7 @@
         }
         .loading, .no-data, .found-codes {
             text-align: center;
-            font-size: 18px;
+            font-size: 20px;
             color: var(--primary-color);
             margin: 20px 0;
         }
@@ -203,6 +238,7 @@
             display: flex;
             align-items: center;
             animation: pulse 2s infinite;
+            z-index: 1000;
         }
         #user-counter-icon {
             margin-right: 10px;
@@ -226,6 +262,26 @@
         #ip-display-icon {
             margin-right: 10px;
             font-size: 20px;
+        }
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+            }
+            .code-container {
+                padding: 15px;
+            }
+            .vpn-code, .vpn-image {
+                font-size: 14px;
+            }
+            .code-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .copy-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -349,16 +405,35 @@
                             codeContainer.className = 'code-container';
                             codeContainer.setAttribute('data-key', key);
                             const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
-                            codeContainer.innerHTML = `
-                                <p class="vpn-code">${vpn.code}</p>
-                                <div class="code-info">
-                                    <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
-                                    <span class="network">เครือข่าย: ${vpn.network}</span>
-                                    <span class="countdown" id="countdown-${key}"></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
-                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
-                                </div>
-                            `;
+                            
+                            if (vpn.isImage && vpn.imageUrl) {
+                                // ถ้าเป็น VPN แบบรูปภาพ
+                                codeContainer.innerHTML = `
+                                    <div class="vpn-image">
+                                        <img src="${vpn.imageUrl}" alt="VPN Image">
+                                    </div>
+                                    <div class="code-info">
+                                        <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
+                                        <span class="network">เครือข่าย: ${vpn.network}</span>
+                                        <span class="countdown" id="countdown-${key}"></span>
+                                        <button class="copy-btn" onclick="downloadImage('${vpn.imageUrl}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>ดาวน์โหลด</button>
+                                        <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
+                                    </div>
+                                `;
+                            } else {
+                                // ถ้าเป็น VPN แบบโค้ด
+                                codeContainer.innerHTML = `
+                                    <p class="vpn-code">${vpn.code}</p>
+                                    <div class="code-info">
+                                        <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
+                                        <span class="network">เครือข่าย: ${vpn.network}</span>
+                                        <span class="countdown" id="countdown-${key}"></span>
+                                        <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
+                                        <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
+                                    </div>
+                                `;
+                            }
+
                             vpnList.appendChild(codeContainer);
                             updateCountdown(key, new Date(vpn.expiry));
                         });
@@ -384,7 +459,7 @@
                     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                    countdownElement.textContent = `เหลือเวลา: ${days}วัน ${hours}ชั่วโมง ${minutes}นาที ${seconds}วินาที`;
+                    countdownElement.textContent = `เหลือเวลา: ${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วินาที`;
                     setTimeout(update, 1000);
                 }
             }
@@ -393,13 +468,23 @@
         }
 
         function copyToClipboard(text, key) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
+            navigator.clipboard.writeText(text).then(() => {
+                showCopyAlert();
+                updateCopyLimit(key);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function downloadImage(url, key) {
+            // ดาวน์โหลดภาพ
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'vpn_image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
             showCopyAlert();
             updateCopyLimit(key);
         }
@@ -407,7 +492,11 @@
         function updateCopyLimit(key) {
             database.ref(`vpnCodes/${key}`).transaction((vpn) => {
                 if (vpn) {
-                    vpn.copyCount = (vpn.copyCount || 0) + 1;
+                    if (vpn.isImage) {
+                        vpn.downloadCount = (vpn.downloadCount || 0) + 1;
+                    } else {
+                        vpn.copyCount = (vpn.copyCount || 0) + 1;
+                    }
                 }
                 return vpn;
             }, (error, committed, snapshot) => {
@@ -417,7 +506,7 @@
                     console.log('Transaction aborted.');
                 } else {
                     const vpn = snapshot.val();
-                    const remainingCopies = vpn.copyLimit - vpn.copyCount;
+                    const remainingCopies = vpn.isImage ? vpn.downloadLimit - (vpn.downloadCount || 0) : vpn.copyLimit - (vpn.copyCount || 0);
                     
                     if (remainingCopies <= 0) {
                         // ลบโค้ดออกจาก Firebase
