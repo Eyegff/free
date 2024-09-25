@@ -3,17 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN CHN2 ฟรีโค้ด</title>
+    <title>จัดการ VPN และประวัติ IP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
         
         :root {
-            --primary-color: #00f2fe;
-            --secondary-color: #4facfe;
-            --bg-color: #0c0c1e;
+            --primary-color: #4facfe;
+            --secondary-color: #00f2fe;
+            --bg-color: #1a1a2e;
             --text-color: #ffffff;
             --alert-color: #28a745;
             --error-color: #dc3545;
+            --table-header-bg: #2c2c54;
+            --table-row-hover: #34495e;
+            --border-color: #3a3a5e;
+            --menu-bg: rgba(26, 26, 46, 0.95);
+            --menu-text: #ffffff;
+            --menu-hover: var(--secondary-color);
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         body {
@@ -22,505 +33,720 @@
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(91, 37, 216, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
-                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            position: relative; /* เพิ่มเพื่อให้ตำแหน่งของ #ip-display ถูกต้อง */
+            line-height: 1.6;
         }
+        
         .container {
-            width: 90%;
-            max-width: 600px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 30px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
-        }
-        .code-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .code-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.2);
-        }
-        .vpn-code {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            word-break: break-all;
-            margin-bottom: 10px;
-            color: #a0a0a0;
-        }
-        .code-info {
+        
+        /* Header and Navigation */
+        header {
+            background: var(--menu-bg);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            position: relative;
+            z-index: 2; /* เพิ่ม z-index ให้ header */
         }
-        .expiry-date, .network, .countdown, .copy-limit {
-            font-size: 12px;
-            color: #888;
-            margin-right: 10px;
-        }
-        .countdown {
-            font-weight: bold;
+        
+        header h1 {
             color: var(--primary-color);
+            font-size: 24px;
+            margin: 0;
+            z-index: 3; /* เพิ่ม z-index ให้ h1 */
         }
-        .copy-btn {
+        
+        nav {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: var(--menu-bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            display: none;
+            z-index: 1000; /* เพิ่ม z-index ให้ nav สูงกว่าองค์ประกอบอื่นๆ */
+        }
+        
+        nav a {
+            color: var(--menu-text);
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--menu-hover);
+        }
+        
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            font-size: 24px;
+            color: var(--menu-text);
+            cursor: pointer;
+            z-index: 3; /* เพิ่ม z-index ให้ hamburger */
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                background: var(--menu-bg);
+                padding: 10px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                flex-direction: column;
+            }
+        
+            nav a {
+                margin: 10px 0;
+            }
+        
+            .hamburger {
+                display: block;
+            }
+        }
+        
+        .show-menu {
+            display: flex !important;
+        }
+        
+        /* Common Styles for Both Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .active-section {
+            display: block;
+        }
+        
+        /* Removed h1 and h2 styles since headings are removed */
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="text"], input[type="datetime-local"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="datetime-local"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        button {
             background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
             color: var(--bg-color);
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 14px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--text-color);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        tr:hover {
+            background-color: var(--table-row-hover);
+        }
+        
+        .action-btn {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            width: auto;
+            transition: background 0.3s, transform 0.2s;
         }
-        .copy-btn::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+        
+        .edit-btn {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .edit-btn:hover {
+            background-color: #e0a800;
+            transform: scale(1.05);
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+        
+        /* Styles for IP Logs */
+        .ip-log-container {
             background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
-            transition: all 0.3s ease;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 40px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .copy-btn:hover::before {
-            left: 100%;
-        }
-        .copy-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .copy-alert {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 10000;
-        }
-        .instructions {
-            margin-top: 30px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .instructions ol {
-            padding-left: 20px;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
-        }
-        .loading, .no-data, .found-codes {
-            text-align: center;
-            font-size: 18px;
-            color: var(--primary-color);
-            margin: 20px 0;
-        }
-        .loading::after {
-            content: '';
-            animation: loading-dots 2s infinite;
-        }
-        @keyframes loading-dots {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-            100% { content: ''; }
-        }
-        .found-codes {
-            animation: fadeInOut 3s forwards;
-        }
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        
+        .ip-log-table {
             width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            z-index: 9999;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
-        #user-counter {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: var(--bg-color);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
-            display: flex;
-            align-items: center;
-            animation: pulse 2s infinite;
+        
+        .ip-log-table th, .ip-log-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
-        #user-counter-icon {
-            margin-right: 10px;
-            font-size: 24px;
-        }
-        /* ปรับปรุงสไตล์สำหรับ IP Display */
-        #ip-display {
-            position: fixed; /* เปลี่ยนจาก absolute เป็น fixed */
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 242, 254, 0.2);
+        
+        .ip-log-table th {
+            background-color: var(--table-header-bg);
             color: var(--text-color);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
-            display: flex;
-            align-items: center;
-            z-index: 1000; /* เพิ่ม z-index เพื่อให้แน่ใจว่าอยู่ด้านบนสุด */
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
-        #ip-display-icon {
-            margin-right: 10px;
-            font-size: 20px;
+        
+        .ip-log-table tr:hover {
+            background-color: var(--table-row-hover);
+        }
+        
+        .ip-log-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.07);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            table, .ip-log-table, .pending-send-table, .sent-successfully-table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 12px;
+            }
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .section, .ip-log-container, .pending-send-container, .sent-successfully-container {
+                padding: 10px;
+            }
+            table, thead, tbody, th, td, tr, .ip-log-table, .pending-send-table, .sent-successfully-table {
+                display: block;
+            }
+            thead tr, .ip-log-table thead tr, .pending-send-table thead tr, .sent-successfully-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr, .ip-log-table tr, .pending-send-table tr, .sent-successfully-table tr {
+                margin-bottom: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+            td, .ip-log-table td, .pending-send-table td, .sent-successfully-table td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            td::before, .ip-log-table td::before, .pending-send-table td::before, .sent-successfully-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                text-align: left;
+            }
+            .action-btn {
+                width: 48%;
+                margin: 5px 1%;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- IP Display ย้ายออกจาก .container และวางไว้ที่มุมบนซ้าย -->
-    <div id="ip-display">
-        <span id="ip-display-icon">🌐</span>
-        <span id="visitor-ip">กำลังโหลด IP...</span>
-    </div>
+    <!-- Header with Hamburger Menu -->
+    <header>
+        <h1>จัดการ VPN และประวัติ IP</h1>
+        <div class="hamburger"><i class="fas fa-bars"></i></div>
+        <nav>
+            <a href="#manage-vpn">จัดการโค้ด VPN</a>
+            <a href="#ip-history">ประวัติการเข้าถึง IP</a>
+            <a href="#pending-send">รอนำเนินการส่ง</a>
+            <a href="#sent-successfully">ส่งสำเร็จ</a>
+        </nav>
+    </header>
 
     <div class="container">
-        <h1>VPN CHN2 ฟรีโค้ด</h1>
-        <div id="vpn-list">
-            <div class="loading">กำลังค้นหาโค้ด</div>
+        <!-- Section for Managing VPN Codes -->
+        <div id="manage-vpn" class="section active-section">
+            <!-- Removed the h1 title here -->
+            <div class="form-container">
+                <form id="vpn-form">
+                    <div class="form-group">
+                        <label for="vpn-code">โค้ด VPN:</label>
+                        <input type="text" id="vpn-code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expiry-date">วันหมดอายุ:</label>
+                        <input type="datetime-local" id="expiry-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="network">เครือข่าย:</label>
+                        <select id="network" required>
+                            <option value="TRUE">TRUE</option>
+                            <option value="DTAC">DTAC</option>
+                            <option value="AIS">AIS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="copy-limit">จำนวนครั้งที่คัดลอกได้:</label>
+                        <input type="number" id="copy-limit" required min="1" value="3">
+                    </div>
+                    <button type="submit" id="submit-btn">เพิ่มโค้ด VPN</button>
+                </form>
+            </div>
+            <table id="vpn-table">
+                <thead>
+                    <tr>
+                        <th>โค้ด VPN</th>
+                        <th>วันหมดอายุ</th>
+                        <th>เครือข่าย</th>
+                        <th>จำนวนคัดลอกคงเหลือ</th>
+                        <th>สถานะ</th>
+                        <th>การดำเนินการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- VPN codes will be inserted here -->
+                </tbody>
+            </table>
         </div>
-        <div class="instructions">
-            <p><strong>วิธีใช้งาน:</strong></p>
-            <ol>
-                <li>เลือกและคัดลอก URL ที่ต้องการใช้</li>
-                <li>นำไปวางในแอพ VPN ที่รองรับ vless</li>
-                <li>กดเชื่อมต่อเพื่อใช้งาน VPN</li>
-            </ol>
+
+        <!-- Section for IP History -->
+        <div id="ip-history" class="section">
+            <!-- Removed the h2 title here -->
+            <div class="ip-log-container">
+                <table id="ip-log-table" class="ip-log-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>วันที่และเวลา</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- IP logs will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="copy-alert" id="copyAlert">คัดลอกสำเร็จ!</div>
-    <div id="overlay">การถ่ายภาพหน้าจอไม่ได้รับอนุญาต!</div>
-    <div id="user-counter">
-        <span id="user-counter-icon">👥</span>
-        <span id="user-count">0</span> คนออนไลน์
+
+        <!-- Section for Pending Send -->
+        <div id="pending-send" class="section">
+            <div class="pending-send-container">
+                <h2>รอการดำเนินการส่งโค้ด</h2>
+                <table id="pending-send-table" class="pending-send-table">
+                    <thead>
+                        <tr>
+                            <th>โค้ด VPN</th>
+                            <th>วันหมดอายุ</th>
+                            <th>เครือข่าย</th>
+                            <th>จำนวนคัดลอกคงเหลือ</th>
+                            <th>สถานะ</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Pending VPN codes will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section for Sent Successfully -->
+        <div id="sent-successfully" class="section">
+            <div class="sent-successfully-container">
+                <h2>ส่งโค้ดสำเร็จแล้ว</h2>
+                <table id="sent-successfully-table" class="sent-successfully-table">
+                    <thead>
+                        <tr>
+                            <th>โค้ด VPN</th>
+                            <th>วันหมดอายุ</th>
+                            <th>เครือข่าย</th>
+                            <th>จำนวนคัดลอกคงเหลือ</th>
+                            <th>สถานะ</th>
+                            <th>การดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sent VPN codes will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
+    
     <script>
-        // Your web app's Firebase configuration
+        // Initialize Firebase
         const firebaseConfig = {
             databaseURL: "https://goak-71ac8-default-rtdb.firebaseio.com/",
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        const vpnList = document.getElementById('vpn-list');
-        const userCountElement = document.getElementById('user-count');
-        const visitorIpElement = document.getElementById('visitor-ip');
+        // Hamburger Menu Functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('nav');
+            const sections = document.querySelectorAll('.section');
 
-        // Generate a unique ID for this user session
-        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('show-menu');
+            });
 
-        // Function to fetch visitor's IP using ipify API
+            // ปิดเมนูเมื่อคลิกที่ลิงก์และแสดงส่วนที่เลือก
+            const navLinkElements = document.querySelectorAll('nav a');
+            navLinkElements.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = link.getAttribute('href').substring(1);
+                    sections.forEach(section => {
+                        if (section.id === target) {
+                            section.classList.add('active-section');
+                        } else {
+                            section.classList.remove('active-section');
+                        }
+                    });
+                    navLinks.classList.remove('show-menu');
+                });
+            });
+
+            // แสดงส่วนแรกเมื่อโหลดหน้า
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                sections.forEach(section => {
+                    if (section.id === hash) {
+                        section.classList.add('active-section');
+                    } else {
+                        section.classList.remove('active-section');
+                    }
+                });
+            }
+        });
+
+        // VPN Management Functionality
+        const vpnForm = document.getElementById('vpn-form');
+        const vpnTable = document.getElementById('vpn-table').getElementsByTagName('tbody')[0];
+        const submitBtn = document.getElementById('submit-btn');
+
+        // New Tables
+        const pendingSendTable = document.getElementById('pending-send-table').getElementsByTagName('tbody')[0];
+        const sentSuccessfullyTable = document.getElementById('sent-successfully-table').getElementsByTagName('tbody')[0];
+
+        let editingKey = null;
+
+        vpnForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = document.getElementById('vpn-code').value;
+            const expiry = document.getElementById('expiry-date').value;
+            const network = document.getElementById('network').value;
+            const copyLimit = parseInt(document.getElementById('copy-limit').value);
+
+            if (editingKey) {
+                // Update existing VPN code
+                database.ref('vpnCodes/' + editingKey).set({
+                    code: code,
+                    expiry: expiry,
+                    network: network,
+                    copyLimit: copyLimit,
+                    copyCount: 0, // Reset copy count when updating
+                    status: 'Pending', // Reset status to Pending
+                    sentAt: null
+                });
+                editingKey = null;
+                submitBtn.textContent = 'เพิ่มโค้ด VPN';
+            } else {
+                // Add new VPN code
+                database.ref('vpnCodes').push({
+                    code: code,
+                    expiry: expiry,
+                    network: network,
+                    copyLimit: copyLimit,
+                    copyCount: 0,
+                    status: 'Pending',
+                    sentAt: null
+                });
+            }
+
+            vpnForm.reset();
+        });
+
+        function deleteVpnCode(key) {
+            if (confirm('คุณแน่ใจหรือไม่ที่จะลบโค้ด VPN นี้?')) {
+                database.ref('vpnCodes/' + key).remove();
+            }
+        }
+
+        function editVpnCode(key, code, expiry, network, copyLimit) {
+            document.getElementById('vpn-code').value = code;
+            document.getElementById('expiry-date').value = expiry;
+            document.getElementById('network').value = network;
+            document.getElementById('copy-limit').value = copyLimit;
+            editingKey = key;
+            submitBtn.textContent = 'อัปเดตโค้ด VPN';
+            document.querySelector('#manage-vpn').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function sendVpnCode(key) {
+            if (confirm('คุณแน่ใจหรือไม่ที่จะส่งโค้ด VPN นี้?')) {
+                const vpnRef = database.ref('vpnCodes/' + key);
+                vpnRef.once('value').then(snapshot => {
+                    const vpn = snapshot.val();
+                    if (vpn.status === 'Pending') {
+                        vpnRef.update({
+                            status: 'Processing',
+                            sentAt: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    } else {
+                        alert('โค้ด VPN นี้ไม่สามารถส่งได้');
+                    }
+                });
+            }
+        }
+
+        function updateVPNTables(vpnCodes) {
+            vpnTable.innerHTML = '';
+            pendingSendTable.innerHTML = '';
+            sentSuccessfullyTable.innerHTML = '';
+
+            Object.entries(vpnCodes).forEach(([key, vpn]) => {
+                const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
+                const expiryDate = new Date(vpn.expiry).toLocaleString('th-TH');
+
+                // Check and update status if in Processing and 10 minutes have passed
+                if (vpn.status === 'Processing' && vpn.sentAt) {
+                    const sentTime = vpn.sentAt;
+                    const currentTime = Date.now();
+                    const elapsedTime = currentTime - sentTime;
+                    if (elapsedTime >= 10 * 60 * 1000) { // 10 minutes in milliseconds
+                        database.ref('vpnCodes/' + key).update({
+                            status: 'Sent',
+                            sentAt: firebase.database.ServerValue.TIMESTAMP // Update sentAt to mark the time sent
+                        });
+                        return; // Skip rendering this entry now, it will be moved to Sent Successfully
+                    }
+                }
+
+                // Render based on status
+                if (vpn.status === 'Pending' || vpn.status === 'Processing') {
+                    const row = pendingSendTable.insertRow();
+                    row.innerHTML = `
+                        <td data-label="โค้ด VPN">${vpn.code}</td>
+                        <td data-label="วันหมดอายุ">${expiryDate}</td>
+                        <td data-label="เครือข่าย">${vpn.network}</td>
+                        <td data-label="จำนวนคัดลอกคงเหลือ">${remainingCopies}/${vpn.copyLimit}</td>
+                        <td data-label="สถานะ">${vpn.status === 'Pending' ? 'รอการส่ง' : 'กำลังดำเนินการ'}</td>
+                        <td data-label="การดำเนินการ">
+                            ${vpn.status === 'Pending' ? `<button class="action-btn send-btn" onclick="sendVpnCode('${key}')">ส่ง</button>` : ''}
+                            <button class="action-btn delete-btn" onclick="deleteVpnCode('${key}')">ลบ</button>
+                        </td>
+                    `;
+                } else if (vpn.status === 'Sent') {
+                    const row = sentSuccessfullyTable.insertRow();
+                    row.innerHTML = `
+                        <td data-label="โค้ด VPN">${vpn.code}</td>
+                        <td data-label="วันหมดอายุ">${expiryDate}</td>
+                        <td data-label="เครือข่าย">${vpn.network}</td>
+                        <td data-label="จำนวนคัดลอกคงเหลือ">${remainingCopies}/${vpn.copyLimit}</td>
+                        <td data-label="สถานะ">ส่งสำเร็จ</td>
+                        <td data-label="การดำเนินการ">
+                            <button class="action-btn edit-btn" onclick="editVpnCode('${key}', '${vpn.code}', '${vpn.expiry}', '${vpn.network}', ${vpn.copyLimit})">แก้ไข</button>
+                            <button class="action-btn delete-btn" onclick="deleteVpnCode('${key}')">ลบ</button>
+                        </td>
+                    `;
+                }
+            });
+        }
+
+        // Listen for changes in the VPN codes
+        database.ref('vpnCodes').on('value', (snapshot) => {
+            const vpnCodes = snapshot.val();
+            if (vpnCodes) {
+                updateVPNTables(vpnCodes);
+            } else {
+                vpnTable.innerHTML = '';
+                pendingSendTable.innerHTML = '';
+                sentSuccessfullyTable.innerHTML = '';
+            }
+        });
+
+        // IP Logs Functionality
+        const ipLogTable = document.getElementById('ip-log-table').getElementsByTagName('tbody')[0];
+
+        function deleteIPLog(key) {
+            if (confirm(`คุณแน่ใจหรือไม่ที่จะลบ IP นี้?`)) {
+                database.ref('ipLogs/' + key).remove();
+            }
+        }
+
+        function updateIPLogTable(ipLogs) {
+            ipLogTable.innerHTML = '';
+
+            if (!ipLogs) return;
+
+            // สร้างอ็อบเจ็กต์เพื่อเก็บข้อมูล IP ที่ไม่ซ้ำและอัปเดตเวลาล่าสุด
+            const uniqueIPs = {};
+
+            Object.entries(ipLogs).forEach(([key, log]) => {
+                const ip = log.ip;
+                const timestamp = log.timestamp;
+                if (!uniqueIPs[ip] || new Date(timestamp) > new Date(uniqueIPs[ip].timestamp)) {
+                    uniqueIPs[ip] = { timestamp: timestamp, key: key };
+                }
+            });
+
+            // แปลงอ็อบเจ็กต์เป็นอาร์เรย์และเรียงลำดับจากล่าสุดไปเก่าสุด
+            const sortedIPs = Object.entries(uniqueIPs).sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+
+            sortedIPs.forEach(([ip, data]) => {
+                const row = ipLogTable.insertRow();
+                row.innerHTML = `
+                    <td data-label="IP Address">${ip}</td>
+                    <td data-label="วันที่และเวลา">${new Date(data.timestamp).toLocaleString('th-TH')}</td>
+                    <td data-label="การดำเนินการ">
+                        <button class="action-btn delete-btn" onclick="deleteIPLog('${data.key}')">ลบ</button>
+                    </td>
+                `;
+            });
+        }
+
+        // Listen for changes in the IP logs
+        database.ref('ipLogs').on('value', (snapshot) => {
+            const ipLogs = snapshot.val();
+            updateIPLogTable(ipLogs);
+        });
+
+        // Function to store IP in Firebase (Optional: ถ้าคุณยังไม่ได้เพิ่มในไฟล์นี้)
         async function fetchVisitorIP() {
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
                 const data = await response.json();
                 const ip = data.ip;
-                visitorIpElement.textContent = ip;
-
-                // Send IP to another backend (web1)
-                sendIPToBackend(ip);
-
-                // Optionally, store IP in Firebase
                 storeIPInFirebase(ip);
             } catch (error) {
                 console.error('Error fetching IP:', error);
-                visitorIpElement.textContent = 'ไม่สามารถโหลด IP ได้';
             }
         }
 
-        // Function to send IP to another backend (web1)
-        function sendIPToBackend(ip) {
-            // Replace 'https://your-backend-web1.com/api/ip' with your actual backend URL
-            fetch('https://your-backend-web1.com/api/ip', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ip: ip, timestamp: new Date().toISOString() }),
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('IP ส่งไปยังเว็บ1 สำเร็จ');
-                } else {
-                    console.error('การส่ง IP ไปยังเว็บ1 ล้มเหลว');
-                }
-            })
-            .catch(error => {
-                console.error('ข้อผิดพลาดในการส่ง IP ไปยังเว็บ1:', error);
-            });
-        }
-
-        // Function to store IP in Firebase (ถ้าต้องการ)
         function storeIPInFirebase(ip) {
-            const ipLogRef = database.ref('ipLogs');
-            ipLogRef.push({
+            const sanitizedIP = ip.replace(/\./g, '_'); // แทนที่จุดด้วยขีดเส้นใต้เพื่อความปลอดภัย
+            const ipLogRef = database.ref('ipLogs/' + sanitizedIP);
+            ipLogRef.set({
                 ip: ip,
                 timestamp: new Date().toISOString(),
             });
         }
 
-        // Call the fetchVisitorIP function on page load
+        // เรียกใช้ฟังก์ชันเมื่อโหลดหน้าเว็บ
         fetchVisitorIP();
-
-        function updateVPNList(vpnCodes) {
-            const validCodes = Object.entries(vpnCodes || {}).filter(([_, vpn]) => new Date(vpn.expiry) > new Date());
-            const codeCount = validCodes.length;
-
-            // Show loading message for 4 seconds
-            vpnList.innerHTML = '<div class="loading">กำลังค้นหาโค้ด</div>';
-            setTimeout(() => {
-                // Show found codes message for 3 seconds
-                vpnList.innerHTML = `<div class="found-codes">พบโค้ดทั้งหมด จำนวน ${codeCount}</div>`;
-                setTimeout(() => {
-                    // Display the actual VPN codes
-                    vpnList.innerHTML = '';
-                    if (codeCount > 0) {
-                        validCodes.forEach(([key, vpn]) => {
-                            const codeContainer = document.createElement('div');
-                            codeContainer.className = 'code-container';
-                            codeContainer.setAttribute('data-key', key);
-                            const remainingCopies = vpn.copyLimit - (vpn.copyCount || 0);
-                            codeContainer.innerHTML = `
-                                <p class="vpn-code">${vpn.code}</p>
-                                <div class="code-info">
-                                    <span class="expiry-date">หมดอายุ: ${new Date(vpn.expiry).toLocaleString('th-TH')}</span>
-                                    <span class="network">เครือข่าย: ${vpn.network}</span>
-                                    <span class="countdown" id="countdown-${key}"></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('${vpn.code}', '${key}')" ${remainingCopies <= 0 ? 'disabled' : ''}>คัดลอก</button>
-                                    <span class="copy-limit" id="copy-limit-${key}">เหลือ ${remainingCopies} ครั้ง</span>
-                                </div>
-                            `;
-                            vpnList.appendChild(codeContainer);
-                            updateCountdown(key, new Date(vpn.expiry));
-                        });
-                    } else {
-                        vpnList.innerHTML = '<div class="no-data">ไม่พบข้อมูล</div>';
-                    }
-                }, 3000);
-            }, 4000);
-        }
-
-        function updateCountdown(key, expiryDate) {
-            const countdownElement = document.getElementById(`countdown-${key}`);
-            
-            function update() {
-                const now = new Date();
-                const timeLeft = expiryDate - now;
-
-                if (timeLeft <= 0) {
-                    countdownElement.textContent = "หมดอายุแล้ว";
-                } else {
-                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                    countdownElement.textContent = `เหลือเวลา: ${days}วัน ${hours}ชั่วโมง ${minutes}นาที ${seconds}วินาที`;
-                    setTimeout(update, 1000);
-                }
-            }
-
-            update();
-        }
-
-        function copyToClipboard(text, key) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            
-            showCopyAlert();
-            updateCopyLimit(key);
-        }
-
-        function updateCopyLimit(key) {
-            database.ref(`vpnCodes/${key}`).transaction((vpn) => {
-                if (vpn) {
-                    vpn.copyCount = (vpn.copyCount || 0) + 1;
-                }
-                return vpn;
-            }, (error, committed, snapshot) => {
-                if (error) {
-                    console.error('Transaction failed abnormally!', error);
-                } else if (!committed) {
-                    console.log('Transaction aborted.');
-                } else {
-                    const vpn = snapshot.val();
-                    const remainingCopies = vpn.copyLimit - vpn.copyCount;
-                    
-                    if (remainingCopies <= 0) {
-                        // ลบโค้ดออกจาก Firebase
-                        database.ref(`vpnCodes/${key}`).remove();
-                        
-                        // ลบโค้ดออกจากหน้าเว็บ
-                        const codeContainer = document.querySelector(`.code-container[data-key="${key}"]`);
-                        if (codeContainer) {
-                            codeContainer.style.animation = 'fadeOut 0.5s';
-                            setTimeout(() => {
-                                codeContainer.remove();
-                            }, 500);
-                        }
-                    } else {
-                        // อัปเดตจำนวนการคัดลอกที่เหลือ
-                        const copyLimitElement = document.getElementById(`copy-limit-${key}`);
-                        if (copyLimitElement) {
-                            copyLimitElement.textContent = `เหลือ ${remainingCopies} ครั้ง`;
-                        }
-                    }
-                }
-            });
-        }
-
-        function showCopyAlert() {
-            const alert = document.getElementById('copyAlert');
-            alert.style.opacity = '1';
-            setTimeout(() => {
-                alert.style.opacity = '0';
-            }, 2000);
-        }
-
-        // Listen for changes in the database
-        database.ref('vpnCodes').on('value', (snapshot) => {
-            const vpnCodes = snapshot.val();
-            updateVPNList(vpnCodes);
-        });
-
-        // User counter functionality
-        const userStatusRef = database.ref('userStatus');
-        const userCountRef = database.ref('userCount');
-
-        // เพิ่มฟังก์ชันเพื่อตรวจสอบและอัปเดตสถานะการออนไลน์
-        function updateOnlineStatus(online) {
-            if (online) {
-                userStatusRef.child(userId).set(true);
-            } else {
-                userStatusRef.child(userId).remove();
-            }
-        }
-
-        // เมื่อผู้ใช้เชื่อมต่อ
-        updateOnlineStatus(true);
-
-        // ตรวจสอบการเชื่อมต่อกับ Firebase
-        const connectedRef = database.ref('.info/connected');
-        connectedRef.on('value', (snap) => {
-            if (snap.val() === true) {
-                // เมื่อเชื่อมต่อสำเร็จ, อัปเดตสถานะเป็นออนไลน์
-                updateOnlineStatus(true);
-
-                // ตั้งค่าให้ลบสถานะเมื่อตัดการเชื่อมต่อ
-                userStatusRef.child(userId).onDisconnect().remove();
-            }
-        });
-
-        // ฟังก์ชันนับจำนวนผู้ใช้ออนไลน์
-        function countOnlineUsers(users) {
-            return Object.keys(users || {}).length;
-        }
-
-        // ติดตามการเปลี่ยนแปลงของสถานะผู้ใช้
-        userStatusRef.on('value', (snapshot) => {
-            const onlineUsers = snapshot.val();
-            const count = countOnlineUsers(onlineUsers);
-            userCountElement.textContent = count;
-        });
-
-        // ป้องกันการใช้คีย์ลัดคัดลอก
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
-                e.preventDefault();
-            }
-        });
-
-        // ปิดการใช้งานคลิกขวา
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-
-        // แสดง overlay เมื่อพยายามถ่ายภาพหน้าจอ (ใช้ได้เฉพาะบางเบราว์เซอร์)
-        document.addEventListener('keyup', function(e) {
-            if (e.key === 'PrintScreen') {
-                document.getElementById('overlay').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('overlay').style.display = 'none';
-                }, 3000);
-            }
-        });
-
-        // ตรวจสอบเมื่อผู้ใช้ปิดหน้าต่างหรือแท็บ
-        window.addEventListener('beforeunload', function() {
-            updateOnlineStatus(false);
-        });
     </script>
 </body>
+</html>
