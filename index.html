@@ -33,6 +33,7 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            position: relative; /* เพิ่มเพื่อให้ตำแหน่งของ #ip-display ถูกต้อง */
         }
         .container {
             width: 90%;
@@ -207,9 +208,9 @@
             margin-right: 10px;
             font-size: 24px;
         }
-        /* New Styles for IP Display */
+        /* ปรับปรุงสไตล์สำหรับ IP Display */
         #ip-display {
-            position: absolute;
+            position: fixed; /* เปลี่ยนจาก absolute เป็น fixed */
             top: 20px;
             left: 20px;
             background: rgba(0, 242, 254, 0.2);
@@ -220,6 +221,7 @@
             box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
             display: flex;
             align-items: center;
+            z-index: 1000; /* เพิ่ม z-index เพื่อให้แน่ใจว่าอยู่ด้านบนสุด */
         }
         #ip-display-icon {
             margin-right: 10px;
@@ -228,13 +230,13 @@
     </style>
 </head>
 <body>
+    <!-- IP Display ย้ายออกจาก .container และวางไว้ที่มุมบนซ้าย -->
+    <div id="ip-display">
+        <span id="ip-display-icon">🌐</span>
+        <span id="visitor-ip">กำลังโหลด IP...</span>
+    </div>
+
     <div class="container">
-        <!-- IP Display -->
-        <div id="ip-display">
-            <span id="ip-display-icon">🌐</span>
-            <span id="visitor-ip">กำลังโหลด IP...</span>
-        </div>
-        
         <h1>VPN CHN2 ฟรีโค้ด</h1>
         <div id="vpn-list">
             <div class="loading">กำลังค้นหาโค้ด</div>
