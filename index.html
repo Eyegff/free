@@ -29,12 +29,12 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .code-list {
@@ -44,23 +44,38 @@
 
         .code-item {
             background: #f9f9f9;
-            border-left: 4px solid #4a90e2;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
+            border-left: 5px solid #4a90e2;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
             word-break: break-all;
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .code-item::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: -8px;
-            width: 16px;
-            height: 16px;
-            background: #4a90e2;
-            border-radius: 50%;
+        .code-text {
+            flex: 1;
+            margin-right: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .copy-button {
+            background-color: #4a90e2;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex-shrink: 0;
+        }
+
+        .copy-button:hover {
+            background-color: #357ABD;
         }
 
         .loading {
@@ -89,6 +104,16 @@
 
             header h1 {
                 font-size: 1.5em;
+            }
+
+            .code-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .copy-button {
+                margin-top: 10px;
+                width: 100%;
             }
         }
     </style>
@@ -130,7 +155,9 @@
                 try {
                     const response = await fetch(url);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return await response.text();
+                    const text = await response.text();
+                    console.log(`Fetched data from ${url} successfully.`);
+                    return text;
                 } catch (error) {
                     console.error(`Error fetching ${url}:`, error);
                     return null;
@@ -138,7 +165,7 @@
             };
 
             // ฟังก์ชันตรวจสอบและกรองโค้ด
-            const filterCodes = (line) => {
+            const filterCodes = (line, url) => {
                 line = line.trim();
                 if (!line) return;
 
@@ -150,40 +177,76 @@
                         try {
                             const decoded = atob(encoded);
                             const json = JSON.parse(decoded);
-                            if (json.sni === sniFilter) {
+                            if (json.sni && json.sni === sniFilter) {
                                 filteredCodes.push(line);
+                                console.log(`Matched vmess code from ${url}: ${line}`);
+                            } else {
+                                console.log(`vmess code from ${url} does not match sni.`);
                             }
                         } catch (e) {
-                            console.warn('Invalid vmess link:', line);
+                            console.warn(`Invalid vmess link from ${url}: ${line}`);
                         }
                     } else if (line.startsWith('vless://')) {
                         // สำหรับ vless, แยก query parameters และตรวจสอบ sni
                         try {
-                            const url = new URL(line);
-                            const params = new URLSearchParams(url.search);
-                            if (params.get('sni') === sniFilter) {
+                            const urlObj = new URL(line);
+                            const params = new URLSearchParams(urlObj.search);
+                            if (params.get('sni') && params.get('sni') === sniFilter) {
                                 filteredCodes.push(line);
+                                console.log(`Matched vless code from ${url}: ${line}`);
+                            } else {
+                                console.log(`vless code from ${url} does not match sni.`);
                             }
                         } catch (e) {
-                            console.warn('Invalid vless link:', line);
+                            console.warn(`Invalid vless link from ${url}: ${line}`);
                         }
                     }
                 }
+            };
+
+            // ฟังก์ชันคัดลอกโค้ดไปยัง Clipboard
+            const copyToClipboard = (text, button) => {
+                navigator.clipboard.writeText(text).then(() => {
+                    button.textContent = 'คัดลอกแล้ว!';
+                    button.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        button.textContent = 'คัดลอก';
+                        button.style.backgroundColor = '#4a90e2';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            };
+
+            // ฟังก์ชันสร้างรายการโค้ด
+            const createCodeItem = (code) => {
+                const li = document.createElement('li');
+                li.className = 'code-item';
+
+                const codeText = document.createElement('div');
+                codeText.className = 'code-text';
+                codeText.textContent = code;
+
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.textContent = 'คัดลอก';
+                copyButton.addEventListener('click', () => copyToClipboard(code, copyButton));
+
+                li.appendChild(codeText);
+                li.appendChild(copyButton);
+                codeListElement.appendChild(li);
             };
 
             // ฟังก์ชันแสดงผลลัพธ์
             const displayCodes = () => {
                 loadingElement.style.display = 'none';
                 if (filteredCodes.length > 0) {
-                    filteredCodes.forEach(code => {
-                        const li = document.createElement('li');
-                        li.className = 'code-item';
-                        li.textContent = code;
-                        codeListElement.appendChild(li);
-                    });
+                    filteredCodes.forEach(code => createCodeItem(code));
+                    console.log(`Total matched codes: ${filteredCodes.length}`);
                 } else {
                     messageElement.textContent = 'ไม่พบโค้ดที่ตรงกับเงื่อนไข';
                     messageElement.style.display = 'block';
+                    console.log('No codes matched the filter.');
                 }
             };
 
@@ -192,10 +255,11 @@
                 const fetchPromises = urls.map(url => fetchContent(url));
                 const results = await Promise.all(fetchPromises);
 
-                results.forEach(content => {
+                results.forEach((content, index) => {
+                    const url = urls[index];
                     if (content) {
                         const lines = content.split('\n');
-                        lines.forEach(line => filterCodes(line));
+                        lines.forEach(line => filterCodes(line, url));
                     }
                 });
 
