@@ -128,13 +128,27 @@
             gap: 0.5rem;
         }
 
-        .config-card h3::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #10b981;
             border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
 
         .config-text {
@@ -282,6 +296,21 @@
         const VALID_HOSTS = ['bpb-v.pages.dev'];
         const VALID_SNIS = ['bpb-v.pages.dev'];
 
+        function formatTimestamp() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('th-TH', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+            const date = now.toLocaleDateString('th-TH', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            return `อัพเดทล่าสุด: ${date} เวลา ${time} น.`;
+        }
+
         async function fetchConfigs() {
             try {
                 const configs = [];
@@ -327,8 +356,12 @@
                     const configName = config.split('#')[1] || `Config ${index + 1}`;
                     
                     card.innerHTML = `
-                        <h3>${decodeURIComponent(configName)}</h3>
+                        <h3>
+                            <span class="status-dot"></span>
+                            ${decodeURIComponent(configName)}
+                        </h3>
                         <div class="config-text">${config}</div>
+                        <span class="timestamp">${formatTimestamp()}</span>
                         <button class="copy-btn" onclick="copyConfig(this, '${config}')">
                             <i class="fas fa-copy"></i>
                             คัดลอก
