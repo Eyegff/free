@@ -2,315 +2,359 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>โค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRN9mFSVOBf2UhvV4X6Q98ZlL1SVt7fEe/mBBN4pYbXHxFcBj07xHkSxZ9lE+iCShxv7B1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>VLESS Configs Dashboard</title>
     <style>
-        /* Reset */
+        /* Reset CSS */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Body Styling */
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8.5px);
+            -webkit-backdrop-filter: blur(8.5px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
-        header h1 {
-            font-size: 2.5em;
-            color: #4a90e2;
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #00e6e6;
             margin-bottom: 10px;
         }
 
-        header p {
-            font-size: 1.2em;
-            color: #555;
+        .header p {
+            font-size: 1rem;
+            color: #cccccc;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        /* Card Styling */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 15px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            word-wrap: break-word;
         }
 
-        .code-list {
-            list-style: none;
-            padding: 0;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .code-item {
-            background-color: #f9f9f9;
-            border-left: 5px solid #4a90e2;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #00e6e6;
+        }
+
+        .info {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             word-break: break-all;
-            transition: background-color 0.3s, transform 0.3s;
         }
 
-        .code-item:hover {
-            background-color: #e6f2ff;
-            transform: translateY(-2px);
+        .info strong {
+            color: #ffcc00;
         }
 
-        .code-text {
-            flex: 1;
-            margin-right: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            word-break: break-word;
-        }
-
-        .copy-button {
-            background-color: #4a90e2;
-            color: #fff;
+        /* Copy Button */
+        .copy-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #ff5722;
+            color: #ffffff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 0.8rem;
             transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            font-size: 0.9em;
-        }
-
-        .copy-button:hover {
-            background-color: #357ABD;
-        }
-
-        .copy-button.copied {
-            background-color: #28a745;
-        }
-
-        .copy-button i {
-            margin-right: 8px;
-        }
-
-        .loading {
+            width: 100%;
             text-align: center;
-            font-size: 1.2em;
-            color: #888;
-            margin-bottom: 20px;
         }
 
-        .error {
-            text-align: center;
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
+        .copy-btn:hover {
+            background-color: #e64a19;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #aaa;
+        /* Error Card Styling */
+        .error-card {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 4px solid #ff0000;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 2em;
+        /* Responsive Typography */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
             }
 
-            .code-item {
-                flex-direction: column;
-                align-items: flex-start;
+            .header p {
+                font-size: 0.9rem;
             }
 
-            .copy-button {
-                width: 100%;
-                margin-top: 10px;
-                justify-content: center;
+            .card h2 {
+                font-size: 1.1rem;
             }
 
-            .code-text {
-                margin-right: 0;
-                margin-bottom: 10px;
+            .info {
+                font-size: 0.85rem;
+            }
+
+            .copy-btn {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.8rem;
+            }
+
+            .card h2 {
+                font-size: 1rem;
+            }
+
+            .info {
+                font-size: 0.8rem;
+            }
+
+            .copy-btn {
+                font-size: 0.8rem;
+                padding: 7px 8px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>โค้ด V2Ray และ VLESS</h1>
-        <p>แสดงโค้ดที่มี SNI = <strong>BpB-V.PagEs.dev</strong></p>
-    </header>
-
     <div class="container">
-        <div id="loading" class="loading">กำลังโหลดข้อมูล...</div>
-        <ul id="codeList" class="code-list"></ul>
-        <div id="message" class="error" style="display: none;">ไม่พบโค้ดที่ตรงกับเงื่อนไข</div>
+        <div class="header">
+            <h1>VLESS Configurations</h1>
+            <p>ดึงข้อมูลจากลิงก์และแสดงผลอย่างสวยงาม พร้อมปุ่มคัดลอกโค้ด</p>
+        </div>
+        <div class="cards-grid" id="cards-container">
+            <!-- การ์ดข้อมูลจะถูกเพิ่มที่นี่โดย JavaScript -->
+        </div>
     </div>
 
-    <footer>
-        &copy; 2024 เว็บไซต์ดึงโค้ด V2Ray และ VLESS
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urls = [
-                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt",
-                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt",
-                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt",
-                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub4.txt",
-                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt"
-            ];
+        // ลิสต์ของ URLs ที่ต้องการดึงข้อมูล
+        const urls = [
+            "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt",
+            "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt",
+            "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt",
+            "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub4.txt",
+            "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt"
+        ];
 
-            const sniFilter = 'BpB-V.PagEs.dev';
-            const codeListElement = document.getElementById('codeList');
-            const loadingElement = document.getElementById('loading');
-            const messageElement = document.getElementById('message');
+        const container = document.getElementById('cards-container');
 
-            let filteredCodes = [];
+        /**
+         * คัดลอกข้อความไปยังคลิปบอร์ด
+         * @param {string} text - ข้อความที่จะคัดลอก
+         */
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // แสดงการแจ้งเตือนแบบไม่รบกวนผู้ใช้
+                showToast('คัดลอกเรียบร้อย!');
+            }).catch(err => {
+                showToast('ไม่สามารถคัดลอกได้');
+                console.error('Error:', err);
+            });
+        }
 
-            // ฟังก์ชันดึงข้อมูลจาก URL
-            const fetchContent = async (url) => {
+        /**
+         * แสดง Toast Notification
+         * @param {string} message - ข้อความที่จะแสดง
+         */
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            toast.style.color = '#fff';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '5px';
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s';
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '1';
+            }, 100);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 500);
+            }, 2000);
+        }
+
+        /**
+         * แยกข้อมูล ws host และ SNI จาก VLESS URL
+         * @param {string} vlessUrl - VLESS URL ที่ต้องการแยกข้อมูล
+         * @returns {object} - ออบเจ็กต์ที่มี wsHost และ sni
+         */
+        function parseVless(vlessUrl) {
+            try {
+                const urlObj = new URL(vlessUrl);
+                const params = new URLSearchParams(urlObj.search);
+                let wsHost = params.get('host');
+                let sni = params.get('sni');
+
+                // ตรวจสอบและสลับหากไม่เจอ
+                if (!wsHost || !sni) {
+                    wsHost = params.get('host') || '';
+                    sni = params.get('sni') || '';
+                    // สลับกรณีตัวอักษร
+                    if (wsHost && !sni) {
+                        sni = wsHost.toLowerCase();
+                        wsHost = wsHost.toUpperCase();
+                    } else if (!wsHost && sni) {
+                        wsHost = sni.toLowerCase();
+                        sni = sni.toUpperCase();
+                    }
+                }
+
+                return { wsHost, sni };
+            } catch (error) {
+                console.error('Error parsing URL:', error);
+                return { wsHost: 'ไม่พบข้อมูล', sni: 'ไม่พบข้อมูล' };
+            }
+        }
+
+        /**
+         * สร้างการ์ดข้อมูลสำหรับแต่ละ VLESS URL
+         * @param {string} vlessUrl - VLESS URL
+         */
+        function createCard(vlessUrl) {
+            const { wsHost, sni } = parseVless(vlessUrl);
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const title = document.createElement('h2');
+            title.textContent = 'VLESS Config';
+
+            const vlessInfo = document.createElement('div');
+            vlessInfo.className = 'info';
+            vlessInfo.innerHTML = `<strong>VLESS URL:</strong> <span>${vlessUrl}</span>`;
+
+            const wsHostInfo = document.createElement('div');
+            wsHostInfo.className = 'info';
+            wsHostInfo.innerHTML = `<strong>WS Host:</strong> <span>${wsHost}</span>`;
+
+            const sniInfo = document.createElement('div');
+            sniInfo.className = 'info';
+            sniInfo.innerHTML = `<strong>SNI:</strong> <span>${sni}</span>`;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-btn';
+            copyButton.textContent = 'คัดลอก VLESS URL';
+            copyButton.onclick = () => copyToClipboard(vlessUrl);
+
+            // เพิ่มองค์ประกอบลงในการ์ด
+            card.appendChild(title);
+            card.appendChild(vlessInfo);
+            card.appendChild(wsHostInfo);
+            card.appendChild(sniInfo);
+            card.appendChild(copyButton);
+
+            container.appendChild(card);
+        }
+
+        /**
+         * สร้างการ์ดแสดงข้อผิดพลาดเมื่อไม่สามารถดึงข้อมูลได้
+         * @param {string} url - URL ที่ไม่สามารถดึงข้อมูลได้
+         * @param {string} error - ข้อความข้อผิดพลาด
+         */
+        function createErrorCard(url, error) {
+            const card = document.createElement('div');
+            card.className = 'card error-card';
+
+            const title = document.createElement('h2');
+            title.textContent = 'ข้อผิดพลาดในการดึงข้อมูล';
+
+            const errorInfo = document.createElement('div');
+            errorInfo.className = 'info';
+            errorInfo.innerHTML = `<strong>URL:</strong> ${url}<br><strong>Error:</strong> ${error}`;
+
+            // เพิ่มองค์ประกอบลงในการ์ด
+            card.appendChild(title);
+            card.appendChild(errorInfo);
+
+            container.appendChild(card);
+        }
+
+        /**
+         * ดึงข้อมูลจากทุก URLs และสร้างการ์ดสำหรับแต่ละ VLESS URL
+         */
+        async function fetchData() {
+            for (const url of urls) {
                 try {
                     const response = await fetch(url);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     const text = await response.text();
-                    console.log(`Fetched data from ${url} successfully.`);
-                    return text;
+                    const lines = text.split('\n').map(line => line.trim()).filter(line => line.startsWith('vless://'));
+                    
+                    if (lines.length === 0) {
+                        createErrorCard(url, 'ไม่มี VLESS URLs ในไฟล์นี้');
+                        continue;
+                    }
+
+                    lines.forEach(vlessUrl => {
+                        createCard(vlessUrl);
+                    });
                 } catch (error) {
-                    console.error(`Error fetching ${url}:`, error);
-                    return null;
+                    console.error('Fetch error:', error);
+                    createErrorCard(url, error.message);
                 }
-            };
+            }
+        }
 
-            // ฟังก์ชันตรวจสอบและกรองโค้ด
-            const filterCodes = (line, url) => {
-                line = line.trim();
-                if (!line) return;
-
-                // ตรวจสอบว่าเป็น vmess:// หรือ vless://
-                if (/^(vmess|vless):\/\/.+$/.test(line)) {
-                    if (line.startsWith('vmess://')) {
-                        // สำหรับ vmess, ถอดรหัส base64 แล้วตรวจสอบ sni
-                        const encoded = line.slice(8);
-                        try {
-                            const decoded = atob(encoded);
-                            const json = JSON.parse(decoded);
-                            if (json.sni && json.sni.toLowerCase() === sniFilter.toLowerCase()) {
-                                filteredCodes.push(line);
-                                console.log(`Matched vmess code from ${url}: ${line}`);
-                            } else {
-                                console.log(`vmess code from ${url} does not match sni.`);
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid vmess link from ${url}: ${line}`);
-                        }
-                    } else if (line.startsWith('vless://')) {
-                        // สำหรับ vless, แยก query parameters และตรวจสอบ sni
-                        try {
-                            const urlObj = new URL(line);
-                            const params = new URLSearchParams(urlObj.search);
-                            const sniValue = params.get('sni') || params.get('serverName') || params.get('host');
-                            if (sniValue && sniValue.toLowerCase() === sniFilter.toLowerCase()) {
-                                filteredCodes.push(line);
-                                console.log(`Matched vless code from ${url}: ${line}`);
-                            } else {
-                                // ถ้าไม่มี sni ใน query, ก็ตรวจสอบ host
-                                const host = urlObj.host.split('@').pop().split(':')[0];
-                                if (host.toLowerCase() === sniFilter.toLowerCase()) {
-                                    filteredCodes.push(line);
-                                    console.log(`Matched vless code by host from ${url}: ${line}`);
-                                } else {
-                                    console.log(`vless code from ${url} does not match sni.`);
-                                }
-                            }
-                        } catch (e) {
-                            console.warn(`Invalid vless link from ${url}: ${line}`);
-                        }
-                    }
-                }
-            };
-
-            // ฟังก์ชันคัดลอกโค้ดไปยัง Clipboard
-            const copyToClipboard = (text, button) => {
-                navigator.clipboard.writeText(text).then(() => {
-                    button.innerHTML = '<i class="fas fa-check"></i> คัดลอกแล้ว!';
-                    button.classList.add('copied');
-                    setTimeout(() => {
-                        button.innerHTML = '<i class="fas fa-copy"></i> คัดลอก';
-                        button.classList.remove('copied');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                });
-            };
-
-            // ฟังก์ชันสร้างรายการโค้ด
-            const createCodeItem = (code) => {
-                const li = document.createElement('li');
-                li.className = 'code-item';
-
-                const codeText = document.createElement('div');
-                codeText.className = 'code-text';
-                codeText.textContent = code;
-
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-button';
-                copyButton.innerHTML = '<i class="fas fa-copy"></i> คัดลอก';
-                copyButton.addEventListener('click', () => copyToClipboard(code, copyButton));
-
-                li.appendChild(codeText);
-                li.appendChild(copyButton);
-                codeListElement.appendChild(li);
-            };
-
-            // ฟังก์ชันแสดงผลลัพธ์
-            const displayCodes = () => {
-                loadingElement.style.display = 'none';
-                if (filteredCodes.length > 0) {
-                    filteredCodes.forEach(code => createCodeItem(code));
-                    console.log(`Total matched codes: ${filteredCodes.length}`);
-                } else {
-                    messageElement.textContent = 'ไม่พบโค้ดที่ตรงกับเงื่อนไข';
-                    messageElement.style.display = 'block';
-                    console.log('No codes matched the filter.');
-                }
-            };
-
-            // ฟังก์ชันหลัก
-            const init = async () => {
-                const fetchPromises = urls.map(url => fetchContent(url));
-                const results = await Promise.all(fetchPromises);
-
-                results.forEach((content, index) => {
-                    const url = urls[index];
-                    if (content) {
-                        const lines = content.split('\n');
-                        console.log(`Processing ${lines.length} lines from ${url}`);
-                        lines.forEach(line => filterCodes(line, url));
-                    } else {
-                        console.log(`No content fetched from ${url}`);
-                    }
-                });
-
-                displayCodes();
-            };
-
-            init();
-        </script>
+        // เรียกใช้ฟังก์ชันดึงข้อมูลเมื่อโหลดหน้าเว็บ
+        window.addEventListener('DOMContentLoaded', fetchData);
+    </script>
 </body>
 </html>
