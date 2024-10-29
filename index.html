@@ -293,8 +293,9 @@
             'https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt'
         ];
 
-        const VALID_HOSTS = ['bpb-v.pages.dev'];
-        const VALID_SNIS = ['bpb-v.pages.dev'];
+        // รวมค่า host และ sni ทั้งหมดที่ต้องการ
+        const VALID_HOSTS = ['bpb-v.pages.dev', 'isaa1.paGes.DEv', 'isaA1.pages.dev'];
+        const VALID_SNIS = ['bpb-v.pages.dev', 'iSaA1.paGes.DEv', 'iSaA1.pages.dev'];
 
         function formatTimestamp() {
             const now = new Date();
@@ -317,7 +318,7 @@
                 const [urlPart, comment] = config.split('#');
                 const url = new URL(urlPart);
 
-                // แทนที่ Host ใน URL
+                // แทนที่ Hostname ใน URL
                 url.hostname = 's.true.th';
 
                 // ดึงพารามิเตอร์ที่มีอยู่แล้ว
@@ -325,6 +326,15 @@
 
                 // เพิ่มหรือปรับปรุงพารามิเตอร์ที่ต้องการ
                 params.set('encryption', 'none');
+
+                // แปลง host และ sni เป็นค่าที่ต้องการ
+                if (params.has('host')) {
+                    params.set('host', 'IsaA1.pAGEs.DEV');
+                }
+
+                if (params.has('sni')) {
+                    params.set('sni', 'iSaA1.paGes.DEv');
+                }
 
                 // สร้าง URL ใหม่ด้วยพารามิเตอร์ที่ปรับปรุง
                 url.search = params.toString();
@@ -349,16 +359,22 @@
                         
                         for (const line of lines) {
                             if (line.startsWith('vless://')) {
-                                const urlObj = new URL(line.split('#')[0]);
-                                const params = new URLSearchParams(urlObj.search);
-                                const host = params.get('host')?.toLowerCase();
-                                const sni = params.get('sni')?.toLowerCase();
-                                const type = params.get('type');
+                                try {
+                                    const [urlPart, comment] = line.split('#');
+                                    const urlObj = new URL(urlPart);
+                                    const params = new URLSearchParams(urlObj.search);
+                                    const host = params.get('host')?.toLowerCase();
+                                    const sni = params.get('sni')?.toLowerCase();
+                                    const type = params.get('type');
 
-                                if (type === 'ws' && 
-                                    ((VALID_HOSTS.includes(host) && VALID_SNIS.includes(sni)) ||
-                                     (VALID_SNIS.includes(host) && VALID_HOSTS.includes(sni)))) {
-                                    configs.push(line);
+                                    // ตรวจสอบว่า type เป็น 'ws' และ host และ sni ตรงตามที่กำหนด
+                                    if (type === 'ws' && 
+                                        VALID_HOSTS.includes(host) &&
+                                        VALID_SNIS.includes(sni)) {
+                                        configs.push(line);
+                                    }
+                                } catch (innerError) {
+                                    console.error(`Error parsing config line: ${line}`, innerError);
                                 }
                             }
                         }
