@@ -2,9 +2,10 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>ดึงโค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</title>
+    <title>โค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Reset บางส่วนเพื่อความเข้ากันได้ */
+        /* Reset */
         * {
             margin: 0;
             padding: 0;
@@ -12,8 +13,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f8;
             color: #333;
             padding: 20px;
         }
@@ -24,17 +25,18 @@
         }
 
         header h1 {
-            font-size: 2em;
+            font-size: 2.5em;
             color: #4a90e2;
+            margin-bottom: 10px;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background: #fff;
-            padding: 25px;
+            background-color: #ffffff;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
 
         .code-list {
@@ -43,16 +45,16 @@
         }
 
         .code-item {
-            background: #f9f9f9;
+            background-color: #f9f9f9;
             border-left: 5px solid #4a90e2;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 5px;
-            word-break: break-all;
-            position: relative;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            word-break: break-all;
         }
 
         .code-text {
@@ -67,15 +69,19 @@
             background-color: #4a90e2;
             color: #fff;
             border: none;
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            flex-shrink: 0;
+            margin-top: 10px;
         }
 
         .copy-button:hover {
             background-color: #357ABD;
+        }
+
+        .copy-button.copied {
+            background-color: #28a745;
         }
 
         .loading {
@@ -88,6 +94,7 @@
             text-align: center;
             color: red;
             font-weight: bold;
+            margin-top: 20px;
         }
 
         footer {
@@ -98,12 +105,8 @@
 
         /* Responsive */
         @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-
             header h1 {
-                font-size: 1.5em;
+                font-size: 2em;
             }
 
             .code-item {
@@ -112,8 +115,8 @@
             }
 
             .copy-button {
-                margin-top: 10px;
                 width: 100%;
+                margin-top: 10px;
             }
         }
     </style>
@@ -126,7 +129,7 @@
     <div class="container">
         <div id="loading" class="loading">กำลังโหลดข้อมูล...</div>
         <ul id="codeList" class="code-list"></ul>
-        <div id="message" class="error" style="display: none;"></div>
+        <div id="message" class="error" style="display: none;">ไม่พบโค้ดที่ตรงกับเงื่อนไข</div>
     </div>
 
     <footer>
@@ -208,10 +211,10 @@
             const copyToClipboard = (text, button) => {
                 navigator.clipboard.writeText(text).then(() => {
                     button.textContent = 'คัดลอกแล้ว!';
-                    button.style.backgroundColor = '#28a745';
+                    button.classList.add('copied');
                     setTimeout(() => {
                         button.textContent = 'คัดลอก';
-                        button.style.backgroundColor = '#4a90e2';
+                        button.classList.remove('copied');
                     }, 2000);
                 }).catch(err => {
                     console.error('Could not copy text: ', err);
