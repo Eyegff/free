@@ -31,16 +31,9 @@
             min-height: 100vh;
             line-height: 1.6;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%),
-                radial-gradient(circle at 25% 75%, rgba(29, 78, 216, 0.05) 0%, transparent 70%);
+                radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(29, 78, 216, 0.1) 0%, transparent 40%);
             background-attachment: fixed;
-            animation: backgroundMove 10s linear infinite;
-        }
-
-        @keyframes backgroundMove {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
         }
 
         .container {
@@ -57,7 +50,7 @@
             overflow: hidden;
             border-radius: 1rem;
             background: var(--card);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -84,6 +77,32 @@
             font-size: 1.125rem;
             color: var(--accent);
             opacity: 0.9;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card p {
+            font-size: 1rem;
+            color: var(--text);
         }
 
         .config-container {
@@ -272,6 +291,14 @@
                 font-size: 0.8rem;
                 padding: 0.75rem;
             }
+
+            .info-card h2 {
+                font-size: 1.25rem;
+            }
+
+            .info-card p {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -282,6 +309,13 @@
             <p class="subtitle">API Configuration Manager</p>
         </header>
         
+        <!-- ส่วนแจ้งเตือนแอพที่ต้องใช้ -->
+        <div class="info-card">
+            <h2><i class="fas fa-info-circle"></i> แอพที่ต้องใช้</h2>
+            <p>เพื่อใช้งาน Configs นี้ คุณจำเป็นต้องใช้แอพ <strong>Nte Mod</strong> เท่านั้น</p>
+        </div>
+        <!-- สิ้นสุดส่วนแจ้งเตือนแอพที่ต้องใช้ -->
+
         <div id="loading" class="loading pulse">
             <i class="fas fa-spinner fa-spin"></i>
             <span>กำลังโหลดและประมวลผล Config...</span>
@@ -415,7 +449,7 @@
                         </h3>
                         <div class="config-text">${config}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, '${config}')">
+                        <button class="copy-btn" onclick="copyConfig(this, \`${config}\`)">
                             <i class="fas fa-copy"></i>
                             คัดลอก
                         </button>
@@ -434,7 +468,7 @@
                         </h3>
                         <div class="config-text">${transformedConfig}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, '${transformedConfig}')">
+                        <button class="copy-btn" onclick="copyConfig(this, \`${transformedConfig}\`)">
                             <i class="fas fa-copy"></i>
                             คัดลอก
                         </button>
