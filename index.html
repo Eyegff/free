@@ -2,122 +2,208 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ดึงโค้ด V2ray</title>
+    <title>ดึงโค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</title>
     <style>
+        /* Reset บางส่วนเพื่อความเข้ากันได้ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
             padding: 20px;
         }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2em;
+            color: #4a90e2;
+        }
+
         .container {
             max-width: 800px;
-            margin: auto;
-            background-color: #fff;
+            margin: 0 auto;
+            background: #fff;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .config {
-            border: 1px solid #ddd;
+
+        .code-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .code-item {
+            background: #f9f9f9;
+            border-left: 4px solid #4a90e2;
             padding: 15px;
             margin-bottom: 15px;
-            border-radius: 5px;
-            background-color: #fafafa;
-        }
-        .config h3 {
-            margin-top: 0;
-        }
-        .config pre {
-            background-color: #e8e8e8;
-            padding: 10px;
             border-radius: 4px;
-            overflow-x: auto;
+            word-break: break-all;
+            position: relative;
+        }
+
+        .code-item::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            background: #4a90e2;
+            border-radius: 50%;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #888;
+        }
+
+        .error {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #aaa;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>โค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</h1>
+    </header>
 
-<div class="container">
-    <h1>ดึงโค้ด V2ray จาก GitHub</h1>
-    <div id="configs">
-        <!-- โค้ดจะถูกแทรกที่นี่ -->
+    <div class="container">
+        <div id="loading" class="loading">กำลังโหลดข้อมูล...</div>
+        <ul id="codeList" class="code-list"></ul>
+        <div id="message" class="error" style="display: none;"></div>
     </div>
-</div>
 
-<script>
-    // รายการลิงก์ที่ต้องการดึงข้อมูล
-    const urls = [
-        "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt",
-        "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt",
-        "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt",
-        "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub4.txt",
-        "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt"
-    ];
+    <footer>
+        &copy; 2024 เว็บไซต์ดึงโค้ด V2Ray และ VLESS
+    </footer>
 
-    // ฟังก์ชันดึงข้อมูลจากแต่ละลิงก์
-    async function fetchConfigs() {
-        const container = document.getElementById('configs');
-        const fetchTime = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urls = [
+                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt",
+                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt",
+                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt",
+                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub4.txt",
+                "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt"
+            ];
 
-        for (let i = 0; i < urls.length; i++) {
-            try {
-                const response = await fetch(urls[i]);
-                if (!response.ok) {
-                    throw new Error(`ไม่สามารถดึงข้อมูลจาก ${urls[i]} ได้`);
+            const sniFilter = 'BpB-V.PagEs.dev';
+            const codeListElement = document.getElementById('codeList');
+            const loadingElement = document.getElementById('loading');
+            const messageElement = document.getElementById('message');
+
+            let filteredCodes = [];
+
+            // ฟังก์ชันดึงข้อมูลจาก URL
+            const fetchContent = async (url) => {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.text();
+                } catch (error) {
+                    console.error(`Error fetching ${url}:`, error);
+                    return null;
                 }
-                const data = await response.text();
+            };
 
-                // สร้างองค์ประกอบสำหรับแสดงผล
-                const configDiv = document.createElement('div');
-                configDiv.className = 'config';
+            // ฟังก์ชันตรวจสอบและกรองโค้ด
+            const filterCodes = (line) => {
+                line = line.trim();
+                if (!line) return;
 
-                // แยกส่วนต่าง ๆ ของลิงก์ vless
-                const vlessLink = data.trim();
-                const url = new URL(vlessLink.split('vless://')[1]);
-                const user = url.pathname.split('@')[0];
-                const host = url.hostname;
-                const port = url.port;
-                const params = new URLSearchParams(url.search);
-                const security = params.get('security') || 'N/A';
-                const sni = params.get('sni') || 'N/A';
-                const type = params.get('type') || 'N/A';
-                const wsHost = params.get('host') || 'N/A';
-                const path = decodeURIComponent(params.get('path') || '/');
-                const alpn = decodeURIComponent(params.get('alpn') || '/');
+                // ตรวจสอบว่าเป็น vmess:// หรือ vless://
+                if (/^(vmess|vless):\/\/.+$/.test(line)) {
+                    if (line.startsWith('vmess://')) {
+                        // สำหรับ vmess, ถอดรหัส base64 แล้วตรวจสอบ sni
+                        const encoded = line.slice(8);
+                        try {
+                            const decoded = atob(encoded);
+                            const json = JSON.parse(decoded);
+                            if (json.sni === sniFilter) {
+                                filteredCodes.push(line);
+                            }
+                        } catch (e) {
+                            console.warn('Invalid vmess link:', line);
+                        }
+                    } else if (line.startsWith('vless://')) {
+                        // สำหรับ vless, แยก query parameters และตรวจสอบ sni
+                        try {
+                            const url = new URL(line);
+                            const params = new URLSearchParams(url.search);
+                            if (params.get('sni') === sniFilter) {
+                                filteredCodes.push(line);
+                            }
+                        } catch (e) {
+                            console.warn('Invalid vless link:', line);
+                        }
+                    }
+                }
+            };
 
-                // ใส่ข้อมูลลงใน HTML
-                configDiv.innerHTML = `
-                    <h3>TRUEMOVE พญานินจาเมก้าบูสต์ V2</h3>
-                    <pre>${vlessLink}</pre>
-                    <p>ผู้ให้บริการเครือข่าย: TRUE</p>
-                    <p>โปรโตคอล: VLESS ผ่าน WebSocket</p>
-                    <p>เซิร์ฟเวอร์: ${host} (${port})</p>
-                    <p>ระบบความปลอดภัย: ${security}</p>
-                    <p>SNI: ${sni}</p>
-                    <p>ประเภท: ${type}</p>
-                    <p>WebSocket Host: ${wsHost}</p>
-                    <p>Path: ${path}</p>
-                    <p>ALPN: ${alpn}</p>
-                    <p>ดึงโค้ดเมื่อ: ${fetchTime}</p>
-                    <p>ดึงโค้ดโดยบอท: XCELLENT O5</p>
-                    <p>กลุ่ม: CKOI VIP</p>
-                `;
+            // ฟังก์ชันแสดงผลลัพธ์
+            const displayCodes = () => {
+                loadingElement.style.display = 'none';
+                if (filteredCodes.length > 0) {
+                    filteredCodes.forEach(code => {
+                        const li = document.createElement('li');
+                        li.className = 'code-item';
+                        li.textContent = code;
+                        codeListElement.appendChild(li);
+                    });
+                } else {
+                    messageElement.textContent = 'ไม่พบโค้ดที่ตรงกับเงื่อนไข';
+                    messageElement.style.display = 'block';
+                }
+            };
 
-                container.appendChild(configDiv);
+            // ฟังก์ชันหลัก
+            const init = async () => {
+                const fetchPromises = urls.map(url => fetchContent(url));
+                const results = await Promise.all(fetchPromises);
 
-            } catch (error) {
-                console.error(error);
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'config';
-                errorDiv.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาดในการดึงข้อมูลจากลิงก์: ${urls[i]}</p>`;
-                container.appendChild(errorDiv);
-            }
-        }
-    }
+                results.forEach(content => {
+                    if (content) {
+                        const lines = content.split('\n');
+                        lines.forEach(line => filterCodes(line));
+                    }
+                });
 
-    // เรียกใช้ฟังก์ชันเมื่อโหลดหน้าเว็บเสร็จ
-    window.onload = fetchConfigs;
-</script>
+                displayCodes();
+            };
 
+            init();
+        });
+    </script>
 </body>
 </html>
