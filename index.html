@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>โค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRN9mFSVOBf2UhvV4X6Q98ZlL1SVt7fEe/mBBN4pYbXHxFcBj07xHkSxZ9lE+iCShxv7B1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Reset */
         * {
@@ -14,14 +18,14 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f8;
+            background-color: #f0f2f5;
             color: #333;
             padding: 20px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         header h1 {
@@ -30,13 +34,18 @@
             margin-bottom: 10px;
         }
 
+        header p {
+            font-size: 1.2em;
+            color: #555;
+        }
+
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .code-list {
@@ -55,6 +64,12 @@
             align-items: center;
             flex-wrap: wrap;
             word-break: break-all;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .code-item:hover {
+            background-color: #e6f2ff;
+            transform: translateY(-2px);
         }
 
         .code-text {
@@ -63,6 +78,7 @@
             font-family: 'Courier New', Courier, monospace;
             white-space: pre-wrap;
             overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .copy-button {
@@ -73,7 +89,9 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
         }
 
         .copy-button:hover {
@@ -84,10 +102,15 @@
             background-color: #28a745;
         }
 
+        .copy-button i {
+            margin-right: 8px;
+        }
+
         .loading {
             text-align: center;
             font-size: 1.2em;
             color: #888;
+            margin-bottom: 20px;
         }
 
         .error {
@@ -117,13 +140,20 @@
             .copy-button {
                 width: 100%;
                 margin-top: 10px;
+                justify-content: center;
+            }
+
+            .code-text {
+                margin-right: 0;
+                margin-bottom: 10px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>โค้ด V2Ray และ VLESS ที่มี SNI = BpB-V.PagEs.dev</h1>
+        <h1>โค้ด V2Ray และ VLESS</h1>
+        <p>แสดงโค้ดที่มี SNI = <strong>BpB-V.PagEs.dev</strong></p>
     </header>
 
     <div class="container">
@@ -180,7 +210,7 @@
                         try {
                             const decoded = atob(encoded);
                             const json = JSON.parse(decoded);
-                            if (json.sni && json.sni === sniFilter) {
+                            if (json.sni && json.sni.toLowerCase() === sniFilter.toLowerCase()) {
                                 filteredCodes.push(line);
                                 console.log(`Matched vmess code from ${url}: ${line}`);
                             } else {
@@ -194,11 +224,19 @@
                         try {
                             const urlObj = new URL(line);
                             const params = new URLSearchParams(urlObj.search);
-                            if (params.get('sni') && params.get('sni') === sniFilter) {
+                            const sniValue = params.get('sni') || params.get('serverName') || params.get('host');
+                            if (sniValue && sniValue.toLowerCase() === sniFilter.toLowerCase()) {
                                 filteredCodes.push(line);
                                 console.log(`Matched vless code from ${url}: ${line}`);
                             } else {
-                                console.log(`vless code from ${url} does not match sni.`);
+                                // ถ้าไม่มี sni ใน query, ก็ตรวจสอบ host
+                                const host = urlObj.host.split('@').pop().split(':')[0];
+                                if (host.toLowerCase() === sniFilter.toLowerCase()) {
+                                    filteredCodes.push(line);
+                                    console.log(`Matched vless code by host from ${url}: ${line}`);
+                                } else {
+                                    console.log(`vless code from ${url} does not match sni.`);
+                                }
                             }
                         } catch (e) {
                             console.warn(`Invalid vless link from ${url}: ${line}`);
@@ -210,10 +248,10 @@
             // ฟังก์ชันคัดลอกโค้ดไปยัง Clipboard
             const copyToClipboard = (text, button) => {
                 navigator.clipboard.writeText(text).then(() => {
-                    button.textContent = 'คัดลอกแล้ว!';
+                    button.innerHTML = '<i class="fas fa-check"></i> คัดลอกแล้ว!';
                     button.classList.add('copied');
                     setTimeout(() => {
-                        button.textContent = 'คัดลอก';
+                        button.innerHTML = '<i class="fas fa-copy"></i> คัดลอก';
                         button.classList.remove('copied');
                     }, 2000);
                 }).catch(err => {
@@ -232,7 +270,7 @@
 
                 const copyButton = document.createElement('button');
                 copyButton.className = 'copy-button';
-                copyButton.textContent = 'คัดลอก';
+                copyButton.innerHTML = '<i class="fas fa-copy"></i> คัดลอก';
                 copyButton.addEventListener('click', () => copyToClipboard(code, copyButton));
 
                 li.appendChild(codeText);
@@ -262,7 +300,10 @@
                     const url = urls[index];
                     if (content) {
                         const lines = content.split('\n');
+                        console.log(`Processing ${lines.length} lines from ${url}`);
                         lines.forEach(line => filterCodes(line, url));
+                    } else {
+                        console.log(`No content fetched from ${url}`);
                     }
                 });
 
@@ -270,7 +311,6 @@
             };
 
             init();
-        });
-    </script>
+        </script>
 </body>
 </html>
