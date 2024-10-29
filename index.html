@@ -31,9 +31,16 @@
             min-height: 100vh;
             line-height: 1.6;
             background-image: 
-                radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 0% 100%, rgba(29, 78, 216, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%),
+                radial-gradient(circle at 25% 75%, rgba(29, 78, 216, 0.05) 0%, transparent 70%);
             background-attachment: fixed;
+            animation: backgroundMove 10s linear infinite;
+        }
+
+        @keyframes backgroundMove {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
         }
 
         .container {
@@ -50,7 +57,7 @@
             overflow: hidden;
             border-radius: 1rem;
             background: var(--card);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -408,7 +415,7 @@
                         </h3>
                         <div class="config-text">${config}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, \`${config}\`)">
+                        <button class="copy-btn" onclick="copyConfig(this, '${config}')">
                             <i class="fas fa-copy"></i>
                             คัดลอก
                         </button>
@@ -427,7 +434,7 @@
                         </h3>
                         <div class="config-text">${transformedConfig}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, \`${transformedConfig}\`)">
+                        <button class="copy-btn" onclick="copyConfig(this, '${transformedConfig}')">
                             <i class="fas fa-copy"></i>
                             คัดลอก
                         </button>
