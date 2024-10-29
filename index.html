@@ -311,6 +311,32 @@
             return `อัพเดทล่าสุด: ${date} เวลา ${time} น.`;
         }
 
+        function transformConfig(config) {
+            try {
+                // แยกส่วน URL และ Comment
+                const [urlPart, comment] = config.split('#');
+                const url = new URL(urlPart);
+
+                // แทนที่ Host ใน URL
+                url.hostname = 's.true.th';
+
+                // ดึงพารามิเตอร์ที่มีอยู่แล้ว
+                const params = new URLSearchParams(url.search);
+
+                // เพิ่มหรือปรับปรุงพารามิเตอร์ที่ต้องการ
+                params.set('encryption', 'none');
+
+                // สร้าง URL ใหม่ด้วยพารามิเตอร์ที่ปรับปรุง
+                url.search = params.toString();
+
+                // รวม URL ใหม่กับ Comment
+                return `${url.toString()}#${comment}`;
+            } catch (error) {
+                console.error('Error transforming config:', error);
+                return config; // คืนค่าตัวเดิมถ้ามีข้อผิดพลาด
+            }
+        }
+
         async function fetchConfigs() {
             try {
                 const configs = [];
@@ -350,19 +376,22 @@
 
                 const configsContainer = document.getElementById('configs');
                 configs.forEach((config, index) => {
+                    // แปลง config ตามที่ต้องการ
+                    const transformedConfig = transformConfig(config);
+
                     const card = document.createElement('div');
                     card.className = 'config-card';
                     
-                    const configName = config.split('#')[1] || `Config ${index + 1}`;
+                    const configName = transformedConfig.split('#')[1] || `Config ${index + 1}`;
                     
                     card.innerHTML = `
                         <h3>
                             <span class="status-dot"></span>
                             ${decodeURIComponent(configName)}
                         </h3>
-                        <div class="config-text">${config}</div>
+                        <div class="config-text">${transformedConfig}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, '${config}')">
+                        <button class="copy-btn" onclick="copyConfig(this, \`${transformedConfig}\`)">
                             <i class="fas fa-copy"></i>
                             คัดลอก
                         </button>
@@ -397,7 +426,7 @@
             });
         }
 
-        // Start fetching configs when page loads
+        // เริ่มการดึง Config เมื่อโหลดหน้าเว็บ
         fetchConfigs();
     </script>
 </body>
