@@ -395,15 +395,35 @@
                     // แปลง config ตามที่ต้องการ
                     const transformedConfig = transformConfig(config);
 
-                    const card = document.createElement('div');
-                    card.className = 'config-card';
-                    
-                    const configName = transformedConfig.split('#')[1] || `Config ${index + 1}`;
-                    
-                    card.innerHTML = `
+                    // สร้างการ์ดสำหรับ Config ดั้งเดิม
+                    const originalCard = document.createElement('div');
+                    originalCard.className = 'config-card';
+
+                    const originalName = config.split('#')[1] || `Original Config ${index + 1}`;
+
+                    originalCard.innerHTML = `
                         <h3>
                             <span class="status-dot"></span>
-                            ${decodeURIComponent(configName)}
+                            ${decodeURIComponent(originalName)} (Original)
+                        </h3>
+                        <div class="config-text">${config}</div>
+                        <span class="timestamp">${formatTimestamp()}</span>
+                        <button class="copy-btn" onclick="copyConfig(this, \`${config}\`)">
+                            <i class="fas fa-copy"></i>
+                            คัดลอก
+                        </button>
+                    `;
+
+                    // สร้างการ์ดสำหรับ Config ที่แปลงแล้ว
+                    const transformedCard = document.createElement('div');
+                    transformedCard.className = 'config-card';
+
+                    const transformedName = transformedConfig.split('#')[1] || `Transformed Config ${index + 1}`;
+
+                    transformedCard.innerHTML = `
+                        <h3>
+                            <span class="status-dot"></span>
+                            ${decodeURIComponent(transformedName)} (Transformed)
                         </h3>
                         <div class="config-text">${transformedConfig}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
@@ -412,8 +432,10 @@
                             คัดลอก
                         </button>
                     `;
-                    
-                    configsContainer.appendChild(card);
+
+                    // เพิ่มการ์ดทั้งสองลงในคอนเทนเนอร์
+                    configsContainer.appendChild(originalCard);
+                    configsContainer.appendChild(transformedCard);
                 });
             } catch (error) {
                 showError('เกิดข้อผิดพลาดในการดึงข้อมูล');
