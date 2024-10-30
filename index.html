@@ -7,28 +7,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #6b46c1; /* สีม่วงเข้ม */
-            --secondary: #7f56d9; /* สีม่วงกลาง */
-            --accent: #b794f4; /* สีม่วงอ่อน */
-            --background: #0f172a; /* สีพื้นหลังมืด */
-            --card: #1e293b; /* สีการ์ดมืด */
-            --text: #f1f5f9; /* สีข้อความมืด */
+            --primary: #3b82f6;
+            --secondary: #1d4ed8;
+            --accent: #60a5fa;
+            --background: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
             --success: #10b981;
             --error: #ef4444;
-            --gradient: linear-gradient(135deg, #7f56d9 0%, #b794f4 100%); /* กราดิเอนต์สีม่วง */
-        }
-
-        /* Light mode variables */
-        .light-mode {
-            --primary: #9f7aea; /* สีม่วงอ่อน */
-            --secondary: #d6bcfa; /* สีม่วงพาสเทล */
-            --accent: #c084fc; /* สีม่วงสดใส */
-            --background: #ffffff; /* สีพื้นหลังสว่าง */
-            --card: #f5f5f5; /* สีการ์ดสว่าง */
-            --text: #1a202c; /* สีข้อความสว่าง */
-            --success: #10b981;
-            --error: #ef4444;
-            --gradient: linear-gradient(135deg, #c084fc 0%, #9f7aea 100%); /* กราดิเอนต์สีม่วง */
+            --gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
         }
 
         * {
@@ -44,10 +31,9 @@
             min-height: 100vh;
             line-height: 1.6;
             background-image: 
-                radial-gradient(circle at 100% 0%, rgba(107, 70, 193, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 0% 100%, rgba(127, 86, 217, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(29, 78, 216, 0.1) 0%, transparent 40%);
             background-attachment: fixed;
-            transition: background-color 0.3s, color 0.3s, background-image 0.3s;
         }
 
         .container {
@@ -66,7 +52,6 @@
             background: var(--card);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background 0.3s, border 0.3s;
         }
 
         header::before {
@@ -77,7 +62,6 @@
             right: 0;
             height: 4px;
             background: var(--gradient);
-            transition: background 0.3s;
         }
 
         h1 {
@@ -87,42 +71,12 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s;
         }
 
         .subtitle {
             font-size: 1.125rem;
             color: var(--accent);
             opacity: 0.9;
-            transition: color 0.3s;
-        }
-
-        .info-card {
-            background: var(--card);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .info-card p {
-            font-size: 1rem;
-            color: var(--text);
-            transition: color 0.3s;
         }
 
         .config-container {
@@ -140,7 +94,6 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .config-card::before {
@@ -173,7 +126,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: color 0.3s;
         }
 
         .status-dot {
@@ -201,14 +153,13 @@
 
         .config-text {
             font-family: 'Monaco', 'Consolas', monospace;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(0, 0, 0, 0.2);
             padding: 1rem;
             border-radius: 0.75rem;
             overflow-x: auto;
             margin-bottom: 1rem;
             font-size: 0.9rem;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: background 0.3s, border 0.3s;
         }
 
         .copy-btn {
@@ -226,12 +177,12 @@
             gap: 0.5rem;
             font-size: 0.9rem;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(107, 70, 193, 0.2);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
         }
 
         .copy-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .loading {
@@ -258,7 +209,6 @@
             margin: 2rem auto;
             max-width: 600px;
             border: 1px solid rgba(239, 68, 68, 0.2);
-            transition: background 0.3s, border 0.3s;
         }
 
         .success-message {
@@ -315,50 +265,6 @@
                 font-size: 0.8rem;
                 padding: 0.75rem;
             }
-
-            .info-card h2 {
-                font-size: 1.25rem;
-            }
-
-            .info-card p {
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Light mode specific styles */
-        .light-mode .config-card {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .light-mode header {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-        }
-
-        .light-mode .error {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.1);
-        }
-
-        .light-mode .success-message {
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-        }
-
-        .light-mode .info-card {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .light-mode .config-text {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            color: #1a202c;
-        }
-
-        .light-mode .status-dot {
-            background-color: #10b981;
-        }
-
-        .light-mode .subtitle {
-            color: var(--accent);
         }
     </style>
 </head>
@@ -367,20 +273,8 @@
         <header>
             <h1>โค้ดทรูโปรเฟสฟรีๆ</h1>
             <p class="subtitle">API Configuration Manager</p>
-            <!-- ปุ่มสลับโหมด -->
-            <button id="theme-toggle" class="copy-btn" style="position: absolute; top: 1rem; left: 1rem; padding: 0.5rem; background: none; box-shadow: none;">
-                <i class="fas fa-moon"></i> โหมดมืด
-            </button>
-            <!-- สิ้นสุดปุ่มสลับโหมด -->
         </header>
         
-        <!-- ส่วนแจ้งเตือนแอพที่ต้องใช้ -->
-        <div class="info-card">
-            <h2><i class="fas fa-info-circle"></i> แอพที่ต้องใช้</h2>
-            <p>เพื่อใช้งาน Configs นี้ คุณจำเป็นต้องใช้แอพ <strong>Nte Mod</strong> เท่านั้น</p>
-        </div>
-        <!-- สิ้นสุดส่วนแจ้งเตือนแอพที่ต้องใช้ -->
-
         <div id="loading" class="loading pulse">
             <i class="fas fa-spinner fa-spin"></i>
             <span>กำลังโหลดและประมวลผล Config...</span>
@@ -399,9 +293,8 @@
             'https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub5.txt'
         ];
 
-        // รวมค่า host และ sni ทั้งหมดที่ต้องการ
-        const VALID_HOSTS = ['bpb-v.pages.dev', 'isaa1.paGes.DEv', 'isaA1.pages.dev'];
-        const VALID_SNIS = ['bpb-v.pages.dev', 'iSaA1.paGes.DEv', 'iSaA1.pages.dev'];
+        const VALID_HOSTS = ['bpb-v.pages.dev'];
+        const VALID_SNIS = ['bpb-v.pages.dev'];
 
         function formatTimestamp() {
             const now = new Date();
@@ -424,7 +317,7 @@
                 const [urlPart, comment] = config.split('#');
                 const url = new URL(urlPart);
 
-                // แทนที่ Hostname ใน URL
+                // แทนที่ Host ใน URL
                 url.hostname = 's.true.th';
 
                 // ดึงพารามิเตอร์ที่มีอยู่แล้ว
@@ -432,15 +325,6 @@
 
                 // เพิ่มหรือปรับปรุงพารามิเตอร์ที่ต้องการ
                 params.set('encryption', 'none');
-
-                // แปลง host และ sni เป็นค่าที่ต้องการ
-                if (params.has('host')) {
-                    params.set('host', 'IsaA1.pAGEs.DEV');
-                }
-
-                if (params.has('sni')) {
-                    params.set('sni', 'iSaA1.paGes.DEv');
-                }
 
                 // สร้าง URL ใหม่ด้วยพารามิเตอร์ที่ปรับปรุง
                 url.search = params.toString();
@@ -465,22 +349,16 @@
                         
                         for (const line of lines) {
                             if (line.startsWith('vless://')) {
-                                try {
-                                    const [urlPart, comment] = line.split('#');
-                                    const urlObj = new URL(urlPart);
-                                    const params = new URLSearchParams(urlObj.search);
-                                    const host = params.get('host')?.toLowerCase();
-                                    const sni = params.get('sni')?.toLowerCase();
-                                    const type = params.get('type');
+                                const urlObj = new URL(line.split('#')[0]);
+                                const params = new URLSearchParams(urlObj.search);
+                                const host = params.get('host')?.toLowerCase();
+                                const sni = params.get('sni')?.toLowerCase();
+                                const type = params.get('type');
 
-                                    // ตรวจสอบว่า type เป็น 'ws' และ host และ sni ตรงตามที่กำหนด
-                                    if (type === 'ws' && 
-                                        VALID_HOSTS.includes(host) &&
-                                        VALID_SNIS.includes(sni)) {
-                                        configs.push(line);
-                                    }
-                                } catch (innerError) {
-                                    console.error(`Error parsing config line: ${line}`, innerError);
+                                if (type === 'ws' && 
+                                    ((VALID_HOSTS.includes(host) && VALID_SNIS.includes(sni)) ||
+                                     (VALID_SNIS.includes(host) && VALID_HOSTS.includes(sni)))) {
+                                    configs.push(line);
                                 }
                             }
                         }
@@ -501,35 +379,15 @@
                     // แปลง config ตามที่ต้องการ
                     const transformedConfig = transformConfig(config);
 
-                    // สร้างการ์ดสำหรับ Config ดั้งเดิม
-                    const originalCard = document.createElement('div');
-                    originalCard.className = 'config-card';
-
-                    const originalName = config.split('#')[1] || `Original Config ${index + 1}`;
-
-                    originalCard.innerHTML = `
+                    const card = document.createElement('div');
+                    card.className = 'config-card';
+                    
+                    const configName = transformedConfig.split('#')[1] || `Config ${index + 1}`;
+                    
+                    card.innerHTML = `
                         <h3>
                             <span class="status-dot"></span>
-                            ${decodeURIComponent(originalName)} (Original)
-                        </h3>
-                        <div class="config-text">${config}</div>
-                        <span class="timestamp">${formatTimestamp()}</span>
-                        <button class="copy-btn" onclick="copyConfig(this, \`${config}\`)">
-                            <i class="fas fa-copy"></i>
-                            คัดลอก
-                        </button>
-                    `;
-
-                    // สร้างการ์ดสำหรับ Config ที่แปลงแล้ว
-                    const transformedCard = document.createElement('div');
-                    transformedCard.className = 'config-card';
-
-                    const transformedName = transformedConfig.split('#')[1] || `Transformed Config ${index + 1}`;
-
-                    transformedCard.innerHTML = `
-                        <h3>
-                            <span class="status-dot"></span>
-                            ${decodeURIComponent(transformedName)} (Transformed)
+                            ${decodeURIComponent(configName)}
                         </h3>
                         <div class="config-text">${transformedConfig}</div>
                         <span class="timestamp">${formatTimestamp()}</span>
@@ -538,10 +396,8 @@
                             คัดลอก
                         </button>
                     `;
-
-                    // เพิ่มการ์ดทั้งสองลงในคอนเทนเนอร์
-                    configsContainer.appendChild(originalCard);
-                    configsContainer.appendChild(transformedCard);
+                    
+                    configsContainer.appendChild(card);
                 });
             } catch (error) {
                 showError('เกิดข้อผิดพลาดในการดึงข้อมูล');
@@ -569,40 +425,6 @@
                 showError('ไม่สามารถคัดลอกได้ กรุณาลองอีกครั้ง');
             });
         }
-
-        // สลับโหมดมืดและสว่าง
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
-
-        // ตรวจสอบการตั้งค่าจาก localStorage
-        const currentTheme = localStorage.getItem("theme");
-        if (currentTheme === "light") {
-            document.body.classList.add("light-mode");
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> โหมดสว่าง';
-        } else if (currentTheme === "dark") {
-            document.body.classList.remove("light-mode");
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> โหมดมืด';
-        } else if (prefersDarkScheme.matches) {
-            document.body.classList.remove("light-mode");
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> โหมดมืด';
-        } else {
-            document.body.classList.add("light-mode");
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> โหมดสว่าง';
-        }
-
-        themeToggleBtn.addEventListener('click', function() {
-            document.body.classList.toggle("light-mode");
-            let theme = "dark";
-
-            if (document.body.classList.contains("light-mode")) {
-                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> โหมดสว่าง';
-                theme = "light";
-            } else {
-                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> โหมดมืด';
-            }
-
-            localStorage.setItem("theme", theme);
-        });
 
         // เริ่มการดึง Config เมื่อโหลดหน้าเว็บ
         fetchConfigs();
